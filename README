@@ -1,0 +1,25 @@
+This code is distributed under the LGPL 2.1 license.
+
+Requirements:
+-------------
+
+javabridge>=1.0.11
+numpy        
+glob
+pydot
+pyparsing
+GraphViz
+
+Installation:
+-------------
+
+Should suffice with doing:
+
+ python setup.py install
+
+Needless to say, no installation is needed just to use the module. A mere:
+
+ import pydot
+
+should do it, provided that the directory containing the modules is on Python
+module search path.
