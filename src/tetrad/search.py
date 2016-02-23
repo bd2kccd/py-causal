@@ -8,6 +8,9 @@ import javabridge
 import os
 import glob
 import pydot
+import random
+import string
+import tempfile
 
 import tetrad
 
@@ -20,32 +23,47 @@ class fgs():
     def __init__(self, df, penaltydiscount = 4, depth = 3, faithfulness = True, verbose = False, java_max_heap_size = None):
     
         tetrad_libdir = os.path.join(os.path.dirname(__file__), 'lib')
-        print 'tetrad_libdir: %s' % tetrad_libdir
+        # print 'tetrad_libdir: %s' % tetrad_libdir
         
         for l in glob.glob(tetrad_libdir + os.sep + "*.jar"):
-            print l
             javabridge.JARS.append(str(l))
             
         javabridge.start_vm(run_headless=True, max_heap_size = java_max_heap_size)
         javabridge.attach()
             
-        node_list = javabridge.JWrapper(javabridge.make_instance("java/util/ArrayList", "()V"))
-        for col in df.columns:
-            nodname = javabridge.make_instance("java/lang/String", "(Ljava/lang/String;)V",col)
-            nodi = javabridge.make_instance("edu/cmu/tetrad/graph/GraphNode", "(Ljava/lang/String;)V",nodname)
-            node_list.add(nodi)
-            
-        tetradMatrix = javabridge.JWrapper(javabridge.make_instance("edu/cmu/tetrad/util/TetradMatrix","(II)V",
-                                        len(df.index),df.columns.size))
+        tetradData = None
           
-        for row in df.index:
-            for col in range(0,df.columns.size):
-                tetradMatrix.set(row,col,df.ix[row][col])            
+        if(len(df.index)*df.columns.size <= 1500):
+
+            node_list = javabridge.JWrapper(javabridge.make_instance("java/util/ArrayList", "()V"))
+            for col in df.columns:
+                nodname = javabridge.make_instance("java/lang/String", "(Ljava/lang/String;)V",col)
+                nodi = javabridge.make_instance("edu/cmu/tetrad/graph/GraphNode", "(Ljava/lang/String;)V",nodname)
+                node_list.add(nodi)
+                
+            tetradMatrix = javabridge.JWrapper(javabridge.make_instance("edu/cmu/tetrad/util/TetradMatrix","(II)V",
+                                            len(df.index),df.columns.size))
         
-        tetradData = javabridge.static_call("edu/cmu/tetrad/data/ColtDataSet","makeContinuousData",
-                                    "(Ljava/util/List;Ledu/cmu/tetrad/util/TetradMatrix;)Ledu/cmu/tetrad/data/DataSet;",
-                                    node_list,tetradMatrix)
-        
+            for row in df.index:
+                for col in range(0,df.columns.size):
+                    tetradMatrix.set(row,col,df.ix[row][col])            
+            
+            tetradData = javabridge.static_call("edu/cmu/tetrad/data/ColtDataSet","makeContinuousData",
+                            "(Ljava/util/List;Ledu/cmu/tetrad/util/TetradMatrix;)Ledu/cmu/tetrad/data/DataSet;",
+                            node_list,tetradMatrix)
+
+        else:
+            #Generate random name
+            temp_data_file = ''.join(random.choice(string.lowercase) for i in range(10)) + '.csv'
+            temp_data_path = os.path.join(tempfile.gettempdir(), temp_data_file)
+            df.to_csv(temp_data_path, sep = "\t")
+
+            f = javabridge.make_instance("java/io/File", "(Ljava/lang/String;)V",temp_data_path)
+            excludeVar = javabridge.JWrapper(javabridge.make_instance("java/util/HashSet","()V"))
+            excludeVar.add("MULT")
+            tetradData = javabridge.static_call("edu/cmu/tetrad/data/BigDataSetUtility","readInContinuousData","(Ljava/io/File;CLjava/util/Set;)Ledu/cmu/tetrad/data/DataSet;",f,"\t",excludeVar)
+            os.remove(temp_data_path)
+            
         fgs = javabridge.make_instance("edu/cmu/tetrad/search/Fgs","(Ledu/cmu/tetrad/data/DataSet;)V",tetradData)
         fgs = javabridge.JWrapper(fgs)
     
