@@ -15,11 +15,8 @@ Installation:
 
 Should suffice with doing:
 
+ git clone git://github.com/bd2kccd/PyTetrad.git
  python setup.py install
-
-Or using pip to install:
- 
- pip install git+https://github.com/bd2kccd/PyTetrad
 
 Needless to say, no installation is needed just to use the module. A mere:
 

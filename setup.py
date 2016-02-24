@@ -30,7 +30,7 @@ except ImportError, excp:
 
 setup(
     name = "tetrad",
-    version='5.3.0',
+    version = "5.3.0",
     description = "Python wrapper for the Tetrad Library",
     author = "Chirayu Kong Wongchokprasitti",
     author_email = 'chw20@pitt.edu',
