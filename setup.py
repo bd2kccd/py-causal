@@ -57,6 +57,6 @@ setup(
         'pydot',
         'pyparsing',
         'GraphViz'],
-    data_files = [('.', ['LICENSE', 'README'])]
+    data_files = [('.', ['LICENSE', 'README'], 'data/charity.txt')]
 )
 
