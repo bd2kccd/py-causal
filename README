@@ -27,6 +27,8 @@ Install required prerequisites with pip setuptools:
 
  iPython Notebook users, follow these:
  
+ Install Anaconda setuptools: http://docs.continuum.io/anaconda/install
+ 
  conda install python-javabridge
  conda install pandas
  conda install numpy
