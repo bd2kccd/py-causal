@@ -47,9 +47,9 @@ We have observed that on some OS X installations, pydot may provide the followin
     Couldn't import dot_parser, loading of dot files will not be possible.
 
 If you see this, try the following
-uninstall pydot
-pip install pyparsing==1.5.7
-install pydot
+    uninstall pydot
+    pip install pyparsing==1.5.7
+    install pydot
 
 
 Then, from within the pytetrad directory, run the following command:
