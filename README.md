@@ -9,11 +9,11 @@ Requirements:
 ============
 
 Python 2.7 (does not work with Python 3)
-*javabridge>=1.0.11
-*pandas
-*numpy 
-*pydot
-*GraphViz
+* javabridge>=1.0.11
+* pandas
+* numpy 
+* pydot
+* GraphViz
 * JDK 1.7+
 
 Installation overview:
