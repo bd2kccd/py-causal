@@ -85,11 +85,11 @@ Installing Python with Anaconda and Jupyter may be easier for some users:
 ** For OS X, this default install does not seem to work well. try the following instead:
         conda install --channel https://conda.anaconda.org/david_baddeley python-javabridge
 * conda install pandas  
-*conda install numpy
-*conda install pydot
-*conda install graphviz 
-*conda install -c https://conda.anaconda.org/chirayu pytetrad 
-*jupyter notebook
+* conda install numpy
+* conda install pydot
+* conda install graphviz 
+* conda install -c https://conda.anaconda.org/chirayu pytetrad 
+* jupyter notebook
 
-and the load one of the note books
+and the load one of the Jupyter notebooks.
 
