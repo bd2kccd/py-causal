@@ -22,7 +22,7 @@ We have found two approaches to be useful:
 * Direct python installation with pip, possibly including use of [Jupyter](http://jupyter.org/). This approach is likely best for users who have Python installed and are familiar with installing Python modules.
 * Installation via [Anaconda](https://www.continuum.io/downloads), which  installs Python and related utilities.
 
-Directions for both approache are given below...
+Directions for both approaches are given below...
 
 Installation with pip
 =====================
