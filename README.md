@@ -31,31 +31,31 @@ If you do not have pip installed already, try [these instructions](https://pip.p
 
 Once pip is installed, execute these commands
 
-* pip install javabridge
-* pip install pandas
 * pip install numpy
+* pip install pandas
+* pip install javabridge
 * pip install pydot
 * pip install GraphViz
 
-
-After running this command, enter a python shell and attempt the follwing imports
- * import pandas as pd
- * import pydot
- * from tetrad import search as s
- 
 We have observed that on some OS X installations, pydot may provide the following response
     Couldn't import dot_parser, loading of dot files will not be possible.
 
 If you see this, try the following
 
-     uninstall pydot
+     pip uninstall pydot
      pip install pyparsing==1.5.7
-     install pydot
+     pip install pydot
 
 
 Then, from within the pytetrad directory, run the following command:
 
     python setup.py install
+    
+
+After running this command, enter a python shell and attempt the follwing imports
+ * import pandas as pd
+ * import pydot
+ * from tetrad import search as s
 
 Finally, try to run the python example
 
