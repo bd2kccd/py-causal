@@ -88,6 +88,7 @@ For OS X, this default install does not seem to work well. try the following ins
 
     conda install --channel https://conda.anaconda.org/david_baddeley python-javabridge
 
+Then run the following to configure anacoda
 
     conda install pandas  
     conda install numpy
@@ -96,5 +97,5 @@ For OS X, this default install does not seem to work well. try the following ins
     conda install -c https://conda.anaconda.org/chirayu pytetrad 
     jupyter notebook
 
-and the load one of the Jupyter notebooks.
+and then load one of the Jupyter notebooks.
 
