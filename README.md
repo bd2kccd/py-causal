@@ -31,11 +31,11 @@ If you do not have pip installed already, try [these instructions](https://pip.p
 
 Once pip is installed, execute these commands
 
-* pip install numpy
-* pip install pandas
-* pip install javabridge
-* pip install pydot
-* pip install GraphViz
+    pip install numpy
+    pip install pandas
+    pip install javabridge
+    pip install pydot 
+    pip install GraphViz
 
 We have observed that on some OS X installations, pydot may provide the following response
     Couldn't import dot_parser, loading of dot files will not be possible.
@@ -52,10 +52,10 @@ Then, from within the pytetrad directory, run the following command:
     python setup.py install
     
 
-After running this command, enter a python shell and attempt the follwing imports
- * import pandas as pd
- * import pydot
- * from tetrad import search as s
+After running this command, enter a python shell and attempt the follwing import
+    import pandas as pd
+    import pydot
+    from tetrad import search as s
 
 Finally, try to run the python example
 
@@ -85,14 +85,15 @@ Installing Python with Anaconda and Jupyter may be easier for some users:
 * conda install python-javabridge
 
 For OS X, this default install does not seem to work well. try the following instead:
-        conda install --channel https://conda.anaconda.org/david_baddeley python-javabridge
+    conda install --channel https://conda.anaconda.org/david_baddeley python-javabridge
 
-* conda install pandas  
-* conda install numpy
-* conda install pydot
-* conda install graphviz 
-* conda install -c https://conda.anaconda.org/chirayu pytetrad 
-* jupyter notebook
+
+    conda install pandas  
+    conda install numpy
+    conda install pydot
+    conda install graphviz 
+    conda install -c https://conda.anaconda.org/chirayu pytetrad 
+    jupyter notebook
 
 and the load one of the Jupyter notebooks.
 
