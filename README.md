@@ -47,7 +47,7 @@ If you see this, try the following
      pip install pydot
 
 
-Then, from within the pytetrad directory, run the following command:
+Then, from within the py-causal directory, run the following command:
 
     python setup.py install
     
@@ -59,9 +59,9 @@ After running this command, enter a python shell and attempt the follwing import
 
 Finally, try to run the python example
 
-    python pytetrad-example.py
+    python py-causal-example.py
 
-Be sure to run this from within the pytetrad directory.
+Be sure to run this from within the py-causal directory.
 
 This program will create a file named tetrad.svg, which should be viewable in any SVG capable program. If you see a causal graph, everything is working correctly.
 
