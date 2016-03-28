@@ -4,7 +4,7 @@ package:
  
 source:
   git_rev: v0.1
-  git_url: https://github.com/bd2kccd/pytetrad.git
+  git_url: https://github.com/bd2kccd/py-causal.git
  
 requirements:
   build:

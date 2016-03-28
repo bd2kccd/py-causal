@@ -94,7 +94,7 @@ Then run the following to configure anacoda
     conda install numpy
     conda install pydot
     conda install graphviz 
-    conda install -c https://conda.anaconda.org/chirayu pycausal 
+    conda install -c https://conda.anaconda.org/chirayu py-causal 
     jupyter notebook
 
 and then load one of the Jupyter notebooks.
