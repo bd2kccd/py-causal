@@ -1,6 +1,6 @@
 package:
-  name: pytetrad
-  version: "5.3.0"
+  name: pycausal
+  version: "0.1.0"
  
 source:
   git_rev: v0.1
@@ -19,6 +19,6 @@ requirements:
     - graphviz
   
 about:
-  home: https://github.com/bd2kccd/pytetrad
+  home: https://github.com/bd2kccd/py-causal
   license: LGPL >= 2.1
   license_file: LICENSE

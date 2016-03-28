@@ -12,7 +12,7 @@ import random
 import string
 import tempfile
 
-import tetrad
+import PyCausal
 
 class fgs():
     
@@ -38,18 +38,18 @@ class fgs():
             node_list = javabridge.JWrapper(javabridge.make_instance("java/util/ArrayList", "()V"))
             for col in df.columns:
                 nodname = javabridge.make_instance("java/lang/String", "(Ljava/lang/String;)V",col)
-                nodi = javabridge.make_instance("edu/cmu/tetrad/graph/GraphNode", "(Ljava/lang/String;)V",nodname)
+                nodi = javabridge.make_instance("edu/cmu/PyCausal/graph/GraphNode", "(Ljava/lang/String;)V",nodname)
                 node_list.add(nodi)
                 
-            tetradMatrix = javabridge.JWrapper(javabridge.make_instance("edu/cmu/tetrad/util/TetradMatrix","(II)V",
+            tetradMatrix = javabridge.JWrapper(javabridge.make_instance("edu/cmu/PyCausal/util/TetradMatrix","(II)V",
                                             len(df.index),df.columns.size))
         
             for row in df.index:
                 for col in range(0,df.columns.size):
                     tetradMatrix.set(row,col,df.ix[row][col])            
             
-            tetradData = javabridge.static_call("edu/cmu/tetrad/data/ColtDataSet","makeContinuousData",
-                            "(Ljava/util/List;Ledu/cmu/tetrad/util/TetradMatrix;)Ledu/cmu/tetrad/data/DataSet;",
+            tetradData = javabridge.static_call("edu/cmu/PyCausal/data/ColtDataSet","makeContinuousData",
+                            "(Ljava/util/List;Ledu/cmu/PyCausal/util/TetradMatrix;)Ledu/cmu/PyCausal/data/DataSet;",
                             node_list,tetradMatrix)
 
         else:
@@ -61,10 +61,10 @@ class fgs():
             f = javabridge.make_instance("java/io/File", "(Ljava/lang/String;)V",temp_data_path)
             excludeVar = javabridge.JWrapper(javabridge.make_instance("java/util/HashSet","()V"))
             excludeVar.add("MULT")
-            tetradData = javabridge.static_call("edu/cmu/tetrad/data/BigDataSetUtility","readInContinuousData","(Ljava/io/File;CLjava/util/Set;)Ledu/cmu/tetrad/data/DataSet;",f,"\t",excludeVar)
+            tetradData = javabridge.static_call("edu/cmu/PyCausal/data/BigDataSetUtility","readInContinuousData","(Ljava/io/File;CLjava/util/Set;)Ledu/cmu/PyCausal/data/DataSet;",f,"\t",excludeVar)
             os.remove(temp_data_path)
             
-        fgs = javabridge.make_instance("edu/cmu/tetrad/search/Fgs","(Ledu/cmu/tetrad/data/DataSet;)V",tetradData)
+        fgs = javabridge.make_instance("edu/cmu/PyCausal/search/Fgs","(Ledu/cmu/PyCausal/data/DataSet;)V",tetradData)
         fgs = javabridge.JWrapper(fgs)
     
         fgs.setPenaltyDiscount(penaltydiscount)# set to 2 if variable# <= 50 otherwise set it to 4
@@ -101,7 +101,7 @@ class fgs():
                 src = token[0]
                 arc = token[1]
                 dst = token[2]
-                if(tetrad.isNodeExisting(n,src) and tetrad.isNodeExisting(n,dst)):
+                if(PyCausal.isNodeExisting(n,src) and PyCausal.isNodeExisting(n,dst)):
                     edge = pydot.Edge(nodes[n.index(src)],nodes[n.index(dst)])
                     if(arc == "---"):
                         edge.set_arrowhead("none")

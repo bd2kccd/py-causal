@@ -29,13 +29,13 @@ except ImportError, excp:
     from setuptools import setup
 
 setup(
-    name = "tetrad",
-    version = "5.3.0",
+    name = "pycausal",
+    version = "0.1.0",
     description = "Python wrapper for the Tetrad Library",
     author = "Chirayu Kong Wongchokprasitti",
     author_email = 'chw20@pitt.edu',
-    url = 'http://github.com/bd2kccd/pytetrad',
-    download_url = 'https://github.com/bd2kccd/pytetrad/archive/v5.3.0.tar.gz',
+    url = 'http://github.com/bd2kccd/py-causal',
+    download_url = 'https://github.com/bd2kccd/py-causal/archive/v0.1.tar.gz',
     license = 'Lesser GNU General Public License version >= 2.1 (LGPL >= 2.1)',
     keywords = 'tetrad causal graph bayesian network search discovery',
     platforms = ['any'],
@@ -48,9 +48,9 @@ setup(
         'Topic :: Scientific/Engineering :: Artificial Intelligence',
         'Topic :: Software Development :: Libraries :: Python Modules'],
     package_dir = {'': 'src'},
-    packages = ['tetrad'],
+    packages = ['pycausal'],
     package_data = {
-        'tetrad': ['lib/*.jar'],
+        'pycausal': ['lib/*.jar'],
     },
     install_requires = [
         'javabridge>=1.0.11', 

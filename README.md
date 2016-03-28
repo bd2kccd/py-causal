@@ -1,4 +1,4 @@
-pytetrad
+py-causal
 ========
 Python APIs for causal modeling algorithms developed by the University of Pittsburgh/Carnegie Mellon University [Center for Causal Discovery](http://www.ccd.pitt.edu). 
 
@@ -94,7 +94,7 @@ Then run the following to configure anacoda
     conda install numpy
     conda install pydot
     conda install graphviz 
-    conda install -c https://conda.anaconda.org/chirayu pytetrad 
+    conda install -c https://conda.anaconda.org/chirayu pycausal 
     jupyter notebook
 
 and then load one of the Jupyter notebooks.

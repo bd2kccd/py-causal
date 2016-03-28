@@ -12,7 +12,7 @@ df = pd.read_table(data_dir, sep="\t")
 
 
 
-from tetrad import search as s
+from pycausal import search as s
 
 fgs = s.fgs(df,penaltydiscount = 2, depth = -1,
             faithfulness = True, verbose = True, java_max_heap_size = '500M')
@@ -26,7 +26,7 @@ fgs.getEdges()
 dot = fgs.getDot()
 svg_str = dot.create_svg(prog='dot')
 
-f = open('tetrad.dot','w')
+f = open('pycausal.dot','w')
 f.write(svg_str)
 f.close()
 
