@@ -87,7 +87,7 @@ class fgsDiscrete():
         fgs.setDepth(depth)
         fgs.setNumPatternsToStore(0)
         fgs.setFaithfulnessAssumed(faithfulness)
-        fgs.setParallelism(numOfThreads)
+        fgs.setParallelism(numofthreads)
         fgs.setVerbose(verbose)
         tetradGraph = fgs.search()
         
