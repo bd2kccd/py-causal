@@ -24,7 +24,7 @@ Created on Feb 15, 2016
 
 # lgpl 2.1
 __author__ = 'Chirayu Kong Wongchokprasitti'
-__version__ = '0.1.0'
+__version__ = '0.1.1'
 __license__ = 'LGPL >= 2.1'
 
 
