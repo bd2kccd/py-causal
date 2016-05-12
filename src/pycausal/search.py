@@ -20,8 +20,7 @@ class fgsDiscrete():
     nodes = []
     edges = []
     
-    def __init__(self, df, structurePrior = 1.0, samplePrior = 1.0, depth = 3, faithfulness = True, numOfThreads = 2, 
-                 verbose = False, java_max_heap_size = None):
+    def __init__(self, df, structurePrior = 1.0, samplePrior = 1.0, depth = 3, faithfulness = True, numofthreads = 2, verbose = False, java_max_heap_size = None):
             
         tetrad_libdir = os.path.join(os.path.dirname(__file__), 'lib')
         
@@ -158,7 +157,7 @@ class fgs():
         javabridge.start_vm(run_headless=True, max_heap_size = java_max_heap_size)
         javabridge.attach()
             
-        score = None
+        tetradData = None
           
         if(len(df.index)*df.columns.size <= 1500):
 
@@ -188,6 +187,7 @@ class fgs():
             # Read in method 1
             f = javabridge.JClassWrapper('java.nio.file.Paths').get(temp_data_path)
             dataReader = javabridge.JClassWrapper('edu.cmu.tetrad.io.TabularContinuousDataReader')(f,'\t')
+            tetradData = dataReader.readInData(excludeVar)
             
             # Read in method 2 -- Depreciated
             # f = javabridge.JClassWrapper('java.io.File')(temp_data_path)
