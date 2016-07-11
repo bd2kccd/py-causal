@@ -33,7 +33,7 @@ import javabridge
 import os
 import glob
 
-def start_vm(java_max_heap_size = None):
+def start_vm(self, java_max_heap_size = None):
     tetrad_libdir = os.path.join(os.path.dirname(__file__), 'lib')
 
     for l in glob.glob(tetrad_libdir + os.sep + "*.jar"):
@@ -42,7 +42,7 @@ def start_vm(java_max_heap_size = None):
     javabridge.start_vm(run_headless=True, max_heap_size = java_max_heap_size)
     javabridge.attach()        
     
-def stop_vm():
+def stop_vm(self):
     javabridge.detach()
     javabridge.kill_vm()
 
