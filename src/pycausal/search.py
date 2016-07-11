@@ -22,15 +22,7 @@ class fgsDiscrete():
     edges = []
     
     def __init__(self, df, structurePrior = 1.0, samplePrior = 1.0, depth = 3, heuristicSpeedup = True, numofthreads = 2, verbose = False, priorKnowledge = None):
-            
-        tetrad_libdir = os.path.join(os.path.dirname(__file__), 'lib')
         
-        for l in glob.glob(tetrad_libdir + os.sep + "*.jar"):
-            javabridge.JARS.append(str(l))
-            
-        javabridge.start_vm(run_headless=True, max_heap_size = java_max_heap_size)
-        javabridge.attach()
-            
         score = None
           
         if(len(df.index)*df.columns.size <= 1500):
@@ -146,14 +138,6 @@ class fgs():
     edges = []
     
     def __init__(self, df, penaltydiscount = 4, depth = 3, heuristicSpeedup = True, numofthreads = 2, verbose = False, priorKnowledge = None):
-    
-        tetrad_libdir = os.path.join(os.path.dirname(__file__), 'lib')
-        
-        for l in glob.glob(tetrad_libdir + os.sep + "*.jar"):
-            javabridge.JARS.append(str(l))
-            
-        javabridge.start_vm(run_headless=True, max_heap_size = java_max_heap_size)
-        javabridge.attach()
             
         tetradData = None
           
