@@ -19,7 +19,8 @@ MA 02110-1301  USA
  
 Created on Feb 15, 2016
 
-@author: chw20
+@author: Chirayu Wongchokprasitti, PhD 
+@email: chw20@pitt.edu
 '''
 
 # lgpl 2.1
@@ -35,5 +36,4 @@ def isNodeExisting(nodes,node):
     except IndexError:
         print "Node %s does not exist!", node
         return False
-    
     

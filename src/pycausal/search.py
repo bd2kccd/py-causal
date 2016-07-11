@@ -1,7 +1,8 @@
 '''
 Created on Feb 17, 2016
 
-@author: chw20
+@author: Chirayu Wongchokprasitti, PhD 
+@email: chw20@pitt.edu
 '''
 
 import javabridge
@@ -20,7 +21,7 @@ class fgsDiscrete():
     nodes = []
     edges = []
     
-    def __init__(self, df, structurePrior = 1.0, samplePrior = 1.0, depth = 3, faithfulness = True, numofthreads = 2, verbose = False, java_max_heap_size = None):
+    def __init__(self, df, structurePrior = 1.0, samplePrior = 1.0, depth = 3, heuristicSpeedup = True, numofthreads = 2, verbose = False, java_max_heap_size = None, priorKnowledge = None, stop_jvm_after_finish = True):
             
         tetrad_libdir = os.path.join(os.path.dirname(__file__), 'lib')
         
@@ -32,52 +33,52 @@ class fgsDiscrete():
             
         score = None
           
-        # if(len(df.index)*df.columns.size <= 1500):
+        if(len(df.index)*df.columns.size <= 1500):
         
-        dataBox = javabridge.JClassWrapper('edu.cmu.tetrad.data.VerticalIntDataBox')(len(df.index),df.columns.size)
+            dataBox = javabridge.JClassWrapper('edu.cmu.tetrad.data.VerticalIntDataBox')(len(df.index),df.columns.size)
 
-        node_list = javabridge.JClassWrapper('java.util.ArrayList')()
-        col_no = 0
-        for col in df.columns:
+            node_list = javabridge.JClassWrapper('java.util.ArrayList')()
+            col_no = 0
+            for col in df.columns:
 
-            cat_array = sorted(set(df[col]))
-            cat_list = javabridge.JClassWrapper('java.util.ArrayList')()
-            for cat in cat_array:
-                catname = javabridge.JClassWrapper('java.lang.String')(cat)
-                cat_list.add(catname)
+                cat_array = sorted(set(df[col]))
+                cat_list = javabridge.JClassWrapper('java.util.ArrayList')()
+                for cat in cat_array:
+                    catname = javabridge.JClassWrapper('java.lang.String')(cat)
+                    cat_list.add(catname)
 
-            nodname = javabridge.JClassWrapper('java.lang.String')(col)
-            nodi = javabridge.JClassWrapper('edu.cmu.tetrad.data.DiscreteVariable')(nodname,cat_list)
-            node_list.add(nodi)
+                nodname = javabridge.JClassWrapper('java.lang.String')(col)
+                nodi = javabridge.JClassWrapper('edu.cmu.tetrad.data.DiscreteVariable')(nodname,cat_list)
+                node_list.add(nodi)
 
-            for row in df.index:
-                value = javabridge.JClassWrapper('java.lang.Integer')(cat_array.index(df.ix[row][col_no]))
-                dataBox.set(row,col_no,value)
+                for row in df.index:
+                    value = javabridge.JClassWrapper('java.lang.Integer')(cat_array.index(df.ix[row][col_no]))
+                    dataBox.set(row,col_no,value)
 
-            col_no = col_no + 1
+                col_no = col_no + 1
 
-        tetradData = javabridge.JClassWrapper('edu.cmu.tetrad.data.BoxDataSet')(dataBox, node_list)
+            tetradData = javabridge.JClassWrapper('edu.cmu.tetrad.data.BoxDataSet')(dataBox, node_list)
 
-        # else:
+        else:
             # Generate random name
-            # temp_data_file = ''.join(random.choice(string.lowercase) for i in range(10)) + '.csv'
-            # temp_data_path = os.path.join(tempfile.gettempdir(), temp_data_file)
-            # df.to_csv(temp_data_path, sep = "\t", index = False)
+            temp_data_file = ''.join(random.choice(string.lowercase) for i in range(10)) + '.csv'
+            temp_data_path = os.path.join(tempfile.gettempdir(), temp_data_file)
+            df.to_csv(temp_data_path, sep = "\t", index = False)
 
-            # excludeVar = javabridge.JWrapper(javabridge.make_instance("java/util/HashSet","()V"))
-            # excludeVar.add("MULT")
+            excludeVar = javabridge.JClassWrapper('java.util.HashSet')()
+            excludeVar.add("MULT")
 
             # Read in method 1
-            # f = javabridge.static_call("java/nio/file/Paths","get","(Ljava/lang/String;)V",temp_data_path)
-            # dataReader = javabridge.make_instance("edu/cmu/tetrad/io/TabularContinuousDataReader","(Ljava/nio/file/Path;C)V",f,"\t")
-            # dataReader = javabridge.JWrapper(dataReader)
-            # tetradData = dataReader.readInData(excludeVar)
+            f = javabridge.JClassWrapper('java.nio.file.Paths').get(temp_data_path)
+            dataReader = javabridge.JClassWrapper('edu.cmu.tetrad.io.VerticalTabularDiscreteDataReader')(f,'\t')
+            dataReader = javabridge.JWrapper(dataReader)
+            tetradData = dataReader.readInData(excludeVar)
             
             # Read in method 2 -- Depreciated
             # f = javabridge.make_instance("java/io/File", "(Ljava/lang/String;)V",temp_data_path)
             # tetradData = javabridge.static_call("edu/cmu/tetrad/data/BigDataSetUtility", "readInDiscreteData", "(Ljava/io/File;CLjava/util/Set;)Ledu/cmu/tetrad/data/DataSet;",f,"\t",excludeVar)
             
-            # os.remove(temp_data_path)
+            os.remove(temp_data_path)
         
         score = javabridge.JClassWrapper('edu.cmu.tetrad.search.BDeuScore')(tetradData)
         score.setStructurePrior(structurePrior)
@@ -86,7 +87,7 @@ class fgsDiscrete():
         fgs = javabridge.JClassWrapper('edu.cmu.tetrad.search.Fgs')(score)
         fgs.setDepth(depth)
         fgs.setNumPatternsToStore(0)
-        fgs.setFaithfulnessAssumed(faithfulness)
+        fgs.setHeuristicSpeedup(heuristicSpeedup)
         fgs.setParallelism(numofthreads)
         fgs.setVerbose(verbose)
         tetradGraph = fgs.search()
@@ -127,7 +128,8 @@ class fgsDiscrete():
         self.edges = e            
     
         javabridge.detach()
-        javabridge.kill_vm()
+        if stop_jvm_after_finish == True:
+            javabridge.kill_vm()
             
         self.graph = graph
         
@@ -147,7 +149,7 @@ class fgs():
     nodes = []
     edges = []
     
-    def __init__(self, df, penaltydiscount = 4, depth = 3, faithfulness = True, numofthreads = 2, verbose = False, java_max_heap_size = None):
+    def __init__(self, df, penaltydiscount = 4, depth = 3, faithfulness = True, numofthreads = 2, verbose = False, java_max_heap_size = None, priorKnowledge = None, stop_jvm_after_finish = True):
     
         tetrad_libdir = os.path.join(os.path.dirname(__file__), 'lib')
         
@@ -244,7 +246,8 @@ class fgs():
         self.edges = e            
     
         javabridge.detach()
-        javabridge.kill_vm()
+        if stop_jvm_after_finish == True:
+            javabridge.kill_vm()
             
         self.graph = graph
         
