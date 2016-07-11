@@ -27,15 +27,7 @@ import javabridge
 import os
 import glob
 
-def knowledge(self, forbiddirect = None, requiredirect = None, addtemporal = None):
-    tetrad_libdir = os.path.join(os.path.dirname(__file__), 'lib')
-
-    for l in glob.glob(tetrad_libdir + os.sep + "*.jar"):
-        javabridge.JARS.append(str(l))
-            
-    javabridge.start_vm(run_headless=True, max_heap_size = java_max_heap_size)
-    javabridge.attach()        
-    
+def knowledge(forbiddirect = None, requiredirect = None, addtemporal = None):
     prior = javabridge.JClassWrapper('edu.cmu.tetrad.data.Knowledge2')()
     
     # forbidden directed edges
@@ -66,15 +58,7 @@ def knowledge(self, forbiddirect = None, requiredirect = None, addtemporal = Non
     
     return prior
 
-def knowledgeFromFile(self, knowlegeFile):
-    tetrad_libdir = os.path.join(os.path.dirname(__file__), 'lib')
-
-    for l in glob.glob(tetrad_libdir + os.sep + "*.jar"):
-        javabridge.JARS.append(str(l))
-            
-    javabridge.start_vm(run_headless=True, max_heap_size = java_max_heap_size)
-    javabridge.attach()        
-    
+def knowledgeFromFile(knowlegeFile):
     f = javabridge.JClassWrapper('java.io.File')(knowlegeFile)
     reader = javabridge.JClassWrapper('edu.cmu.tetrad.data.DataReader')()
     prior = reader.parseKnowledge(f)

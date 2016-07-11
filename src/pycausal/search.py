@@ -21,7 +21,7 @@ class fgsDiscrete():
     nodes = []
     edges = []
     
-    def __init__(self, df, structurePrior = 1.0, samplePrior = 1.0, depth = 3, heuristicSpeedup = True, numofthreads = 2, verbose = False, java_max_heap_size = None, priorKnowledge = None, stop_jvm_after_finish = True):
+    def __init__(self, df, structurePrior = 1.0, samplePrior = 1.0, depth = 3, heuristicSpeedup = True, numofthreads = 2, verbose = False, priorKnowledge = None):
             
         tetrad_libdir = os.path.join(os.path.dirname(__file__), 'lib')
         
@@ -127,10 +127,6 @@ class fgsDiscrete():
     
         self.edges = e            
     
-        javabridge.detach()
-        if stop_jvm_after_finish == True:
-            javabridge.kill_vm()
-            
         self.graph = graph
         
     def getDot(self):
@@ -149,7 +145,7 @@ class fgs():
     nodes = []
     edges = []
     
-    def __init__(self, df, penaltydiscount = 4, depth = 3, faithfulness = True, numofthreads = 2, verbose = False, java_max_heap_size = None, priorKnowledge = None, stop_jvm_after_finish = True):
+    def __init__(self, df, penaltydiscount = 4, depth = 3, faithfulness = True, numofthreads = 2, verbose = False, priorKnowledge = None):
     
         tetrad_libdir = os.path.join(os.path.dirname(__file__), 'lib')
         
@@ -245,10 +241,6 @@ class fgs():
     
         self.edges = e            
     
-        javabridge.detach()
-        if stop_jvm_after_finish == True:
-            javabridge.kill_vm()
-            
         self.graph = graph
         
     def getDot(self):
