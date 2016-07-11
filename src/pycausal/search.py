@@ -145,7 +145,7 @@ class fgs():
     nodes = []
     edges = []
     
-    def __init__(self, df, penaltydiscount = 4, depth = 3, faithfulness = True, numofthreads = 2, verbose = False, priorKnowledge = None):
+    def __init__(self, df, penaltydiscount = 4, depth = 3, heuristicSpeedup = True, numofthreads = 2, verbose = False, priorKnowledge = None):
     
         tetrad_libdir = os.path.join(os.path.dirname(__file__), 'lib')
         
@@ -201,7 +201,7 @@ class fgs():
         fgs = javabridge.JClassWrapper('edu.cmu.tetrad.search.Fgs')(score)
         fgs.setDepth(depth)#-1
         fgs.setNumPatternsToStore(0)
-        fgs.setFaithfulnessAssumed(faithfulness)
+        fgs.setHeuristicSpeedup(heuristicSpeedup)
         fgs.setParallelism(numofthreads)
         fgs.setVerbose(verbose)
         tetradGraph = fgs.search()
