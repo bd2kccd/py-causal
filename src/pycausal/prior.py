@@ -51,6 +51,9 @@ def knowledge(forbiddirect = None, requiredirect = None, addtemporal = None):
         for i in range(0,len(addtemporal)):
             teir = i
             temporal = addtemporal[i]
+            if isinstance(temporal,ForbiddenWithin):
+                prior.setTierForbiddenWithin(tier, True)
+                temporal = temporal.nodes
             for j in range(0,len(temporal)):
                 node = temporal[j]
                 node = node.replace(' ', '.')
@@ -65,3 +68,9 @@ def knowledgeFromFile(knowlegeFile):
 
     return prior
     
+class ForbiddenWithin():
+    
+    nodes = []
+    
+    def __init__(self,nodes):
+        self.nodes = nodes    
