@@ -63,7 +63,6 @@ class fgsDiscrete():
             # Read in method 1
             f = javabridge.JClassWrapper('java.nio.file.Paths').get(temp_data_path)
             dataReader = javabridge.JClassWrapper('edu.cmu.tetrad.io.VerticalTabularDiscreteDataReader')(f,'\t')
-            dataReader = javabridge.JWrapper(dataReader)
             tetradData = dataReader.readInData(excludeVar)
             
             # Read in method 2 -- Depreciated
