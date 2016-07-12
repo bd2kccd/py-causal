@@ -49,7 +49,7 @@ def knowledge(forbiddirect = None, requiredirect = None, addtemporal = None):
     # add temporal nodes' tiers
     if addtemporal is not None:
         for i in range(0,len(addtemporal)):
-            teir = i
+            tier = i
             temporal = addtemporal[i]
             if isinstance(temporal,ForbiddenWithin):
                 prior.setTierForbiddenWithin(tier, True)
@@ -57,7 +57,7 @@ def knowledge(forbiddirect = None, requiredirect = None, addtemporal = None):
             for j in range(0,len(temporal)):
                 node = temporal[j]
                 node = node.replace(' ', '.')
-                prior.addToTier(teir, node)
+                prior.addToTier(tier, node)
     
     return prior
 
