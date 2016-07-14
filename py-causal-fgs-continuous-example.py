@@ -9,11 +9,14 @@ from IPython.display import SVG
 data_dir = os.path.join(os.getcwd(), 'data', 'charity.txt')
 df = pd.read_table(data_dir, sep="\t")
 
+from pycausal import pycausal as pc
+
+pc.start_vm()
+
 from pycausal import search as s
 
 fgs = s.fgs(df,penaltydiscount = 2, depth = -1,
-            faithfulness = True, numofthreads = 2, verbose = True, 
-            java_max_heap_size = '500M')
+            heuristicSpeedup = True, numofthreads = 2, verbose = True)
 
 fgs.getNodes()
 fgs.getEdges()
@@ -25,3 +28,4 @@ f = open('fgs-continuous.dot','w')
 f.write(svg_str)
 f.close()
 
+pc.stop_vm()
