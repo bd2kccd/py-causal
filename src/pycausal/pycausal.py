@@ -19,7 +19,8 @@ MA 02110-1301  USA
  
 Created on Feb 15, 2016
 
-@author: chw20
+@author: Chirayu Wongchokprasitti, PhD 
+@email: chw20@pitt.edu
 '''
 
 # lgpl 2.1
@@ -28,6 +29,23 @@ __version__ = '0.1.1'
 __license__ = 'LGPL >= 2.1'
 
 
+import javabridge
+import os
+import glob
+
+def start_vm(java_max_heap_size = None):
+    tetrad_libdir = os.path.join(os.path.dirname(__file__), 'lib')
+
+    for l in glob.glob(tetrad_libdir + os.sep + "*.jar"):
+        javabridge.JARS.append(str(l))
+            
+    javabridge.start_vm(run_headless=True, max_heap_size = java_max_heap_size)
+    javabridge.attach()        
+    
+def stop_vm():
+    javabridge.detach()
+    javabridge.kill_vm()
+
 def isNodeExisting(nodes,node):
     try:
         nodes.index(node)
@@ -35,5 +53,4 @@ def isNodeExisting(nodes,node):
     except IndexError:
         print "Node %s does not exist!", node
         return False
-    
     

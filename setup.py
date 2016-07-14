@@ -30,7 +30,7 @@ except ImportError, excp:
 
 setup(
     name = "pycausal",
-    version = "0.1.1",
+    version = "0.1.2",
     description = "Python wrapper for the Tetrad Library",
     author = "Chirayu Kong Wongchokprasitti",
     author_email = 'chw20@pitt.edu',
@@ -57,6 +57,6 @@ setup(
         'pydot',
         'pyparsing',
         'GraphViz'],
-    data_files = [('.', ['LICENSE', 'README'], 'data/charity.txt')]
+    data_files = [('.', ['LICENSE', 'README'], 'data/charity.txt','data/audiology.txt')]
 )
 
