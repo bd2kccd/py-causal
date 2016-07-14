@@ -81,6 +81,10 @@ class fgsDiscrete():
         fgs.setHeuristicSpeedup(heuristicSpeedup)
         fgs.setParallelism(numofthreads)
         fgs.setVerbose(verbose)
+        
+        if priorKnowledge is not None:    
+            fgs.setKnowledge(priorKnowledge)
+            
         tetradGraph = fgs.search()
         
         graph = pydot.Dot(graph_type='digraph')
@@ -187,6 +191,10 @@ class fgs():
         fgs.setHeuristicSpeedup(heuristicSpeedup)
         fgs.setParallelism(numofthreads)
         fgs.setVerbose(verbose)
+        
+        if priorKnowledge is not None:    
+            fgs.setKnowledge(priorKnowledge)
+            
         tetradGraph = fgs.search()
         
         graph = pydot.Dot(graph_type='digraph')

@@ -42,8 +42,8 @@ def knowledge(forbiddirect = None, requiredirect = None, addtemporal = None):
     if requiredirect is not None:
         for i in range(0,len(requiredirect)):
             require = requiredirect[i]
-            _from = forbid[0]
-            _to = forbid[1]
+            _from = require[0]
+            _to = require[1]
             prior.setRequired(_from, _to)
     
     # add temporal nodes' tiers
