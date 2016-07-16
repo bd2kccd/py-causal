@@ -23,7 +23,7 @@ class fgsDiscrete():
     
     def __init__(self, df, structurePrior = 1.0, samplePrior = 1.0, depth = 3, heuristicSpeedup = True, numofthreads = 2, verbose = False, priorKnowledge = None):
         
-        tetradData = loadDiscreteData(df)
+        tetradData = pycausal.loadDiscreteData(df)
         
         score = javabridge.JClassWrapper('edu.cmu.tetrad.search.BDeuScore')(tetradData)
         score.setStructurePrior(structurePrior)
@@ -104,10 +104,10 @@ class fci():
         
         if(continuous):
             tetradData = pycausal.loadContinuousData(df)
-            IndTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestChiSquare')(tetradData, significance)
+            IndTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestFisherZ')(tetradData, significance)
         else:
             tetradData = pycausal.loadDiscreteData(df)
-            IndTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestFisherZ')(tetradData, significance)
+            IndTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestChiSquare')(tetradData, significance)
         
         fci = javabridge.JClassWrapper('edu.cmu.tetrad.search.Fci')(IndTest)
         fci.setDepth(depth)#-1
