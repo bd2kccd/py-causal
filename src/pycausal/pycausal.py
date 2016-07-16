@@ -28,10 +28,13 @@ __author__ = 'Chirayu Kong Wongchokprasitti'
 __version__ = '0.1.1'
 __license__ = 'LGPL >= 2.1'
 
-
 import javabridge
 import os
 import glob
+import pydot
+import random
+import string
+import tempfile
 
 def start_vm(java_max_heap_size = None):
     tetrad_libdir = os.path.join(os.path.dirname(__file__), 'lib')
@@ -54,3 +57,129 @@ def isNodeExisting(nodes,node):
         print "Node %s does not exist!", node
         return False
     
+def loadContinuousData(df):
+    tetradData = None
+          
+    if(len(df.index)*df.columns.size <= 1500):
+
+        node_list = javabridge.JClassWrapper('java.util.ArrayList')()
+        for col in df.columns:
+            nodi = javabridge.JClassWrapper('edu.cmu.tetrad.data.ContinuousVariable')(col)
+            node_list.add(nodi)
+
+        dataBox = javabridge.JClassWrapper('edu.cmu.tetrad.data.DoubleDataBox')(len(df.index),df.columns.size)
+
+        for row in df.index:
+            for col in range(0,df.columns.size):
+                value = javabridge.JClassWrapper('java.lang.Double')(df.ix[row][col])
+                dataBox.set(row,col,value)
+
+        tetradData = javabridge.JClassWrapper('edu.cmu.tetrad.data.BoxDataSet')(dataBox, node_list)
+
+    else:
+        #Generate random name
+        temp_data_file = ''.join(random.choice(string.lowercase) for i in range(10)) + '.csv'
+        temp_data_path = os.path.join(tempfile.gettempdir(), temp_data_file)
+        df.to_csv(temp_data_path, sep = '\t', index = False)
+
+        excludeVar = javabridge.JClassWrapper('java.util.HashSet')()
+        excludeVar.add('MULT')
+
+        # Read Data from File
+        f = javabridge.JClassWrapper('java.nio.file.Paths').get(temp_data_path)
+        dataReader = javabridge.JClassWrapper('edu.cmu.tetrad.io.TabularContinuousDataReader')(f,'\t')
+        tetradData = dataReader.readInData(excludeVar)
+
+        os.remove(temp_data_path)
+        
+    tetradData = javabridge.JClassWrapper('edu.cmu.tetrad.data.CovarianceMatrixOnTheFly')(tetradData)
+
+    return tetradData
+
+def loadDiscreteData(df):
+    tetradData = None
+          
+    if(len(df.index)*df.columns.size <= 1500):
+
+        dataBox = javabridge.JClassWrapper('edu.cmu.tetrad.data.VerticalIntDataBox')(len(df.index),df.columns.size)
+
+        node_list = javabridge.JClassWrapper('java.util.ArrayList')()
+        col_no = 0
+        for col in df.columns:
+
+            cat_array = sorted(set(df[col]))
+            cat_list = javabridge.JClassWrapper('java.util.ArrayList')()
+            for cat in cat_array:
+                catname = javabridge.JClassWrapper('java.lang.String')(cat)
+                cat_list.add(catname)
+
+            nodname = javabridge.JClassWrapper('java.lang.String')(col)
+            nodi = javabridge.JClassWrapper('edu.cmu.tetrad.data.DiscreteVariable')(nodname,cat_list)
+            node_list.add(nodi)
+
+            for row in df.index:
+                value = javabridge.JClassWrapper('java.lang.Integer')(cat_array.index(df.ix[row][col_no]))
+                dataBox.set(row,col_no,value)
+
+            col_no = col_no + 1
+
+        tetradData = javabridge.JClassWrapper('edu.cmu.tetrad.data.BoxDataSet')(dataBox, node_list)
+
+    else:
+        # Generate random name
+        temp_data_file = ''.join(random.choice(string.lowercase) for i in range(10)) + '.csv'
+        temp_data_path = os.path.join(tempfile.gettempdir(), temp_data_file)
+        df.to_csv(temp_data_path, sep = "\t", index = False)
+
+        excludeVar = javabridge.JClassWrapper('java.util.HashSet')()
+        excludeVar.add("MULT")
+
+        # Read Data from File
+        f = javabridge.JClassWrapper('java.nio.file.Paths').get(temp_data_path)
+        dataReader = javabridge.JClassWrapper('edu.cmu.tetrad.io.VerticalTabularDiscreteDataReader')(f,'\t')
+        tetradData = dataReader.readInData(excludeVar)
+
+        os.remove(temp_data_path)
+        
+    return tetradData
+
+def extractTetradGraphNodes(tetradGraph):
+    n = tetradGraph.getNodeNames().toString()
+    n = n[1:len(n)-1]
+    n = n.split(",")
+    for i in range(0,len(n)):
+        node = n[i]
+        n[i] = node.strip()
+
+    return n
+
+def extractTetradGraphEdges(tetradGraph):
+    e = tetradGraph.getEdges().toString()
+    e = e[1:len(e)-1]
+    e = e.split(",")    
+    for i in range(0,len(e)):
+        e[i] = e[i].strip()
+
+    return e            
+    
+def generatePyDotGraph(n,e):
+    graph = pydot.Dot(graph_type='digraph')
+    nodes = []
+
+    for i in range(0,len(n)):
+        nodes.append(pydot.Node(n[i]))
+        graph.add_node(nodes[i])
+
+    for i in range(0,len(e)):
+        token = e[i].split(" ")
+        if(len(token) == 3):
+            src = token[0]
+            arc = token[1]
+            dst = token[2]
+            if(isNodeExisting(n,src) and isNodeExisting(n,dst)):
+                edge = pydot.Edge(nodes[n.index(src)],nodes[n.index(dst)])
+                if(arc == "---"):
+                    edge.set_arrowhead("none")
+                graph.add_edge(edge)
+
+    return graph
