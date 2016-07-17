@@ -99,7 +99,7 @@ class fci():
     nodes = []
     edges = []
     
-    def __init__(self, df, continuous = True, depth = 3, significance = 0.05, verbose = False, priorKnowledge = None):
+    def __init__(self, df, continuous = True, depth = 3, significance = 0.05, noDSepSearch = False, verbose = False, priorKnowledge = None):
         IndTest = None
         
         if(continuous):
@@ -111,6 +111,7 @@ class fci():
         
         fci = javabridge.JClassWrapper('edu.cmu.tetrad.search.Fci')(IndTest)
         fci.setDepth(depth)#-1
+        fci.setPossibleDsepSearchDone(!noDSepSearch)
         fci.setVerbose(verbose)
         
         if priorKnowledge is not None:    
