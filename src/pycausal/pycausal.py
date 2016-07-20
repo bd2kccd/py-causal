@@ -153,6 +153,16 @@ def extractTetradGraphNodes(tetradGraph):
 
     return n
 
+def extractTetradDagNodes(dag):
+    n = dag.getNodes().toString()
+    n = n[1:len(n)-1]
+    n = n.split(",")
+    for i in range(0,len(n)):
+        node = n[i]
+        n[i] = node.strip()
+
+    return n
+
 def extractTetradGraphEdges(tetradGraph):
     e = tetradGraph.getEdges().toString()
     e = e[1:len(e)-1]
