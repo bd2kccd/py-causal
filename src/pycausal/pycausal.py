@@ -110,8 +110,8 @@ def loadDiscreteData(df):
             cat_array = sorted(set(df[col]))
             cat_list = javabridge.JClassWrapper('java.util.ArrayList')()
             for cat in cat_array:
-                catname = javabridge.JClassWrapper('java.lang.String')(cat)
-                cat_list.add(catname)
+                cat = str(cat)
+                cat_list.add(cat)
 
             nodname = javabridge.JClassWrapper('java.lang.String')(col)
             nodi = javabridge.JClassWrapper('edu.cmu.tetrad.data.DiscreteVariable')(nodname,cat_list)

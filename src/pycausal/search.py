@@ -314,6 +314,7 @@ class bayesEst():
     nodes = []
     edges = []
     dag = None
+    bayesPm = None
     bayesIm = None
     
     def __init__(self, df, depth = 3, significance = 0.05, verbose = False, priorKnowledge = None):
@@ -334,12 +335,13 @@ class bayesEst():
 
         pm = javabridge.JClassWrapper('edu.cmu.tetrad.bayes.BayesPm')(dag)
         est = javabridge.JClassWrapper('edu.cmu.tetrad.bayes.MlBayesEstimator')()
-        im = est.estimate(pm, boxData)
+        im = est.estimate(pm, tetradData)
 
-        self.nodes = pycausal.extractTetradGraphNodes(tetradGraph)
-        self.edges = pycausal.extractTetradGraphEdges(tetradGraph)
+        self.nodes = pycausal.extractTetradDagNodes(dag)
+        self.edges = pycausal.extractTetradGraphEdges(dag)
         self.graph = pycausal.generatePyDotGraph(self.nodes,self.edges)
         self.dag = dag
+        self.bayesPm = pm
         self.bayesIm = im
         
     def getDot(self):
@@ -353,6 +355,9 @@ class bayesEst():
     
     def getDag(self):
         return self.dag
+    
+    def getBayesPm(self):
+        return self.bayesPm
     
     def getBayesIm(self):
         return self.bayesIm
