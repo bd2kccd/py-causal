@@ -144,17 +144,7 @@ def loadDiscreteData(df):
     return tetradData
 
 def extractTetradGraphNodes(tetradGraph):
-    n = tetradGraph.getNodeNames().toString()
-    n = n[1:len(n)-1]
-    n = n.split(",")
-    for i in range(0,len(n)):
-        node = n[i]
-        n[i] = node.strip()
-
-    return n
-
-def extractTetradDagNodes(dag):
-    n = dag.getNodes().toString()
+    n = tetradGraph.getNodes().toString()
     n = n[1:len(n)-1]
     n = n.split(",")
     for i in range(0,len(n)):

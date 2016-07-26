@@ -201,7 +201,7 @@ class pc():
     nodes = []
     edges = []
     
-    def __init__(self, df, continuous = True, depth = 3, significance = 0.05, verbose = False, priorKnowledge = None):
+    def __init__(self, df, continuous = True, depth = 3, aggressivelyPreventCycles = False, falseDiscoveryRate = False, significance = 0.05, verbose = False, priorKnowledge = None):
         IndTest = None
     
         if(continuous):
@@ -213,6 +213,8 @@ class pc():
         
         pc = javabridge.JClassWrapper('edu.cmu.tetrad.search.Pc')(IndTest)
         pc.setDepth(depth)
+        pc.setAggressivelyPreventCycles(aggressivelyPreventCycles)
+        pc.setFdr(falseDiscoveryRate)
         pc.setVerbose(verbose)
         
         if priorKnowledge is not None:    
@@ -239,7 +241,7 @@ class pcstable():
     nodes = []
     edges = []
     
-    def __init__(self, df, continuous = True, depth = 3, significance = 0.05, verbose = False, priorKnowledge = None):
+    def __init__(self, df, continuous = True, depth = 3, aggressivelyPreventCycles = False, significance = 0.05, verbose = False, priorKnowledge = None):
         IndTest = None
     
         if(continuous):
@@ -251,6 +253,7 @@ class pcstable():
         
         pcstable = javabridge.JClassWrapper('edu.cmu.tetrad.search.PcStable')(IndTest)
         pcstable.setDepth(depth)
+        pcstable.setAggressivelyPreventCycles(aggressivelyPreventCycles)
         pcstable.setVerbose(verbose)
         
         if priorKnowledge is not None:    
@@ -277,7 +280,7 @@ class cpc():
     nodes = []
     edges = []
     
-    def __init__(self, df, continuous = True, depth = 3, significance = 0.05, verbose = False, priorKnowledge = None):
+    def __init__(self, df, continuous = True, depth = 3, aggressivelyPreventCycles = False, significance = 0.05, verbose = False, priorKnowledge = None):
         IndTest = None
     
         if(continuous):
@@ -289,12 +292,52 @@ class cpc():
         
         cpc = javabridge.JClassWrapper('edu.cmu.tetrad.search.Cpc')(IndTest)
         cpc.setDepth(depth)
+        cpc.setAggressivelyPreventCycles(aggressivelyPreventCycles)
         cpc.setVerbose(verbose)
         
         if priorKnowledge is not None:    
             cpc.setKnowledge(priorKnowledge)
             
         tetradGraph = cpc.search()
+        
+        self.nodes = pycausal.extractTetradGraphNodes(tetradGraph)
+        self.edges = pycausal.extractTetradGraphEdges(tetradGraph)
+        self.graph = pycausal.generatePyDotGraph(self.nodes,self.edges)
+
+    def getDot(self):
+        return self.graph
+        
+    def getNodes(self):
+        return self.nodes
+    
+    def getEdges(self):    
+        return self.edges    
+    
+class cpcstable():
+    
+    graph = None
+    nodes = []
+    edges = []
+    
+    def __init__(self, df, continuous = True, depth = 3, aggressivelyPreventCycles = False, significance = 0.05, verbose = False, priorKnowledge = None):
+        IndTest = None
+    
+        if(continuous):
+            tetradData = pycausal.loadContinuousData(df)
+            IndTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestFisherZ')(tetradData, significance)
+        else:
+            tetradData = pycausal.loadDiscreteData(df)
+            IndTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestChiSquare')(tetradData, significance)
+        
+        cpcstable = javabridge.JClassWrapper('edu.cmu.tetrad.search.CpcStable')(IndTest)
+        cpcstable.setDepth(depth)
+        cpcstable.setAggressivelyPreventCycles(aggressivelyPreventCycles)
+        cpcstable.setVerbose(verbose)
+        
+        if priorKnowledge is not None:    
+            cpcstable.setKnowledge(priorKnowledge)
+            
+        tetradGraph = cpcstable.search()
         
         self.nodes = pycausal.extractTetradGraphNodes(tetradGraph)
         self.edges = pycausal.extractTetradGraphEdges(tetradGraph)
@@ -338,7 +381,7 @@ class bayesEst():
         est = javabridge.JClassWrapper('edu.cmu.tetrad.bayes.MlBayesEstimator')()
         im = est.estimate(pm, tetradData)
 
-        self.nodes = pycausal.extractTetradDagNodes(dag)
+        self.nodes = pycausal.extractTetradGraphNodes(dag)
         self.edges = pycausal.extractTetradGraphEdges(dag)
         self.graph = pycausal.generatePyDotGraph(self.nodes,self.edges)
         self.dag = dag
@@ -382,7 +425,7 @@ class randomDag():
             dag = javabridge.JClassWrapper("edu.cmu.tetrad.graph.Dag")(graph)
             initEdges = dag.getNumEdges()
             
-        self.nodes = pycausal.extractTetradDagNodes(dag)
+        self.nodes = pycausal.extractTetradGraphNodes(dag)
         self.edges = pycausal.extractTetradGraphEdges(dag)
         self.graph = pycausal.generatePyDotGraph(self.nodes,self.edges)
         self.dag = dag
