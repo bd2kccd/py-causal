@@ -101,16 +101,16 @@ class fci():
     edges = []
     
     def __init__(self, df, continuous = True, depth = 3, significance = 0.05, noDSepSearch = False, verbose = False, priorKnowledge = None):
-        IndTest = None
+        indTest = None
         
         if(continuous):
             tetradData = pycausal.loadContinuousData(df)
-            IndTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestFisherZ')(tetradData, significance)
+            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestFisherZ')(tetradData, significance)
         else:
             tetradData = pycausal.loadDiscreteData(df)
-            IndTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestChiSquare')(tetradData, significance)
+            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestChiSquare')(tetradData, significance)
         
-        fci = javabridge.JClassWrapper('edu.cmu.tetrad.search.Fci')(IndTest)
+        fci = javabridge.JClassWrapper('edu.cmu.tetrad.search.Fci')(indTest)
         fci.setDepth(depth)
         fci.setPossibleDsepSearchDone(not noDSepSearch)
         fci.setVerbose(verbose)
@@ -135,16 +135,16 @@ class cfci():
     edges = []
     
     def __init__(self, df, continuous = True, depth = 3, significance = 0.05, verbose = False, priorKnowledge = None):
-        IndTest = None
+        indTest = None
         
         if(continuous):
             tetradData = pycausal.loadContinuousData(df)
-            IndTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestFisherZ')(tetradData, significance)
+            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestFisherZ')(tetradData, significance)
         else:
             tetradData = pycausal.loadDiscreteData(df)
-            IndTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestChiSquare')(tetradData, significance)
+            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestChiSquare')(tetradData, significance)
         
-        cfci = javabridge.JClassWrapper('edu.cmu.tetrad.search.Cfci')(IndTest)
+        cfci = javabridge.JClassWrapper('edu.cmu.tetrad.search.Cfci')(indTest)
         cfci.setDepth(depth)
         cfci.setVerbose(verbose)
         
@@ -162,22 +162,55 @@ class cfci():
     def getEdges(self):    
         return self.edges
         
+class rfci():
+    
+    nodes = []
+    edges = []
+    
+    def __init__(self, df, continuous = True, depth = 3, significance = 0.05, verbose = False, priorKnowledge = None):
+        indTest = None
+        
+        if(continuous):
+            tetradData = pycausal.loadContinuousData(df)
+            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestFisherZ')(tetradData, significance)
+        else:
+            tetradData = pycausal.loadDiscreteData(df)
+            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestChiSquare')(tetradData, significance)
+        
+        rfci = javabridge.JClassWrapper('edu.cmu.tetrad.search.Rfci')(indTest)
+        rfci.setDepth(depth)
+        rfci.setVerbose(verbose)
+        
+        if priorKnowledge is not None:    
+            rfci.setKnowledge(priorKnowledge)
+            
+        tetradGraph = rfci.search()
+        
+        self.nodes = pycausal.extractTetradGraphNodes(tetradGraph)
+        self.edges = pycausal.extractTetradGraphEdges(tetradGraph) 
+        
+    def getNodes(self):
+        return self.nodes
+    
+    def getEdges(self):    
+        return self.edges
+        
 class ccd():
     
     nodes = []
     edges = []
     
     def __init__(self, df, continuous = True, depth = 3, significance = 0.05, verbose = False, priorKnowledge = None):
-        IndTest = None
+        indTest = None
         
         if(continuous):
             tetradData = pycausal.loadContinuousData(df)
-            IndTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestFisherZ')(tetradData, significance)
+            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestFisherZ')(tetradData, significance)
         else:
             tetradData = pycausal.loadDiscreteData(df)
-            IndTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestChiSquare')(tetradData, significance)
+            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestChiSquare')(tetradData, significance)
         
-        ccd = javabridge.JClassWrapper('edu.cmu.tetrad.search.Ccd')(IndTest)
+        ccd = javabridge.JClassWrapper('edu.cmu.tetrad.search.Ccd')(indTest)
         ccd.setDepth(depth)
         ccd.setVerbose(verbose)
         
@@ -202,16 +235,16 @@ class pc():
     edges = []
     
     def __init__(self, df, continuous = True, depth = 3, aggressivelyPreventCycles = False, falseDiscoveryRate = False, significance = 0.05, verbose = False, priorKnowledge = None):
-        IndTest = None
+        indTest = None
     
         if(continuous):
             tetradData = pycausal.loadContinuousData(df)
-            IndTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestFisherZ')(tetradData, significance)
+            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestFisherZ')(tetradData, significance)
         else:
             tetradData = pycausal.loadDiscreteData(df)
-            IndTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestChiSquare')(tetradData, significance)
+            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestChiSquare')(tetradData, significance)
         
-        pc = javabridge.JClassWrapper('edu.cmu.tetrad.search.Pc')(IndTest)
+        pc = javabridge.JClassWrapper('edu.cmu.tetrad.search.Pc')(indTest)
         pc.setDepth(depth)
         pc.setAggressivelyPreventCycles(aggressivelyPreventCycles)
         pc.setFdr(falseDiscoveryRate)
@@ -242,16 +275,16 @@ class pcstable():
     edges = []
     
     def __init__(self, df, continuous = True, depth = 3, aggressivelyPreventCycles = False, significance = 0.05, verbose = False, priorKnowledge = None):
-        IndTest = None
+        indTest = None
     
         if(continuous):
             tetradData = pycausal.loadContinuousData(df)
-            IndTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestFisherZ')(tetradData, significance)
+            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestFisherZ')(tetradData, significance)
         else:
             tetradData = pycausal.loadDiscreteData(df)
-            IndTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestChiSquare')(tetradData, significance)
+            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestChiSquare')(tetradData, significance)
         
-        pcstable = javabridge.JClassWrapper('edu.cmu.tetrad.search.PcStable')(IndTest)
+        pcstable = javabridge.JClassWrapper('edu.cmu.tetrad.search.PcStable')(indTest)
         pcstable.setDepth(depth)
         pcstable.setAggressivelyPreventCycles(aggressivelyPreventCycles)
         pcstable.setVerbose(verbose)
@@ -281,16 +314,16 @@ class cpc():
     edges = []
     
     def __init__(self, df, continuous = True, depth = 3, aggressivelyPreventCycles = False, significance = 0.05, verbose = False, priorKnowledge = None):
-        IndTest = None
+        indTest = None
     
         if(continuous):
             tetradData = pycausal.loadContinuousData(df)
-            IndTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestFisherZ')(tetradData, significance)
+            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestFisherZ')(tetradData, significance)
         else:
             tetradData = pycausal.loadDiscreteData(df)
-            IndTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestChiSquare')(tetradData, significance)
+            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestChiSquare')(tetradData, significance)
         
-        cpc = javabridge.JClassWrapper('edu.cmu.tetrad.search.Cpc')(IndTest)
+        cpc = javabridge.JClassWrapper('edu.cmu.tetrad.search.Cpc')(indTest)
         cpc.setDepth(depth)
         cpc.setAggressivelyPreventCycles(aggressivelyPreventCycles)
         cpc.setVerbose(verbose)
@@ -320,16 +353,16 @@ class cpcstable():
     edges = []
     
     def __init__(self, df, continuous = True, depth = 3, aggressivelyPreventCycles = False, significance = 0.05, verbose = False, priorKnowledge = None):
-        IndTest = None
+        indTest = None
     
         if(continuous):
             tetradData = pycausal.loadContinuousData(df)
-            IndTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestFisherZ')(tetradData, significance)
+            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestFisherZ')(tetradData, significance)
         else:
             tetradData = pycausal.loadDiscreteData(df)
-            IndTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestChiSquare')(tetradData, significance)
+            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestChiSquare')(tetradData, significance)
         
-        cpcstable = javabridge.JClassWrapper('edu.cmu.tetrad.search.CpcStable')(IndTest)
+        cpcstable = javabridge.JClassWrapper('edu.cmu.tetrad.search.CpcStable')(indTest)
         cpcstable.setDepth(depth)
         cpcstable.setAggressivelyPreventCycles(aggressivelyPreventCycles)
         cpcstable.setVerbose(verbose)
@@ -363,9 +396,9 @@ class bayesEst():
     
     def __init__(self, df, depth = 3, significance = 0.05, verbose = False, priorKnowledge = None):
         tetradData = pycausal.loadDiscreteData(df)
-        IndTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestChiSquare')(tetradData, significance)
+        indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestChiSquare')(tetradData, significance)
         
-        cpc = javabridge.JClassWrapper('edu.cmu.tetrad.search.Cpc')(IndTest)
+        cpc = javabridge.JClassWrapper('edu.cmu.tetrad.search.Cpc')(indTest)
         cpc.setDepth(depth)
         cpc.setVerbose(verbose)
         
@@ -413,7 +446,7 @@ class randomDag():
     edges = []
     dag = None
     
-    def __init__(self, df, seed = None, numNodes = 10, numEdges = 10):
+    def __init__(self, seed = None, numNodes = 10, numEdges = 10):
         if seed is not None:
             RandomUtil = javabridge.static_call("edu/cmu/tetrad/util/RandomUtil","getInstance","()Ledu/cmu/tetrad/util/RandomUtil;")
             javabridge.call(RandomUtil, "setSeed", "(J)V", seed)
