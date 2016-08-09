@@ -195,6 +195,71 @@ class rfci():
     def getEdges(self):    
         return self.edges
         
+class gfciDiscrete():
+    
+    nodes = []
+    edges = []
+    
+    def __init__(self, df, structurePrior = 1.0, samplePrior = 1.0, depth = -1, maxPathLength = -1, completeRuleSetUsed = False, faithfulness = True, verbose = False, priorKnowledge = None):
+        tetradData = pycausal.loadDiscreteData(df)
+        
+        score = javabridge.JClassWrapper('edu.cmu.tetrad.search.BDeuScore')(tetradData)
+        score.setStructurePrior(structurePrior)
+        score.setSamplePrior(samplePrior)
+        
+        gfci = javabridge.JClassWrapper('edu.cmu.tetrad.search.GFci')(score)
+        gfci.setPenaltyDiscount(penaltydiscount)
+        gfci.setMaxIndegree(depth)
+        gfci.setMaxPathLength(maxPathLength)
+        gfci.setCompleteRuleSetUsed(completeRuleSetUsed)
+        gfci.setFaithfulnessAssumed(faithfulness)
+        gfci.setVerbose(verbose)
+        
+        if priorKnowledge is not None:    
+            gfci.setKnowledge(priorKnowledge)
+            
+        tetradGraph = gfci.search()
+        
+        self.nodes = pycausal.extractTetradGraphNodes(tetradGraph)
+        self.edges = pycausal.extractTetradGraphEdges(tetradGraph) 
+        
+    def getNodes(self):
+        return self.nodes
+    
+    def getEdges(self):    
+        return self.edges        
+        
+class gfci():
+    
+    nodes = []
+    edges = []
+    
+    def __init__(self, df, penaltydiscount = 2, depth = -1, maxPathLength = -1, significance = 0.05, completeRuleSetUsed = False, faithfulness = True, verbose = False, priorKnowledge = None):
+        itetradData = pycausal.loadContinuousData(df)
+        indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestFisherZ')(tetradData, significance)
+        
+        gfci = javabridge.JClassWrapper('edu.cmu.tetrad.search.GFci')(indTest)
+        gfci.setPenaltyDiscount(penaltydiscount)
+        gfci.setMaxIndegree(depth)
+        gfci.setMaxPathLength(maxPathLength)
+        gfci.setCompleteRuleSetUsed(completeRuleSetUsed)
+        gfci.setFaithfulnessAssumed(faithfulness)
+        gfci.setVerbose(verbose)
+        
+        if priorKnowledge is not None:    
+            gfci.setKnowledge(priorKnowledge)
+            
+        tetradGraph = gfci.search()
+        
+        self.nodes = pycausal.extractTetradGraphNodes(tetradGraph)
+        self.edges = pycausal.extractTetradGraphEdges(tetradGraph) 
+        
+    def getNodes(self):
+        return self.nodes
+    
+    def getEdges(self):    
+        return self.edges
+        
 class ccd():
     
     nodes = []
