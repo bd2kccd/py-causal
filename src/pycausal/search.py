@@ -208,7 +208,6 @@ class gfciDiscrete():
         score.setSamplePrior(samplePrior)
         
         gfci = javabridge.JClassWrapper('edu.cmu.tetrad.search.GFci')(score)
-        gfci.setPenaltyDiscount(penaltydiscount)
         gfci.setMaxIndegree(depth)
         gfci.setMaxPathLength(maxPathLength)
         gfci.setCompleteRuleSetUsed(completeRuleSetUsed)
