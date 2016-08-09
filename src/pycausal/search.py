@@ -234,7 +234,7 @@ class gfci():
     edges = []
     
     def __init__(self, df, penaltydiscount = 2, depth = -1, maxPathLength = -1, significance = 0.05, completeRuleSetUsed = False, faithfulness = True, verbose = False, priorKnowledge = None):
-        itetradData = pycausal.loadContinuousData(df)
+        tetradData = pycausal.loadContinuousData(df)
         indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestFisherZ')(tetradData, significance)
         
         gfci = javabridge.JClassWrapper('edu.cmu.tetrad.search.GFci')(indTest)
