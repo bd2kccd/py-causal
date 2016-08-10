@@ -37,6 +37,8 @@ Once pip is installed, execute these commands
     pip install pydot 
     pip install GraphViz
 
+Note: you also need to install the GraphViz engine by following [these instructions](http://www.graphviz.org/Download..php).
+
 We have observed that on some OS X installations, pydot may provide the following response
     Couldn't import dot_parser, loading of dot files will not be possible.
 
