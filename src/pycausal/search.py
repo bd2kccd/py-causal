@@ -21,7 +21,7 @@ class fgsDiscrete():
     nodes = []
     edges = []
     
-    def __init__(self, df, structurePrior = 1.0, samplePrior = 1.0, depth = 3, heuristicSpeedup = True, numofthreads = 2, verbose = False, priorKnowledge = None):
+    def __init__(self, df, structurePrior = 1.0, samplePrior = 1.0, maxDegree = 3, faithfulnessAssumed = True, numofthreads = 2, verbose = False, priorKnowledge = None):
         
         tetradData = pycausal.loadDiscreteData(df)
         
@@ -30,9 +30,9 @@ class fgsDiscrete():
         score.setSamplePrior(samplePrior)
         
         fgs = javabridge.JClassWrapper('edu.cmu.tetrad.search.Fgs')(score)
-        fgs.setDepth(depth)
+        fgs.setMaxDegree(maxDegree)
         fgs.setNumPatternsToStore(0)
-        fgs.setHeuristicSpeedup(heuristicSpeedup)
+        fgs.setFaithfulnessAssumed(faithfulnessAssumed)
         fgs.setParallelism(numofthreads)
         fgs.setVerbose(verbose)
         
@@ -62,7 +62,7 @@ class fgs():
     nodes = []
     edges = []
     
-    def __init__(self, df, penaltydiscount = 4, depth = 3, ignoreLinearDependence = True, heuristicSpeedup = True, numofthreads = 2, verbose = False, priorKnowledge = None):
+    def __init__(self, df, penaltydiscount = 4, maxDegree = 3, ignoreLinearDependence = True, faithfulnessAssumed = True, numofthreads = 2, verbose = False, priorKnowledge = None):
             
         tetradData = pycausal.loadContinuousData(df)
 
@@ -70,10 +70,10 @@ class fgs():
         score.setPenaltyDiscount(penaltydiscount) # set to 2 if variable# <= 50 otherwise set it to 4
         
         fgs = javabridge.JClassWrapper('edu.cmu.tetrad.search.Fgs')(score)
-        fgs.setDepth(depth)
+        fgs.setMaxDegree(maxDegree)
         fgs.setNumPatternsToStore(0)
         fgs.setIgnoreLinearDependent(ignoreLinearDependence)
-        fgs.setHeuristicSpeedup(heuristicSpeedup)
+        fgs.setFaithfulnessAssumed(faithfulnessAssumed)
         fgs.setParallelism(numofthreads)
         fgs.setVerbose(verbose)
         
