@@ -15,8 +15,8 @@ pc.start_vm()
 
 from pycausal import search as s
 
-fgs = s.fgs(df,penaltydiscount = 2, depth = -1,
-            heuristicSpeedup = True, numofthreads = 2, verbose = True)
+fgs = s.fgs(df,penaltydiscount = 2, maxDegree = -1,
+            faithfulnessAssumed = True, numofthreads = 2, verbose = True)
 
 fgs.getNodes()
 fgs.getEdges()

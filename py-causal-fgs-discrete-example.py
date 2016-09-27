@@ -16,7 +16,7 @@ pc.start_vm(java_max_heap_size = '100M')
 from pycausal import search as s
 
 fgs = s.fgsDiscrete(df,structurePrior = 1.0, samplePrior = 1.0, 
-                            depth = 3, heuristicSpeedup = True, numOfThreads = 2, 
+                            maxDegree = 3, faithfulnessAssumed = True, numOfThreads = 2, 
                             verbose = True)
 
 fgs.getNodes()
