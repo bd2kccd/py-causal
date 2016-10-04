@@ -62,7 +62,7 @@ class fgs():
     nodes = []
     edges = []
     
-    def __init__(self, df, penaltydiscount = 4, maxDegree = 3, ignoreLinearDependence = True, faithfulnessAssumed = True, numofthreads = 2, verbose = False, priorKnowledge = None):
+    def __init__(self, df, penaltydiscount = 4, maxDegree = 3, faithfulnessAssumed = True, numofthreads = 2, verbose = False, priorKnowledge = None):
             
         tetradData = pycausal.loadContinuousData(df)
 
@@ -72,7 +72,6 @@ class fgs():
         fgs = javabridge.JClassWrapper('edu.cmu.tetrad.search.Fgs')(score)
         fgs.setMaxDegree(maxDegree)
         fgs.setNumPatternsToStore(0)
-        fgs.setIgnoreLinearDependent(ignoreLinearDependence)
         fgs.setFaithfulnessAssumed(faithfulnessAssumed)
         fgs.setParallelism(numofthreads)
         fgs.setVerbose(verbose)
