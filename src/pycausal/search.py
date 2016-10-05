@@ -199,7 +199,7 @@ class gfciDiscrete():
     nodes = []
     edges = []
     
-    def __init__(self, df, structurePrior = 1.0, samplePrior = 1.0, maxInDegree = 3, maxPathLength = -1, completeRuleSetUsed = False, faithfulnessAssumed = True, verbose = False, priorKnowledge = None):
+    def __init__(self, df, structurePrior = 1.0, samplePrior = 1.0, maxInDegree = 3, maxPathLength = -1, significance = 0.05, completeRuleSetUsed = False, faithfulnessAssumed = True, verbose = False, priorKnowledge = None):
         tetradData = pycausal.loadDiscreteData(df)
         
         indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestChiSquare')(tetradData, significance)
