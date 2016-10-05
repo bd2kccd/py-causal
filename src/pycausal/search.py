@@ -243,7 +243,6 @@ class gfci():
         score.setPenaltyDiscount(penaltydiscount) # set to 2 if variable# <= 50 otherwise set it to 4
         
         gfci = javabridge.JClassWrapper('edu.cmu.tetrad.search.GFci')(indTest, score)
-        gfci.setPenaltyDiscount(penaltydiscount)
         gfci.setMaxIndegree(maxInDegree)
         gfci.setMaxPathLength(maxPathLength)
         gfci.setCompleteRuleSetUsed(completeRuleSetUsed)
