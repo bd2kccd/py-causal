@@ -239,6 +239,9 @@ class gfci():
         
         indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestFisherZ')(tetradData, significance)
         
+        score = javabridge.JClassWrapper('edu.cmu.tetrad.search.SemBicScore')(tetradData)
+        score.setPenaltyDiscount(penaltydiscount) # set to 2 if variable# <= 50 otherwise set it to 4
+        
         gfci = javabridge.JClassWrapper('edu.cmu.tetrad.search.GFci')(indTest, score)
         gfci.setPenaltyDiscount(penaltydiscount)
         gfci.setMaxIndegree(maxInDegree)
