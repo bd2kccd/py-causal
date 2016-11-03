@@ -101,3 +101,8 @@ Then run the following to configure anacoda
 
 and then load one of the Jupyter notebooks.
 
+Docker Image
+============
+
+The pre-installed py-causal Docker image is also available at [Docker Hub](https://hub.docker.com/r/chirayukong/py-causal-notebook/)
+
