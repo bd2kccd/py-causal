@@ -15,16 +15,16 @@ pc.start_vm()
 
 from pycausal import search as s
 
-fgs = s.fgs(df,penaltydiscount = 2, maxDegree = -1,
+fges = s.fges(df,penaltydiscount = 2, maxDegree = -1,
             faithfulnessAssumed = True, numofthreads = 2, verbose = True)
 
-fgs.getNodes()
-fgs.getEdges()
+fges.getNodes()
+fges.getEdges()
 
-dot = fgs.getDot()
+dot = fges.getDot()
 svg_str = dot.create_svg(prog='dot')
 
-f = open('fgs-continuous.dot','w')
+f = open('fges-continuous.dot','w')
 f.write(svg_str)
 f.close()
 
