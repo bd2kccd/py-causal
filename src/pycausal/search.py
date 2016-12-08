@@ -15,7 +15,7 @@ import tempfile
 
 import pycausal
 
-class fgsDiscrete():
+class fgesDiscrete():
     
     graph = None
     nodes = []
@@ -29,17 +29,17 @@ class fgsDiscrete():
         score.setStructurePrior(structurePrior)
         score.setSamplePrior(samplePrior)
         
-        fgs = javabridge.JClassWrapper('edu.cmu.tetrad.search.Fgs')(score)
-        fgs.setMaxDegree(maxDegree)
-        fgs.setNumPatternsToStore(0)
-        fgs.setFaithfulnessAssumed(faithfulnessAssumed)
-        fgs.setParallelism(numofthreads)
-        fgs.setVerbose(verbose)
+        fges = javabridge.JClassWrapper('edu.cmu.tetrad.search.Fgs')(score)
+        fges.setMaxDegree(maxDegree)
+        fges.setNumPatternsToStore(0)
+        fges.setFaithfulnessAssumed(faithfulnessAssumed)
+        fges.setParallelism(numofthreads)
+        fges.setVerbose(verbose)
         
         if priorKnowledge is not None:    
-            fgs.setKnowledge(priorKnowledge)
+            fges.setKnowledge(priorKnowledge)
             
-        tetradGraph = fgs.search()
+        tetradGraph = fges.search()
         
         self.nodes = pycausal.extractTetradGraphNodes(tetradGraph)
         self.edges = pycausal.extractTetradGraphEdges(tetradGraph)            
@@ -56,7 +56,7 @@ class fgsDiscrete():
         return self.edges
 
     
-class fgs():
+class fges():
     
     graph = None
     nodes = []
@@ -69,17 +69,17 @@ class fgs():
         score = javabridge.JClassWrapper('edu.cmu.tetrad.search.SemBicScore')(tetradData)
         score.setPenaltyDiscount(penaltydiscount) # set to 2 if variable# <= 50 otherwise set it to 4
         
-        fgs = javabridge.JClassWrapper('edu.cmu.tetrad.search.Fgs')(score)
-        fgs.setMaxDegree(maxDegree)
-        fgs.setNumPatternsToStore(0)
-        fgs.setFaithfulnessAssumed(faithfulnessAssumed)
-        fgs.setParallelism(numofthreads)
-        fgs.setVerbose(verbose)
+        fges = javabridge.JClassWrapper('edu.cmu.tetrad.search.Fgs')(score)
+        fges.setMaxDegree(maxDegree)
+        fges.setNumPatternsToStore(0)
+        fges.setFaithfulnessAssumed(faithfulnessAssumed)
+        fges.setParallelism(numofthreads)
+        fges.setVerbose(verbose)
         
         if priorKnowledge is not None:    
-            fgs.setKnowledge(priorKnowledge)
+            fges.setKnowledge(priorKnowledge)
             
-        tetradGraph = fgs.search()
+        tetradGraph = fges.search()
         
         self.nodes = pycausal.extractTetradGraphNodes(tetradGraph)
         self.edges = pycausal.extractTetradGraphEdges(tetradGraph)            

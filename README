@@ -59,7 +59,7 @@ After running this command, enter a python shell and attempt the follwing import
 
 Finally, try to run the python example
 
-    python py-causal-fgs-continuous-example.py
+    python py-causal-fges-continuous-example.py
 
 Be sure to run this from within the py-causal directory.
 
