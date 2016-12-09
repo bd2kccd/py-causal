@@ -52,6 +52,11 @@ Then, from within the py-causal directory, run the following command:
     python setup.py install
     
 
+or use the pip command:
+
+    pip install git:git://github.com/bd2kccd/py-causal
+
+
 After running this command, enter a python shell and attempt the follwing import
     import pandas as pd
     import pydot
