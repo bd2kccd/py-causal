@@ -269,7 +269,7 @@ class ccd():
     nodes = []
     edges = []
     
-    def __init__(self, df, continuous = True, depth = 3, significance = 0.05, verbose = False, priorKnowledge = None):
+    def __init__(self, df, continuous = True, depth = 3, significance = 0.05, priorKnowledge = None):
         indTest = None
         
         if(continuous):
@@ -281,7 +281,6 @@ class ccd():
         
         ccd = javabridge.JClassWrapper('edu.cmu.tetrad.search.Ccd')(indTest)
         ccd.setDepth(depth)
-        ccd.setVerbose(verbose)
         
         if priorKnowledge is not None:    
             ccd.setKnowledge(priorKnowledge)
