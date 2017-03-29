@@ -166,7 +166,7 @@ class rfci():
     nodes = []
     edges = []
     
-    def __init__(self, df, continuous = True, depth = 3, significance = 0.05, verbose = False, priorKnowledge = None):
+    def __init__(self, df, continuous = True, depth = 3, significance = 0.05, completeRuleSetUsed = False, verbose = False, priorKnowledge = None):
         indTest = None
         
         if(continuous):
@@ -178,6 +178,7 @@ class rfci():
         
         rfci = javabridge.JClassWrapper('edu.cmu.tetrad.search.Rfci')(indTest)
         rfci.setDepth(depth)
+        rfci.setCompleteRuleSetUsed(completeRuleSetUsed)
         rfci.setVerbose(verbose)
         
         if priorKnowledge is not None:    
@@ -199,7 +200,7 @@ class gfciDiscrete():
     nodes = []
     edges = []
     
-    def __init__(self, df, structurePrior = 1.0, samplePrior = 1.0, maxInDegree = 3, maxPathLength = -1, significance = 0.05, completeRuleSetUsed = False, faithfulnessAssumed = True, verbose = False, priorKnowledge = None):
+    def __init__(self, df, structurePrior = 1.0, samplePrior = 1.0, maxDegree = 3, maxPathLength = -1, significance = 0.05, completeRuleSetUsed = False, faithfulnessAssumed = True, verbose = False, priorKnowledge = None):
         tetradData = pycausal.loadDiscreteData(df)
         
         indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestChiSquare')(tetradData, significance)
@@ -209,7 +210,7 @@ class gfciDiscrete():
         score.setSamplePrior(samplePrior)
         
         gfci = javabridge.JClassWrapper('edu.cmu.tetrad.search.GFci')(indTest, score)
-        gfci.setMaxIndegree(maxInDegree)
+        gfci.setMaxDegree(maxDegree)
         gfci.setMaxPathLength(maxPathLength)
         gfci.setCompleteRuleSetUsed(completeRuleSetUsed)
         gfci.setFaithfulnessAssumed(faithfulnessAssumed)
@@ -234,7 +235,7 @@ class gfci():
     nodes = []
     edges = []
     
-    def __init__(self, df, penaltydiscount = 2, maxInDegree = 3, maxPathLength = -1, significance = 0.05, completeRuleSetUsed = False, faithfulnessAssumed = True, verbose = False, priorKnowledge = None):
+    def __init__(self, df, penaltydiscount = 2, maxDegree = 3, maxPathLength = -1, significance = 0.05, completeRuleSetUsed = False, faithfulnessAssumed = True, verbose = False, priorKnowledge = None):
         tetradData = pycausal.loadContinuousData(df)
         
         indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestFisherZ')(tetradData, significance)
@@ -243,7 +244,7 @@ class gfci():
         score.setPenaltyDiscount(penaltydiscount) # set to 2 if variable# <= 50 otherwise set it to 4
         
         gfci = javabridge.JClassWrapper('edu.cmu.tetrad.search.GFci')(indTest, score)
-        gfci.setMaxIndegree(maxInDegree)
+        gfci.setMaxDegree(maxDegree)
         gfci.setMaxPathLength(maxPathLength)
         gfci.setCompleteRuleSetUsed(completeRuleSetUsed)
         gfci.setFaithfulnessAssumed(faithfulnessAssumed)
@@ -268,7 +269,7 @@ class ccd():
     nodes = []
     edges = []
     
-    def __init__(self, df, continuous = True, depth = 3, significance = 0.05, verbose = False, priorKnowledge = None):
+    def __init__(self, df, continuous = True, depth = 3, significance = 0.05, priorKnowledge = None):
         indTest = None
         
         if(continuous):
@@ -280,7 +281,6 @@ class ccd():
         
         ccd = javabridge.JClassWrapper('edu.cmu.tetrad.search.Ccd')(indTest)
         ccd.setDepth(depth)
-        ccd.setVerbose(verbose)
         
         if priorKnowledge is not None:    
             ccd.setKnowledge(priorKnowledge)
@@ -322,6 +322,46 @@ class pc():
             pc.setKnowledge(priorKnowledge)
             
         tetradGraph = pc.search()
+        
+        self.nodes = pycausal.extractTetradGraphNodes(tetradGraph)
+        self.edges = pycausal.extractTetradGraphEdges(tetradGraph)
+        self.graph = pycausal.generatePyDotGraph(self.nodes,self.edges)
+
+    def getDot(self):
+        return self.graph
+        
+    def getNodes(self):
+        return self.nodes
+    
+    def getEdges(self):    
+        return self.edges
+    
+class pcmax():
+    
+    graph = None
+    nodes = []
+    edges = []
+    
+    def __init__(self, df, continuous = True, depth = 3, maxPathLength = 3, useHeuristic = True, significance = 0.05, verbose = False, priorKnowledge = None):
+        indTest = None
+    
+        if(continuous):
+            tetradData = pycausal.loadContinuousData(df)
+            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestFisherZ')(tetradData, significance)
+        else:
+            tetradData = pycausal.loadDiscreteData(df)
+            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestChiSquare')(tetradData, significance)
+        
+        pcmax = javabridge.JClassWrapper('edu.cmu.tetrad.search.PcMax')(indTest)
+        pcmax.setDepth(depth)
+        pcmax.setMaxPathLength(maxPathLength)
+        pcmax.setUseHeuristic(useHeuristic)
+        pcmax.setVerbose(verbose)
+        
+        if priorKnowledge is not None:    
+            pcmax.setKnowledge(priorKnowledge)
+            
+        tetradGraph = pcmax.search()
         
         self.nodes = pycausal.extractTetradGraphNodes(tetradGraph)
         self.edges = pycausal.extractTetradGraphEdges(tetradGraph)
