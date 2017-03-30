@@ -29,7 +29,7 @@ class fgesDiscrete():
         score.setStructurePrior(structurePrior)
         score.setSamplePrior(samplePrior)
         
-        fges = javabridge.JClassWrapper('edu.cmu.tetrad.search.Fgs')(score)
+        fges = javabridge.JClassWrapper('edu.cmu.tetrad.search.Fges')(score)
         fges.setMaxDegree(maxDegree)
         fges.setNumPatternsToStore(0)
         fges.setFaithfulnessAssumed(faithfulnessAssumed)
@@ -69,7 +69,7 @@ class fges():
         score = javabridge.JClassWrapper('edu.cmu.tetrad.search.SemBicScore')(tetradData)
         score.setPenaltyDiscount(penaltydiscount) # set to 2 if variable# <= 50 otherwise set it to 4
         
-        fges = javabridge.JClassWrapper('edu.cmu.tetrad.search.Fgs')(score)
+        fges = javabridge.JClassWrapper('edu.cmu.tetrad.search.Fges')(score)
         fges.setMaxDegree(maxDegree)
         fges.setNumPatternsToStore(0)
         fges.setFaithfulnessAssumed(faithfulnessAssumed)
