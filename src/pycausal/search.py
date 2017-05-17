@@ -67,7 +67,7 @@ class bootstrapFges():
     
     def __init__(self, df, penaltydiscount = 4, maxDegree = 3, faithfulnessAssumed = True, numofthreads = 2, numBootstrapSamples = 10, ensembleMethod = 'Highest', verbose = False, priorKnowledge = None):
         
-        tetradData = pycausal.loadContinuousData(df)
+        tetradData = pycausal.loadContinuousData(df, outputDataset = True)
         
         parameters = javabridge.JClassWrapper('edu.cmu.tetrad.util.Parameters')()
         parameters.set('penaltydiscount', penaltydiscount)
@@ -148,7 +148,7 @@ class bootstrapGfci():
     
     def __init__(self, df, penaltydiscount = 2, maxDegree = 3, maxPathLength = -1, significance = 0.05, completeRuleSetUsed = False, faithfulnessAssumed = True, numBootstrapSamples = 10, ensembleMethod = 'Highest', verbose = False, priorKnowledge = None):
 
-        tetradData = pycausal.loadContinuousData(df)
+        tetradData = pycausal.loadContinuousData(df, outputDataset = True)
         
         parameters = javabridge.JClassWrapper('edu.cmu.tetrad.util.Parameters')()
         parameters.set('penaltydiscount', penaltydiscount)
@@ -190,7 +190,7 @@ class bootstrapRfci():
         tetradData = None
         
         if(continuous):
-            tetradData = pycausal.loadContinuousData(df)
+            tetradData = pycausal.loadContinuousData(df, outputDataset = True)
         else:
             tetradData = pycausal.loadDiscreteData(df)
         

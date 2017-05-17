@@ -56,7 +56,7 @@ def isNodeExisting(nodes,node):
     except IndexError:
         print "Node %s does not exist!", node
         return False
-    
+
 def loadContinuousData(df, outputDataset = False):
     tetradData = None
           
