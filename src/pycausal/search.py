@@ -34,13 +34,11 @@ class bootstrapFgesDiscrete():
         parameters.set('numPatternsToStore', 0)
         parameters.set('verbose', verbose)
         
-        ensemble = javabridge.get_class_wrapper('edu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble')
-        
         fges = javabridge.JClassWrapper('edu.pitt.dbmi.algo.bootstrap.BootstrapTest')(tetradData, 'FGES')
         fges.setNumBootstrapSamples(numBootstrapSamples)
         fges.setVerbose(verbose)
         fges.setParameters(parameters)
-        fges.setEdgeEnsemble(ensemble.getField(ensembleMethod))
+        fges.setEdgeEnsemble(ensembleMethod)
         
         if priorKnowledge is not None:
             fges.setKnowledge(priorKnowledge)
@@ -80,13 +78,11 @@ class bootstrapFges():
         parameters.set('numPatternsToStore', 0)
         parameters.set('verbose', verbose)
         
-        ensemble = javabridge.get_class_wrapper('edu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble')
-        
         fges = javabridge.JClassWrapper('edu.pitt.dbmi.algo.bootstrap.BootstrapTest')(tetradData, 'FGES')
         fges.setNumBootstrapSamples(numBootstrapSamples)
         fges.setVerbose(verbose)
         fges.setParameters(parameters)
-        fges.setEdgeEnsemble(ensemble.getField(ensembleMethod))
+        fges.setEdgeEnsemble(ensembleMethod)
         
         if priorKnowledge is not None:
             fges.setKnowledge(priorKnowledge)
@@ -125,13 +121,11 @@ class bootstrapGfciDiscrete():
         parameters.set('completeRuleSetUsed', completeRuleSetUsed)
         parameters.set('verbose', verbose)
         
-        ensemble = javabridge.get_class_wrapper('edu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble')
-        
         gfci = javabridge.JClassWrapper('edu.pitt.dbmi.algo.bootstrap.BootstrapTest')(tetradData, 'GFCI')
         gfci.setNumBootstrapSamples(numBootstrapSamples)
         gfci.setVerbose(verbose)
         gfci.setParameters(parameters)
-        gfci.setEdgeEnsemble(ensemble.getField(ensembleMethod))
+        gfci.setEdgeEnsemble(ensembleMethod)
         
         if priorKnowledge is not None:
             gfci.setKnowledge(priorKnowledge)
@@ -166,13 +160,11 @@ class bootstrapGfci():
         parameters.set('completeRuleSetUsed', completeRuleSetUsed)
         parameters.set('verbose', verbose)
         
-        ensemble = javabridge.get_class_wrapper('edu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble')
-        
         gfci = javabridge.JClassWrapper('edu.pitt.dbmi.algo.bootstrap.BootstrapTest')(tetradData, 'GFCI')
         gfci.setNumBootstrapSamples(numBootstrapSamples)
         gfci.setVerbose(verbose)
         gfci.setParameters(parameters)
-        gfci.setEdgeEnsemble(ensemble.getField(ensembleMethod))
+        gfci.setEdgeEnsemble(ensembleMethod)
         
         if priorKnowledge is not None:
             gfci.setKnowledge(priorKnowledge)
@@ -209,13 +201,11 @@ class bootstrapRfci():
         parameters.set('completeRuleSetUsed', completeRuleSetUsed)
         parameters.set('verbose', verbose)
 
-        ensemble = javabridge.get_class_wrapper('edu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble')
-    
         rfci = javabridge.JClassWrapper('edu.pitt.dbmi.algo.bootstrap.BootstrapTest')(tetradData, 'RFCI')
         rfci.setNumBootstrapSamples(numBootstrapSamples)
         rfci.setVerbose(verbose)
         rfci.setParameters(parameters)
-        rfci.setEdgeEnsemble(ensemble.getField(ensembleMethod))
+        rfci.setEdgeEnsemble(ensembleMethod)
         
         if priorKnowledge is not None:
             rfci.setKnowledge(priorKnowledge)

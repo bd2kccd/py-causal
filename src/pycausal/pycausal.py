@@ -57,7 +57,7 @@ def isNodeExisting(nodes,node):
         print "Node %s does not exist!", node
         return False
     
-def loadContinuousData(df):
+def loadContinuousData(df, outputDataset = False):
     tetradData = None
           
     if(len(df.index)*df.columns.size <= 1500):
@@ -91,8 +91,9 @@ def loadContinuousData(df):
         tetradData = dataReader.readInData(excludeVar)
 
         os.remove(temp_data_path)
-        
-    tetradData = javabridge.JClassWrapper('edu.cmu.tetrad.data.CovarianceMatrixOnTheFly')(tetradData)
+    
+    if(not outputDataset):
+        tetradData = javabridge.JClassWrapper('edu.cmu.tetrad.data.CovarianceMatrixOnTheFly')(tetradData)
 
     return tetradData
 
