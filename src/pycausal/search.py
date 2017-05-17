@@ -34,11 +34,10 @@ class bootstrapFgesDiscrete():
         parameters.set('numPatternsToStore', 0)
         parameters.set('verbose', verbose)
         
-        algoName = javabridge.get_class_wrapper('edu.pitt.dbmi.algo.bootstrap.BootstrapAlgName')
-        
         ensemble = javabridge.get_class_wrapper('edu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble')
         
-        fges = javabridge.JClassWrapper('edu.pitt.dbmi.algo.bootstrap.BootstrapTest')(tetradData, algoName.getField('FGES'), numBootstrapSamples)
+        fges = javabridge.JClassWrapper('edu.pitt.dbmi.algo.bootstrap.BootstrapTest')(tetradData, 'FGES')
+        fges.setNumBootstrapSamples(numBootstrapSamples)
         fges.setVerbose(verbose)
         fges.setParameters(parameters)
         fges.setEdgeEnsemble(ensemble.getField(ensembleMethod))
@@ -81,11 +80,10 @@ class bootstrapFges():
         parameters.set('numPatternsToStore', 0)
         parameters.set('verbose', verbose)
         
-        algoName = javabridge.get_class_wrapper('edu.pitt.dbmi.algo.bootstrap.BootstrapAlgName')
-        
         ensemble = javabridge.get_class_wrapper('edu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble')
         
-        fges = javabridge.JClassWrapper('edu.pitt.dbmi.algo.bootstrap.BootstrapTest')(tetradData, algoName.getField('FGES'), numBootstrapSamples)
+        fges = javabridge.JClassWrapper('edu.pitt.dbmi.algo.bootstrap.BootstrapTest')(tetradData, 'FGES')
+        fges.setNumBootstrapSamples(numBootstrapSamples)
         fges.setVerbose(verbose)
         fges.setParameters(parameters)
         fges.setEdgeEnsemble(ensemble.getField(ensembleMethod))
@@ -127,11 +125,10 @@ class bootstrapGfciDiscrete():
         parameters.set('completeRuleSetUsed', completeRuleSetUsed)
         parameters.set('verbose', verbose)
         
-        algoName = javabridge.get_class_wrapper('edu.pitt.dbmi.algo.bootstrap.BootstrapAlgName')
-        
         ensemble = javabridge.get_class_wrapper('edu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble')
         
-        gfci = javabridge.JClassWrapper('edu.pitt.dbmi.algo.bootstrap.BootstrapTest')(tetradData, algoName.getField('GFCI'), numBootstrapSamples)
+        gfci = javabridge.JClassWrapper('edu.pitt.dbmi.algo.bootstrap.BootstrapTest')(tetradData, 'GFCI')
+        gfci.setNumBootstrapSamples(numBootstrapSamples)
         gfci.setVerbose(verbose)
         gfci.setParameters(parameters)
         gfci.setEdgeEnsemble(ensemble.getField(ensembleMethod))
@@ -169,11 +166,10 @@ class bootstrapGfci():
         parameters.set('completeRuleSetUsed', completeRuleSetUsed)
         parameters.set('verbose', verbose)
         
-        algoName = javabridge.get_class_wrapper('edu.pitt.dbmi.algo.bootstrap.BootstrapAlgName')
-        
         ensemble = javabridge.get_class_wrapper('edu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble')
         
-        gfci = javabridge.JClassWrapper('edu.pitt.dbmi.algo.bootstrap.BootstrapTest')(tetradData, algoName.getField('GFCI'), numBootstrapSamples)
+        gfci = javabridge.JClassWrapper('edu.pitt.dbmi.algo.bootstrap.BootstrapTest')(tetradData, 'GFCI')
+        gfci.setNumBootstrapSamples(numBootstrapSamples)
         gfci.setVerbose(verbose)
         gfci.setParameters(parameters)
         gfci.setEdgeEnsemble(ensemble.getField(ensembleMethod))
@@ -213,11 +209,10 @@ class bootstrapRfci():
         parameters.set('completeRuleSetUsed', completeRuleSetUsed)
         parameters.set('verbose', verbose)
 
-        algoName = javabridge.get_class_wrapper('edu.pitt.dbmi.algo.bootstrap.BootstrapAlgName')
-        
         ensemble = javabridge.get_class_wrapper('edu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble')
-        
-        rfci = javabridge.JClassWrapper('edu.pitt.dbmi.algo.bootstrap.BootstrapTest')(tetradData, algoName.getField('RFCI'), numBootstrapSamples)
+    
+        rfci = javabridge.JClassWrapper('edu.pitt.dbmi.algo.bootstrap.BootstrapTest')(tetradData, 'RFCI')
+        rfci.setNumBootstrapSamples(numBootstrapSamples)
         rfci.setVerbose(verbose)
         rfci.setParameters(parameters)
         rfci.setEdgeEnsemble(ensemble.getField(ensembleMethod))
