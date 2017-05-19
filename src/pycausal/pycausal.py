@@ -173,7 +173,7 @@ def generatePyDotGraph(n,e):
 
     for i in range(0,len(e)):
         token = e[i].split(" ")
-        if(len(token) == 3):
+        if(len(token) >= 3):
             src = token[0]
             arc = token[1]
             dst = token[2]
