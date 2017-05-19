@@ -91,7 +91,7 @@ Installing Python with Anaconda and Jupyter may be easier for some users:
 
 For OS X, this default install does not seem to work well. try the following instead:
 
-    conda install --channel https://conda.anaconda.org/david_baddeley python-javabridge
+    conda install --channel https://conda.anaconda.org/david_baddeley javabridge
 
 Then run the following to configure anacoda
 
