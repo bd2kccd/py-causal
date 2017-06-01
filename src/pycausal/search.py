@@ -74,7 +74,6 @@ class bootstrapFges():
         parameters.set('maxDegree', maxDegree)
         parameters.set('faithfulnessAssumed', faithfulnessAssumed)
         parameters.set('numofthreads', numofthreads)
-        parameters.set('maxDegree', maxDegree)
         parameters.set('numPatternsToStore', 0)
         parameters.set('verbose', verbose)
         
@@ -215,6 +214,44 @@ class bootstrapRfci():
         self.nodes = pycausal.extractTetradGraphNodes(tetradGraph)
         self.edges = pycausal.extractTetradGraphEdges(tetradGraph)
 
+    def getNodes(self):
+        return self.nodes
+    
+    def getEdges(self):
+        return self.edges
+
+class fgesMixed():
+    
+    graph = None
+    nodes = []
+    edges = []
+    
+    def __init__(self, df, numCategoriesToDiscretize = 4, penaltydiscount = 4, structurePrior = 1.0, maxDegree = 3, faithfulnessAssumed = True, numofthreads = 2, verbose = False, priorKnowledge = None):
+        
+        tetradData = pycausal.loadMixedData(df, numCategoriesToDiscretize)
+        
+        score = javabridge.JClassWrapper('edu.cmu.tetrad.search.ConditionalGaussianScore')(tetradData, structurePrior, True)
+        score.setPenaltyDiscount(penaltydiscount) # set to 2 if variable# <= 50 otherwise set it to 4
+        
+        fges = javabridge.JClassWrapper('edu.cmu.tetrad.search.Fges')(score)
+        fges.setMaxDegree(maxDegree)
+        fges.setNumPatternsToStore(0)
+        fges.setFaithfulnessAssumed(faithfulnessAssumed)
+        fges.setParallelism(numofthreads)
+        fges.setVerbose(verbose)
+        
+        if priorKnowledge is not None:
+            fges.setKnowledge(priorKnowledge)
+        
+        tetradGraph = fges.search()
+        
+        self.nodes = pycausal.extractTetradGraphNodes(tetradGraph)
+        self.edges = pycausal.extractTetradGraphEdges(tetradGraph)
+        self.graph = pycausal.generatePyDotGraph(self.nodes,self.edges)
+
+    def getDot(self):
+        return self.graph
+    
     def getNodes(self):
         return self.nodes
     
@@ -402,6 +439,40 @@ class rfci():
     def getEdges(self):    
         return self.edges
         
+class gfciMixed():
+    
+    nodes = []
+    edges = []
+    
+    def __init__(self, df, numCategoriesToDiscretize = 4, penaltydiscount = 4, structurePrior = 1.0, maxDegree = 3, maxPathLength = -1, significance = 0.05, completeRuleSetUsed = False, faithfulnessAssumed = True, verbose = False, priorKnowledge = None):
+        tetradData = pycausal.loadMixedData(df, numCategoriesToDiscretize)
+        
+        indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestConditionalGaussianLRT')(tetradData, significance)
+        
+        score = javabridge.JClassWrapper('edu.cmu.tetrad.search.ConditionalGaussianScore')(tetradData, structurePrior, True)
+        score.setPenaltyDiscount(penaltydiscount) # set to 2 if variable# <= 50 otherwise set it to 4
+        
+        gfci = javabridge.JClassWrapper('edu.cmu.tetrad.search.GFci')(indTest, score)
+        gfci.setMaxDegree(maxDegree)
+        gfci.setMaxPathLength(maxPathLength)
+        gfci.setCompleteRuleSetUsed(completeRuleSetUsed)
+        gfci.setFaithfulnessAssumed(faithfulnessAssumed)
+        gfci.setVerbose(verbose)
+        
+        if priorKnowledge is not None:
+            gfci.setKnowledge(priorKnowledge)
+        
+        tetradGraph = gfci.search()
+        
+        self.nodes = pycausal.extractTetradGraphNodes(tetradGraph)
+        self.edges = pycausal.extractTetradGraphEdges(tetradGraph)
+
+    def getNodes(self):
+        return self.nodes
+    
+    def getEdges(self):
+        return self.edges
+
 class gfciDiscrete():
     
     nodes = []
@@ -442,7 +513,7 @@ class gfci():
     nodes = []
     edges = []
     
-    def __init__(self, df, penaltydiscount = 2, maxDegree = 3, maxPathLength = -1, significance = 0.05, completeRuleSetUsed = False, faithfulnessAssumed = True, verbose = False, priorKnowledge = None):
+    def __init__(self, df, penaltydiscount = 4, maxDegree = 3, maxPathLength = -1, significance = 0.05, completeRuleSetUsed = False, faithfulnessAssumed = True, verbose = False, priorKnowledge = None):
         tetradData = pycausal.loadContinuousData(df)
         
         indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestFisherZ')(tetradData, significance)

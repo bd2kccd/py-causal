@@ -57,22 +57,88 @@ def isNodeExisting(nodes,node):
         print "Node %s does not exist!", node
         return False
 
+def loadMixedData(df, numCategoriesToDiscretize = 4):
+    tetradData = None
+
+    if(len(df.index)*df.columns.size <= 1500):
+        
+        node_list = javabridge.JClassWrapper('java.util.ArrayList')()
+        cont_list = []
+        disc_list = []
+        col_no = 0
+        for col in df.columns:
+            
+            cat_array = sorted(set(df[col]))
+            if(len(cat_array) > numCategoriesToDiscretize):
+                # Continuous variable
+                nodi = javabridge.JClassWrapper('edu.cmu.tetrad.data.ContinuousVariable')(col)
+                node_list.add(nodi)
+                
+                cont_list.append(col_no)
+            
+            else:
+                # Discrete variable
+                cat_list = javabridge.JClassWrapper('java.util.ArrayList')()
+                for cat in cat_array:
+                    cat = str(cat)
+                    cat_list.add(cat)
+            
+                nodname = javabridge.JClassWrapper('java.lang.String')(col)
+                nodi = javabridge.JClassWrapper('edu.cmu.tetrad.data.DiscreteVariable')(nodname,cat_list)
+                node_list.add(nodi)
+
+                disc_list.append(col_no)
+            
+            col_no = col_no + 1
+        
+        contDataBox = javabridge.JClassWrapper('edu.cmu.tetrad.data.DoubleDataBox')(len(df.index),len(cont_list))
+        discDataBox = javabridge.JClassWrapper('edu.cmu.tetrad.data.VerticalIntDataBox')(len(df.index),len(disc_list))
+        for row in df.index:
+
+            for col in cont_list:
+                value = javabridge.JClassWrapper('java.lang.Double')(df.ix[row][col])
+                contDataBox.set(row,col,value)
+            
+            for col in disc_list:
+                value = javabridge.JClassWrapper('java.lang.Integer')(cat_array.index(df.ix[row][col]))
+                discDataBox.set(row,col,value)
+
+        mixedDataBox = javabridge.JClassWrapper('edu.cmu.tetrad.data.MixedDataBox')(node_list, len(df.index), contDataBox.getData(), discDataBox.getVariableVectors())
+        tetradData = javabridge.JClassWrapper('edu.cmu.tetrad.data.BoxDataSet')(mixedDataBox, node_list)
+                    
+    else:
+        # Generate random name
+        temp_data_file = ''.join(random.choice(string.lowercase) for i in range(10)) + '.csv'
+        temp_data_path = os.path.join(tempfile.gettempdir(), temp_data_file)
+        df.to_csv(temp_data_path, sep = "\t", index = False)
+        
+        # Read Data from File
+        f = javabridge.JClassWrapper('java.io.File')(temp_data_path)
+        dataReader = javabridge.JClassWrapper('edu.pitt.dbmi.data.reader.tabular.MixedTabularDataFileReader')(numCategoriesToDiscretize, f,'\t')
+        tetradData = dataReader.readInDataFromFile(None)
+        
+        os.remove(temp_data_path)
+
+    return tetradData
+
 def loadContinuousData(df, outputDataset = False):
     tetradData = None
           
     if(len(df.index)*df.columns.size <= 1500):
 
+        dataBox = javabridge.JClassWrapper('edu.cmu.tetrad.data.DoubleDataBox')(len(df.index),df.columns.size)
+
         node_list = javabridge.JClassWrapper('java.util.ArrayList')()
+        col_no = 0
         for col in df.columns:
             nodi = javabridge.JClassWrapper('edu.cmu.tetrad.data.ContinuousVariable')(col)
             node_list.add(nodi)
 
-        dataBox = javabridge.JClassWrapper('edu.cmu.tetrad.data.DoubleDataBox')(len(df.index),df.columns.size)
-
-        for row in df.index:
-            for col in range(0,df.columns.size):
-                value = javabridge.JClassWrapper('java.lang.Double')(df.ix[row][col])
-                dataBox.set(row,col,value)
+            for row in df.index:
+                value = javabridge.JClassWrapper('java.lang.Double')(df.ix[row][col_no])
+                dataBox.set(row,col_no,value)
+    
+            col_no = col_no + 1
 
         tetradData = javabridge.JClassWrapper('edu.cmu.tetrad.data.BoxDataSet')(dataBox, node_list)
 
