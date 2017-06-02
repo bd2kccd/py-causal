@@ -95,13 +95,17 @@ def loadMixedData(df, numCategoriesToDiscretize = 4):
         discDataBox = javabridge.JClassWrapper('edu.cmu.tetrad.data.VerticalIntDataBox')(len(df.index),len(disc_list))
         for row in df.index:
 
+            col_no = 0
             for col in cont_list:
                 value = javabridge.JClassWrapper('java.lang.Double')(df.ix[row][col])
-                contDataBox.set(row,col,value)
+                contDataBox.set(row,col_no,value)
+                col_no = col_no + 1
             
+            col_no = 0
             for col in disc_list:
                 value = javabridge.JClassWrapper('java.lang.Integer')(cat_array.index(df.ix[row][col]))
-                discDataBox.set(row,col,value)
+                discDataBox.set(row,col_no,value)
+                col_no = col_no + 1
 
         mixedDataBox = javabridge.JClassWrapper('edu.cmu.tetrad.data.MixedDataBox')(node_list, len(df.index), contDataBox.getData(), discDataBox.getVariableVectors())
         tetradData = javabridge.JClassWrapper('edu.cmu.tetrad.data.BoxDataSet')(mixedDataBox, node_list)
