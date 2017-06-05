@@ -116,7 +116,8 @@ def loadMixedData(df, numCategoriesToDiscretize = 4):
         f = javabridge.JClassWrapper('java.io.File')(temp_data_path)
         delimiter = javabridge.get_static_field('edu/pitt/dbmi/data/Delimiter','TAB','Ledu/pitt/dbmi/data/Delimiter;')
         dataReader = javabridge.JClassWrapper('edu.pitt.dbmi.data.reader.tabular.MixedTabularDataFileReader')(numCategoriesToDiscretize, f,delimiter)
-        tetradData = dataReader.readInDataFromFile(None)
+        tetradData = dataReader.readInData()
+        tetradData = javabridge.static_call('edu/pitt/dbmi/causal/cmd/util/TetradDataUtils','toMixedDataBox','(Ledu/pitt/dbmi/data/MixedTabularDataset;)Ledu/cmu/tetrad/data/DataModel;')
         
         os.remove(temp_data_path)
 
