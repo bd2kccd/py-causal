@@ -30,7 +30,7 @@ except ImportError, excp:
 
 setup(
     name = "pycausal",
-    version = "0.1.2",
+    version = "0.1.3",
     description = "Python wrapper for the Tetrad Library",
     author = "Chirayu Kong Wongchokprasitti",
     author_email = 'chw20@pitt.edu',

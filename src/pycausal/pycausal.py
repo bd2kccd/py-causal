@@ -56,23 +56,91 @@ def isNodeExisting(nodes,node):
     except IndexError:
         print "Node %s does not exist!", node
         return False
-    
-def loadContinuousData(df):
+
+def loadMixedData(df, numCategoriesToDiscretize = 4):
+    tetradData = None
+
+    if(len(df.index)*df.columns.size <= 1500):
+        
+        node_list = javabridge.JClassWrapper('java.util.ArrayList')()
+        cont_list = []
+        disc_list = []
+        col_no = 0
+        for col in df.columns:
+            
+            cat_array = sorted(set(df[col]))
+            if(len(cat_array) > numCategoriesToDiscretize):
+                # Continuous variable
+                nodi = javabridge.JClassWrapper('edu.cmu.tetrad.data.ContinuousVariable')(col)
+                node_list.add(nodi)
+                
+                cont_list.append(col_no)
+            
+            else:
+                # Discrete variable
+                cat_list = javabridge.JClassWrapper('java.util.ArrayList')()
+                for cat in cat_array:
+                    cat = str(cat)
+                    cat_list.add(cat)
+            
+                nodname = javabridge.JClassWrapper('java.lang.String')(col)
+                nodi = javabridge.JClassWrapper('edu.cmu.tetrad.data.DiscreteVariable')(nodname,cat_list)
+                node_list.add(nodi)
+
+                disc_list.append(col_no)
+            
+            col_no = col_no + 1
+        
+        mixedDataBox = javabridge.JClassWrapper('edu.cmu.tetrad.data.MixedDataBox')(node_list, len(df.index))
+                                                                                    
+        for row in df.index:
+
+            for col in cont_list:
+                value = javabridge.JClassWrapper('java.lang.Double')(df.ix[row][col])
+                mixedDataBox.set(row,col,value)
+            
+            for col in disc_list:
+                cat_array = sorted(set(df[df.columns[col]]))
+                value = javabridge.JClassWrapper('java.lang.Integer')(cat_array.index(df.ix[row][col]))
+                mixedDataBox.set(row,col,value)
+
+        tetradData = javabridge.JClassWrapper('edu.cmu.tetrad.data.BoxDataSet')(mixedDataBox, node_list)
+                    
+    else:
+        # Generate random name
+        temp_data_file = ''.join(random.choice(string.lowercase) for i in range(10)) + '.csv'
+        temp_data_path = os.path.join(tempfile.gettempdir(), temp_data_file)
+        df.to_csv(temp_data_path, sep = "\t", index = False)
+        
+        # Read Data from File
+        f = javabridge.JClassWrapper('java.io.File')(temp_data_path)
+        delimiter = javabridge.get_static_field('edu/pitt/dbmi/data/Delimiter','TAB','Ledu/pitt/dbmi/data/Delimiter;')
+        dataReader = javabridge.JClassWrapper('edu.pitt.dbmi.data.reader.tabular.MixedTabularDataFileReader')(numCategoriesToDiscretize, f,delimiter)
+        tetradData = dataReader.readInData()
+        tetradData = javabridge.static_call('edu/pitt/dbmi/causal/cmd/util/TetradDataUtils','toMixedDataBox','(Ledu/pitt/dbmi/data/MixedTabularDataset;)Ledu/cmu/tetrad/data/DataModel;', tetradData)
+        
+        os.remove(temp_data_path)
+
+    return tetradData
+
+def loadContinuousData(df, outputDataset = False):
     tetradData = None
           
     if(len(df.index)*df.columns.size <= 1500):
 
+        dataBox = javabridge.JClassWrapper('edu.cmu.tetrad.data.DoubleDataBox')(len(df.index),df.columns.size)
+
         node_list = javabridge.JClassWrapper('java.util.ArrayList')()
+        col_no = 0
         for col in df.columns:
             nodi = javabridge.JClassWrapper('edu.cmu.tetrad.data.ContinuousVariable')(col)
             node_list.add(nodi)
 
-        dataBox = javabridge.JClassWrapper('edu.cmu.tetrad.data.DoubleDataBox')(len(df.index),df.columns.size)
-
-        for row in df.index:
-            for col in range(0,df.columns.size):
-                value = javabridge.JClassWrapper('java.lang.Double')(df.ix[row][col])
-                dataBox.set(row,col,value)
+            for row in df.index:
+                value = javabridge.JClassWrapper('java.lang.Double')(df.ix[row][col_no])
+                dataBox.set(row,col_no,value)
+    
+            col_no = col_no + 1
 
         tetradData = javabridge.JClassWrapper('edu.cmu.tetrad.data.BoxDataSet')(dataBox, node_list)
 
@@ -91,8 +159,9 @@ def loadContinuousData(df):
         tetradData = dataReader.readInData(excludeVar)
 
         os.remove(temp_data_path)
-        
-    tetradData = javabridge.JClassWrapper('edu.cmu.tetrad.data.CovarianceMatrixOnTheFly')(tetradData)
+    
+    if(not outputDataset):
+        tetradData = javabridge.JClassWrapper('edu.cmu.tetrad.data.CovarianceMatrixOnTheFly')(tetradData)
 
     return tetradData
 
@@ -172,7 +241,7 @@ def generatePyDotGraph(n,e):
 
     for i in range(0,len(e)):
         token = e[i].split(" ")
-        if(len(token) == 3):
+        if(len(token) >= 3):
             src = token[0]
             arc = token[1]
             dst = token[2]
