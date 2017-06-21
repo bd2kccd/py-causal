@@ -27,6 +27,8 @@ Directions for both approaches are given below...
 Installation with pip
 =====================
 
+First install Java 7.1 or higher and Python 2.7 or higher.
+
 If you do not have pip installed already, try [these instructions](https://pip.pypa.io/en/stable/installing/).
 
 Once pip is installed, execute these commands
@@ -83,6 +85,8 @@ We have found [Jupyter](http://jupyter.org/) notebooks to be helpful. (Those who
 
 Anaconda/Jupyter
 ================
+
+First install Java 7.1 or higher and Python 2.7 or higher.
 
 Installing Python with Anaconda and Jupyter may be easier for some users:
 

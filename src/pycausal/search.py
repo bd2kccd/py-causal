@@ -220,6 +220,93 @@ class bootstrapRfci():
     def getEdges(self):
         return self.edges
 
+class fasMixed():
+    
+    nodes = []
+    edges = []
+    
+    def __init__(self, df, numCategoriesToDiscretize = 4, depth = 3, significance = 0.05, sepsetsReturnEmptyIfNotFixed = False, verbose = False, priorKnowledge = None):
+        
+        tetradData = pycausal.loadMixedData(df, numCategoriesToDiscretize)
+        indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestConditionalGaussianLRT')(tetradData, significance)
+        
+        fas = javabridge.JClassWrapper('edu.cmu.tetrad.search.Fas')(indTest)
+        fas.setDepth(depth)
+        fas.setSepsetsReturnEmptyIfNotFixed(sepsetsReturnEmptyIfNotFixed)
+        fas.setVerbose(verbose)
+        
+        if priorKnowledge is not None:
+            fas.setKnowledge(priorKnowledge)
+        
+        tetradGraph = fas.search()
+        
+        self.nodes = pycausal.extractTetradGraphNodes(tetradGraph)
+        self.edges = pycausal.extractTetradGraphEdges(tetradGraph)
+    
+    def getNodes(self):
+        return self.nodes
+    
+    def getEdges(self):
+        return self.edges
+
+class fasDiscrete():
+    
+    nodes = []
+    edges = []
+    
+    def __init__(self, df, depth = 3, significance = 0.05, sepsetsReturnEmptyIfNotFixed = False, verbose = False, priorKnowledge = None):
+        
+        tetradData = pycausal.loadDiscreteData(df)
+        indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestChiSquare')(tetradData, significance)
+        
+        fas = javabridge.JClassWrapper('edu.cmu.tetrad.search.Fas')(indTest)
+        fas.setDepth(depth)
+        fas.setSepsetsReturnEmptyIfNotFixed(sepsetsReturnEmptyIfNotFixed)
+        fas.setVerbose(verbose)
+        
+        if priorKnowledge is not None:
+            fas.setKnowledge(priorKnowledge)
+        
+        tetradGraph = fas.search()
+        
+        self.nodes = pycausal.extractTetradGraphNodes(tetradGraph)
+        self.edges = pycausal.extractTetradGraphEdges(tetradGraph)
+    
+    def getNodes(self):
+        return self.nodes
+    
+    def getEdges(self):
+        return self.edges
+
+class fas():
+    
+    nodes = []
+    edges = []
+    
+    def __init__(self, df, depth = 3, significance = 0.05, sepsetsReturnEmptyIfNotFixed = False, verbose = False, priorKnowledge = None):
+        
+        tetradData = pycausal.loadContinuousData(df)
+        indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestFisherZ')(tetradData, significance)
+        
+        fas = javabridge.JClassWrapper('edu.cmu.tetrad.search.Fas')(indTest)
+        fas.setDepth(depth)
+        fas.setSepsetsReturnEmptyIfNotFixed(sepsetsReturnEmptyIfNotFixed)
+        fas.setVerbose(verbose)
+        
+        if priorKnowledge is not None:
+            fas.setKnowledge(priorKnowledge)
+        
+        tetradGraph = fas.search()
+        
+        self.nodes = pycausal.extractTetradGraphNodes(tetradGraph)
+        self.edges = pycausal.extractTetradGraphEdges(tetradGraph)
+
+    def getNodes(self):
+        return self.nodes
+    
+    def getEdges(self):
+        return self.edges
+
 class fgesMixed():
     
     graph = None
