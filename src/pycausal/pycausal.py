@@ -204,7 +204,7 @@ def loadDiscreteData(df):
         delimiter = javabridge.get_static_field('edu/pitt/dbmi/data/Delimiter','TAB','Ledu/pitt/dbmi/data/Delimiter;')
         dataReader = javabridge.JClassWrapper('edu.pitt.dbmi.data.reader.tabular.VerticalDiscreteTabularDataReader')(f,delimiter)
         tetradData = dataReader.readInData()
-            tetradData = javabridge.static_call('edu/pitt/dbmi/causal/cmd/util/TetradDataUtils','toVerticalDiscreteDataModel','(Ledu/pitt/dbmi/data/BoxDataSet;)Ledu/cmu/tetrad/data/DataModel;', tetradData)
+        tetradData = javabridge.static_call('edu/pitt/dbmi/causal/cmd/util/TetradDataUtils','toVerticalDiscreteDataModel','(Ledu/pitt/dbmi/data/BoxDataSet;)Ledu/cmu/tetrad/data/DataModel;', tetradData)
 
         os.remove(temp_data_path)
         
