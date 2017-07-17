@@ -916,7 +916,7 @@ class pc():
     def getEdges(self):    
         return self.edges
     
-class pcmax():
+class pcstablemax():
     
     graph = None
     nodes = []
@@ -932,7 +932,7 @@ class pcmax():
             tetradData = pycausal.loadDiscreteData(df)
             indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestChiSquare')(tetradData, significance)
         
-        pcmax = javabridge.JClassWrapper('edu.cmu.tetrad.search.PcMax')(indTest)
+        pcmax = javabridge.JClassWrapper('edu.cmu.tetrad.search.PcStableMax')(indTest)
         pcmax.setDepth(depth)
         pcmax.setMaxPathLength(maxPathLength)
         pcmax.setUseHeuristic(useHeuristic)
