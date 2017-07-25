@@ -23,7 +23,7 @@ class imagesBDeu():
 
     def __init__(self, dfs, structurePrior = 1.0, samplePrior = 1.0, maxDegree = 3, faithfulnessAssumed = True, verbose = False, priorKnowledge = None):
         datasets = javabridge.JClassWrapper('java.util.ArrayList')()
-        for idx in range(len(countries)):
+        for idx in range(len(datasets)):
             df = dfs[idx]
             tetradData = pycausal.loadDiscreteData(df)
             datasets.add(tetradData)
@@ -64,7 +64,7 @@ class imagesSemBic():
     
     def __init__(self, dfs, penaltydiscount = 4, maxDegree = 3, faithfulnessAssumed = True, verbose = False, priorKnowledge = None):
         datasets = javabridge.JClassWrapper('java.util.ArrayList')()
-        for idx in range(len(countries)):
+        for idx in range(len(datasets)):
             df = dfs[idx]
             tetradData = pycausal.loadDiscreteData(df)
             datasets.add(tetradData)
