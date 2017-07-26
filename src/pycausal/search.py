@@ -66,7 +66,7 @@ class imagesSemBic():
         datasets = javabridge.JClassWrapper('java.util.ArrayList')()
         for idx in range(len(dfs)):
             df = dfs[idx]
-            tetradData = pycausal.loadDiscreteData(df)
+            tetradData = pycausal.loadContinuousData(df)
             datasets.add(tetradData)
         
         score = javabridge.JClassWrapper('edu.cmu.tetrad.search.SemBicScoreImages')(datasets)
