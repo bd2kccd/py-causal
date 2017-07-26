@@ -15,6 +15,87 @@ import tempfile
 
 import pycausal
 
+class imagesBDeu():
+
+    graph = None
+    nodes = []
+    edges = []
+
+    def __init__(self, dfs, structurePrior = 1.0, samplePrior = 1.0, maxDegree = 3, faithfulnessAssumed = True, verbose = False, priorKnowledge = None):
+        datasets = javabridge.JClassWrapper('java.util.ArrayList')()
+        for idx in range(len(dfs)):
+            df = dfs[idx]
+            tetradData = pycausal.loadDiscreteData(df)
+            datasets.add(tetradData)
+        
+        score = javabridge.JClassWrapper('edu.cmu.tetrad.search.BdeuScoreImages')(datasets)
+        score.setStructurePrior(structurePrior)
+        score.setSamplePrior(samplePrior)
+        
+        fges = javabridge.JClassWrapper('edu.cmu.tetrad.search.Fges')(score)
+        fges.setMaxDegree(maxDegree)
+        fges.setNumPatternsToStore(0)
+        fges.setFaithfulnessAssumed(faithfulnessAssumed)
+        fges.setVerbose(verbose)
+        
+        if priorKnowledge is not None:
+            fges.setKnowledge(priorKnowledge)
+    
+        tetradGraph = fges.search()
+        
+        self.nodes = pycausal.extractTetradGraphNodes(tetradGraph)
+        self.edges = pycausal.extractTetradGraphEdges(tetradGraph)
+        self.graph = pycausal.generatePyDotGraph(self.nodes,self.edges)
+    
+    def getDot(self):
+        return self.graph
+    
+    def getNodes(self):
+        return self.nodes
+    
+    def getEdges(self):
+        return self.edges
+
+class imagesSemBic():
+
+    graph = None
+    nodes = []
+    edges = []
+    
+    def __init__(self, dfs, penaltydiscount = 4, maxDegree = 3, faithfulnessAssumed = True, verbose = False, priorKnowledge = None):
+        datasets = javabridge.JClassWrapper('java.util.ArrayList')()
+        for idx in range(len(dfs)):
+            df = dfs[idx]
+            tetradData = pycausal.loadContinuousData(df)
+            datasets.add(tetradData)
+        
+        score = javabridge.JClassWrapper('edu.cmu.tetrad.search.SemBicScoreImages')(datasets)
+        score.setPenaltyDiscount(penaltydiscount) # set to 2 if variable# <= 50 otherwise set it to 4
+        
+        fges = javabridge.JClassWrapper('edu.cmu.tetrad.search.Fges')(score)
+        fges.setMaxDegree(maxDegree)
+        fges.setNumPatternsToStore(0)
+        fges.setFaithfulnessAssumed(faithfulnessAssumed)
+        fges.setVerbose(verbose)
+        
+        if priorKnowledge is not None:
+            fges.setKnowledge(priorKnowledge)
+        
+        tetradGraph = fges.search()
+        
+        self.nodes = pycausal.extractTetradGraphNodes(tetradGraph)
+        self.edges = pycausal.extractTetradGraphEdges(tetradGraph)
+        self.graph = pycausal.generatePyDotGraph(self.nodes,self.edges)
+
+    def getDot(self):
+        return self.graph
+    
+    def getNodes(self):
+        return self.nodes
+    
+    def getEdges(self):
+        return self.edges
+
 class bootstrapFgesMixed():
     
     graph = None
