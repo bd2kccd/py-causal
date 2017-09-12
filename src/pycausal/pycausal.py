@@ -210,22 +210,35 @@ def loadDiscreteData(df):
         
     return tetradData
 
-def extractTetradGraphNodes(tetradGraph):
+def extractTetradGraphNodes(tetradGraph, orig_columns = None, new_columns = None):
     n = tetradGraph.getNodes().toString()
     n = n[1:len(n)-1]
     n = n.split(",")
     for i in range(0,len(n)):
         node = n[i]
         n[i] = node.strip()
+        if(orig_columns != None and new_columns != None):
+            index = new_columns.index(n[i])
+            n[i] = orig_columns[index]
 
     return n
 
-def extractTetradGraphEdges(tetradGraph):
+def extractTetradGraphEdges(tetradGraph, orig_columns = None, new_columns = None):
     e = tetradGraph.getEdges().toString()
     e = e[1:len(e)-1]
     e = e.split(",")    
     for i in range(0,len(e)):
         e[i] = e[i].strip()
+        if(orig_columns != None and new_columns != None):
+            token = e[i].split(" ")
+            src = token[0]
+            arc = token[1]
+            dst = token[2]
+            src_index = new_columns.index(src)
+            dst_index = new_columns.index(dst)
+            src = orig_columns[src_index]
+            dst = orig_columns[dst_index]
+            e[i] = src + " " + arc + dst
 
     return e            
     

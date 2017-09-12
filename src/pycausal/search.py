@@ -15,6 +15,82 @@ import tempfile
 
 import pycausal
 
+class fofc():
+
+    graph = None
+    nodes = []
+    edges = []
+    
+    def __init__(self, df, testType = 'TETRAD_WISHART', fofcAlgorithm = 'GAP', alpha = .01):
+        tetradData = pycausal.loadContinuousData(df)
+        
+        testType = javabridge.get_static_field('edu/cmu/tetrad/search/TestType',testType,'Ledu/cmu/tetrad/search/TestType;')
+        fofcAlgorithm = javabridge.get_static_field('edu/cmu/tetrad/search/FindOneFactorClusters/Algorithm', fofcAlgorithm, 'Ledu/cmu/tetrad/search/FindOneFactorClusters/Algorithm;')
+    
+        fofc = javabridge.JClassWrapper('edu.cmu.tetrad.search.FindOneFactorClusters')(tetradData, testType, fofcAlgorithm, alpha)
+    
+        tetradGraph = fofc.search()
+        
+        self.nodes = pycausal.extractTetradGraphNodes(tetradGraph)
+        self.edges = pycausal.extractTetradGraphEdges(tetradGraph)
+        self.graph = pycausal.generatePyDotGraph(self.nodes,self.edges)
+        
+    def getDot(self):
+        return self.graph
+    
+    def getNodes(self):
+        return self.nodes
+    
+    def getEdges(self):
+        return self.edges
+    
+class dm():
+    
+    graph = None
+    nodes = []
+    edges = []
+    
+    def __init__(self, inputs, outputs, useGES = True, df, trueInputs, alphaPC = .05, alphaSober = .05, gesDiscount = 10, verbose = False, minDiscount = 4):
+
+        orig_columns = df.columns.values
+        new_columns = df.columns.values
+        col_no = 0
+        for col in df.columns:
+            new_columns[col_no] = 'X' + str(col_no)
+            col_no = col_no + 1
+        df.columns = new_columns
+        
+        tetradData = pycausal.loadContinuousData(df)
+        
+        dm = javabridge.JClassWrapper('edu.cmu.tetrad.search.DMSearch')()
+        dm.setInputs(inputs)
+        dm.setOutputs(outputs)
+        dm.setTrueInputs(trueInputs)
+        dm.setData(tetradData)
+        dm.setVerbose(verbose)
+        dm.setAlphaSober(alphaSober)
+        
+        if useGES == True:
+            dm.setAlphaPC(alphaPC)
+        else:
+            dm.setDiscount(gesDiscount)
+            dm.setMinDiscount(minDiscount)
+            
+        tetradGraph = dm.search()
+        
+        self.nodes = pycausal.extractTetradGraphNodes(tetradGraph, orig_columns, new_columns)
+        self.edges = pycausal.extractTetradGraphEdges(tetradGraph, orig_columns, new_columns)
+        self.graph = pycausal.generatePyDotGraph(self.nodes,self.edges)
+        
+    def getDot(self):
+        return self.graph
+    
+    def getNodes(self):
+        return self.nodes
+    
+    def getEdges(self):
+        return self.edges
+
 class imagesBDeu():
 
     graph = None
