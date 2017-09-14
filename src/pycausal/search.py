@@ -43,7 +43,8 @@ class fofc():
     
     def getEdges(self):
         return self.edges
-    
+
+'''    
 class dm():
     
     graph = None
@@ -90,6 +91,7 @@ class dm():
     
     def getEdges(self):
         return self.edges
+'''
 
 class imagesBDeu():
 
