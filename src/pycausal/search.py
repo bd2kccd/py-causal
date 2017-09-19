@@ -21,11 +21,15 @@ class fofc():
     nodes = []
     edges = []
     
-    def __init__(self, df, testType = 'TETRAD_WISHART', fofcAlgorithm = 'GAP', alpha = .01):
+    def __init__(self, df, testType = 'TETRAD_WISHART', fofcAlgorithm = 'GAP', alpha = 0.01):
         tetradData = pycausal.loadContinuousData(df)
         
-        testType = javabridge.get_static_field('edu/cmu/tetrad/search/TestType',testType,'Ledu/cmu/tetrad/search/TestType;')
-        fofcAlgorithm = javabridge.get_static_field('edu/cmu/tetrad/search/FindOneFactorClusters/Algorithm', fofcAlgorithm, 'Ledu/cmu/tetrad/search/FindOneFactorClusters/Algorithm;')
+        testType = javabridge.get_static_field('edu/cmu/tetrad/search/TestType',
+                                               testType,
+                                               'Ledu/cmu/tetrad/search/TestType;')
+        fofcAlgorithm = javabridge.get_static_field('edu/cmu/tetrad/search/FindOneFactorClusters$Algorithm', 
+                                            fofcAlgorithm, 
+                                            'Ledu/cmu/tetrad/search/FindOneFactorClusters$Algorithm;')
     
         fofc = javabridge.JClassWrapper('edu.cmu.tetrad.search.FindOneFactorClusters')(tetradData, testType, fofcAlgorithm, alpha)
     
@@ -50,7 +54,7 @@ class dm():
     nodes = []
     edges = []
     
-    def __init__(self, df, inputs, outputs, trueInputs, useGES = True, alphaPC = .05, alphaSober = .05, gesDiscount = 10, verbose = False, minDiscount = 4):
+    def __init__(self, df, inputs, outputs, trueInputs, useGES = True, alphaPC = 0.05, alphaSober = 0.05, gesDiscount = 10, verbose = False, minDiscount = 4):
 
         orig_columns = df.columns.values
         orig_columns = orig_columns.tolist()
