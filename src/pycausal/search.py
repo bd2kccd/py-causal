@@ -8,6 +8,7 @@ Created on Feb 17, 2016
 import javabridge
 import os
 import glob
+import numpy as np
 import pydot
 import random
 import string
