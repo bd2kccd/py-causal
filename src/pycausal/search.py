@@ -50,7 +50,7 @@ class dm():
     nodes = []
     edges = []
     
-    def __init__(self, inputs, outputs, useGES = True, df, trueInputs, alphaPC = .05, alphaSober = .05, gesDiscount = 10, verbose = False, minDiscount = 4):
+    def __init__(self, df, inputs, outputs, trueInputs, useGES = True, alphaPC = .05, alphaSober = .05, gesDiscount = 10, verbose = False, minDiscount = 4):
 
         orig_columns = df.columns.values
         orig_columns = orig_columns.tolist()
