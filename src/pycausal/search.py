@@ -8,6 +8,7 @@ Created on Feb 17, 2016
 import javabridge
 import os
 import glob
+import numpy as np
 import pydot
 import random
 import string
@@ -21,11 +22,15 @@ class fofc():
     nodes = []
     edges = []
     
-    def __init__(self, df, testType = 'TETRAD_WISHART', fofcAlgorithm = 'GAP', alpha = .01):
+    def __init__(self, df, testType = 'TETRAD_WISHART', fofcAlgorithm = 'GAP', alpha = 0.01):
         tetradData = pycausal.loadContinuousData(df)
         
-        testType = javabridge.get_static_field('edu/cmu/tetrad/search/TestType',testType,'Ledu/cmu/tetrad/search/TestType;')
-        fofcAlgorithm = javabridge.get_static_field('edu/cmu/tetrad/search/FindOneFactorClusters/Algorithm', fofcAlgorithm, 'Ledu/cmu/tetrad/search/FindOneFactorClusters/Algorithm;')
+        testType = javabridge.get_static_field('edu/cmu/tetrad/search/TestType',
+                                               testType,
+                                               'Ledu/cmu/tetrad/search/TestType;')
+        fofcAlgorithm = javabridge.get_static_field('edu/cmu/tetrad/search/FindOneFactorClusters$Algorithm', 
+                                            fofcAlgorithm, 
+                                            'Ledu/cmu/tetrad/search/FindOneFactorClusters$Algorithm;')
     
         fofc = javabridge.JClassWrapper('edu.cmu.tetrad.search.FindOneFactorClusters')(tetradData, testType, fofcAlgorithm, alpha)
     
@@ -44,24 +49,29 @@ class fofc():
     def getEdges(self):
         return self.edges
 
-'''    
 class dm():
     
     graph = None
     nodes = []
     edges = []
     
-    def __init__(self, inputs, outputs, useGES = True, df, trueInputs, alphaPC = .05, alphaSober = .05, gesDiscount = 10, verbose = False, minDiscount = 4):
+    def __init__(self, df, inputs, outputs, trueInputs, useGES = True, alphaPC = 0.05, alphaSober = 0.05, gesDiscount = 10, verbose = False, minDiscount = 4):
 
+        inputs = javabridge.get_env().make_int_array(np.array(inputs, np.int32))
+        outputs = javabridge.get_env().make_int_array(np.array(outputs, np.int32))
+        trueInputs = javabridge.get_env().make_int_array(np.array(trueInputs, np.int32))
+        
         orig_columns = df.columns.values
+        orig_columns = orig_columns.tolist()
         new_columns = df.columns.values
         col_no = 0
         for col in df.columns:
             new_columns[col_no] = 'X' + str(col_no)
             col_no = col_no + 1
         df.columns = new_columns
+        new_columns = new_columns.tolist()
         
-        tetradData = pycausal.loadContinuousData(df)
+        tetradData = pycausal.loadContinuousData(df, outputDataset = True)
         
         dm = javabridge.JClassWrapper('edu.cmu.tetrad.search.DMSearch')()
         dm.setInputs(inputs)
@@ -69,9 +79,8 @@ class dm():
         dm.setTrueInputs(trueInputs)
         dm.setData(tetradData)
         dm.setVerbose(verbose)
-        dm.setAlphaSober(alphaSober)
         
-        if useGES == True:
+        if useGES:
             dm.setAlphaPC(alphaPC)
         else:
             dm.setDiscount(gesDiscount)
@@ -91,7 +100,6 @@ class dm():
     
     def getEdges(self):
         return self.edges
-'''
 
 class imagesBDeu():
 
