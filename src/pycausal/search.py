@@ -44,7 +44,6 @@ class fofc():
     def getEdges(self):
         return self.edges
 
-'''    
 class dm():
     
     graph = None
@@ -54,14 +53,16 @@ class dm():
     def __init__(self, inputs, outputs, useGES = True, df, trueInputs, alphaPC = .05, alphaSober = .05, gesDiscount = 10, verbose = False, minDiscount = 4):
 
         orig_columns = df.columns.values
+        orig_columns = orig_columns.tolist()
         new_columns = df.columns.values
         col_no = 0
         for col in df.columns:
             new_columns[col_no] = 'X' + str(col_no)
             col_no = col_no + 1
         df.columns = new_columns
+        new_columns = new_columns.tolist()
         
-        tetradData = pycausal.loadContinuousData(df)
+        tetradData = pycausal.loadContinuousData(df, outputDataset = True)
         
         dm = javabridge.JClassWrapper('edu.cmu.tetrad.search.DMSearch')()
         dm.setInputs(inputs)
@@ -69,9 +70,8 @@ class dm():
         dm.setTrueInputs(trueInputs)
         dm.setData(tetradData)
         dm.setVerbose(verbose)
-        dm.setAlphaSober(alphaSober)
         
-        if useGES == True:
+        if useGES:
             dm.setAlphaPC(alphaPC)
         else:
             dm.setDiscount(gesDiscount)
@@ -91,7 +91,6 @@ class dm():
     
     def getEdges(self):
         return self.edges
-'''
 
 class imagesBDeu():
 
