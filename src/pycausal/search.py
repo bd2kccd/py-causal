@@ -56,6 +56,10 @@ class dm():
     
     def __init__(self, df, inputs, outputs, trueInputs, useGES = True, alphaPC = 0.05, alphaSober = 0.05, gesDiscount = 10, verbose = False, minDiscount = 4):
 
+        inputs = javabridge.get_env().make_int_array(np.array(inputs, np.int32))
+        outputs = javabridge.get_env().make_int_array(np.array(outputs, np.int32))
+        trueInputs = javabridge.get_env().make_int_array(np.array(trueInputs, np.int32))
+        
         orig_columns = df.columns.values
         orig_columns = orig_columns.tolist()
         new_columns = df.columns.values
