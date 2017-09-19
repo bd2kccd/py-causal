@@ -31,6 +31,7 @@ __license__ = 'LGPL >= 2.1'
 import javabridge
 import os
 import glob
+import numpy as np
 import pydot
 import random
 import string
