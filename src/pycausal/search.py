@@ -25,10 +25,9 @@ class fofc():
     def __init__(self, df, testType = 'TETRAD_WISHART', fofcAlgorithm = 'GAP', alpha = 0.01, numBootstrap = -1, ensembleMethod = 'Highest'):
         
         fofc = None
-
-        tetradData = pycausal.loadContinuousData(df)
         
         if numBootstrap < 1:
+            tetradData = pycausal.loadContinuousData(df)
             testType = javabridge.get_static_field('edu/cmu/tetrad/search/TestType',
                                                    testType,
                                                    'Ledu/cmu/tetrad/search/TestType;')
@@ -37,7 +36,8 @@ class fofc():
                                                 'Ledu/cmu/tetrad/search/FindOneFactorClusters$Algorithm;')
 
             fofc = javabridge.JClassWrapper('edu.cmu.tetrad.search.FindOneFactorClusters')(tetradData, testType, fofcAlgorithm, alpha)
-        else:    
+        else:
+            tetradData = pycausal.loadContinuousData(df, outputDataset = True)
             algorithm = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.algorithm.cluster.Fofc')()
             
             parameters = javabridge.JClassWrapper('edu.cmu.tetrad.util.Parameters')()
@@ -52,9 +52,9 @@ class fofc():
             parameters.set('alpha', alpha)
             
             fofc = javabridge.JClassWrapper('edu.pitt.dbmi.algo.bootstrap.GeneralBootstrapTest')(tetradData, algorithm, numBootstrap)
-            edgeEnsemble = javabridge.get_static_field('edu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble',
+            edgeEnsemble = javabridge.get_static_field('edu/pitt/dbmi/algo/bootstrap/BootstrapEdgeEnsemble',
                                                ensembleMethod,
-                                               'Ledu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble;')
+                                               'Ledu/pitt/dbmi/algo/bootstrap/BootstrapEdgeEnsemble;')
             fofc.setEdgeEnsemble(edgeEnsemble)
             fofc.setParameters(parameters)
             
@@ -161,9 +161,9 @@ class imagesBDeu():
             parameters.set('verbose', verbose)
             
             fges = javabridge.JClassWrapper('edu.pitt.dbmi.algo.bootstrap.GeneralBootstrapTest')(datasets, algorithm, numBootstrap)
-            edgeEnsemble = javabridge.get_static_field('edu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble',
+            edgeEnsemble = javabridge.get_static_field('edu/pitt/dbmi/algo/bootstrap/BootstrapEdgeEnsemble',
                                                ensembleMethod,
-                                               'Ledu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble;')
+                                               'Ledu/pitt/dbmi/algo/bootstrap/BootstrapEdgeEnsemble;')
             fges.setEdgeEnsemble(edgeEnsemble)
             fges.setParameters(parameters)
 
@@ -197,7 +197,11 @@ class imagesSemBic():
         datasets = javabridge.JClassWrapper('java.util.ArrayList')()
         for idx in range(len(dfs)):
             df = dfs[idx]
-            tetradData = pycausal.loadContinuousData(df)
+            tetradData = None
+            if numBootstrap < 1:
+                tetradData = pycausal.loadContinuousData(df)
+            else:
+                tetradData = pycausal.loadContinuousData(df, outputDataset = True)
             datasets.add(tetradData)
         
         fges = None
@@ -220,9 +224,9 @@ class imagesSemBic():
             parameters.set('verbose', verbose)
             
             fges = javabridge.JClassWrapper('edu.pitt.dbmi.algo.bootstrap.GeneralBootstrapTest')(datasets, algorithm, numBootstrap)
-            edgeEnsemble = javabridge.get_static_field('edu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble',
+            edgeEnsemble = javabridge.get_static_field('edu/pitt/dbmi/algo/bootstrap/BootstrapEdgeEnsemble',
                                                ensembleMethod,
-                                               'Ledu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble;')
+                                               'Ledu/pitt/dbmi/algo/bootstrap/BootstrapEdgeEnsemble;')
             fges.setEdgeEnsemble(edgeEnsemble)
             fges.setParameters(parameters)
         
@@ -246,106 +250,38 @@ class imagesSemBic():
     def getEdges(self):
         return self.edges
 
-class fasMixed():
-    
-    nodes = []
-    edges = []
-    
-    def __init__(self, df, numCategoriesToDiscretize = 4, depth = 3, alpha = 0.05, verbose = False, priorKnowledge = None, numBootstrap = -1, ensembleMethod = 'Highest'):
-        
-        tetradData = pycausal.loadMixedData(df, numCategoriesToDiscretize)       
-        indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestConditionalGaussianLRT')(tetradData, alpha)
-
-        fas = None
-        
-        if numBootstrap < 1:
-            fas = javabridge.JClassWrapper('edu.cmu.tetrad.search.Fas')(indTest)
-            fas.setDepth(depth)
-        else:
-            algorithm = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.algorithm.oracle.pattern.FAS')(indTest)
-            
-            parameters = javabridge.JClassWrapper('edu.cmu.tetrad.util.Parameters')()
-            parameters.set('depth', depth)
-            parameters.set('verbose', verbose)
-            
-            fas = javabridge.JClassWrapper('edu.pitt.dbmi.algo.bootstrap.GeneralBootstrapTest')(tetradData, algorithm, numBootstrap)
-            edgeEnsemble = javabridge.get_static_field('edu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble',
-                                               ensembleMethod,
-                                               'Ledu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble;')
-            fas.setEdgeEnsemble(edgeEnsemble)
-            fas.setParameters(parameters)
-            
-        fas.setVerbose(verbose)
-        
-        if priorKnowledge is not None:
-            fas.setKnowledge(priorKnowledge)
-        
-        tetradGraph = fas.search()
-        
-        self.nodes = pycausal.extractTetradGraphNodes(tetradGraph)
-        self.edges = pycausal.extractTetradGraphEdges(tetradGraph)
-    
-    def getNodes(self):
-        return self.nodes
-    
-    def getEdges(self):
-        return self.edges
-
-class fasDiscrete():
-    
-    nodes = []
-    edges = []
-    
-    def __init__(self, df, depth = 3, alpha = 0.05, verbose = False, priorKnowledge = None, numBootstrap = -1, ensembleMethod = 'Highest'):
-        
-        tetradData = pycausal.loadDiscreteData(df)
-        indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestChiSquare')(tetradData, alpha)
-        
-        fas = None
-        
-        if numBootstrap < 1:
-            fas = javabridge.JClassWrapper('edu.cmu.tetrad.search.Fas')(indTest)
-            fas.setDepth(depth)
-        else:
-            algorithm = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.algorithm.oracle.pattern.FAS')(indTest)
-            
-            parameters = javabridge.JClassWrapper('edu.cmu.tetrad.util.Parameters')()
-            parameters.set('depth', depth)
-            parameters.set('verbose', verbose)
-            
-            fas = javabridge.JClassWrapper('edu.pitt.dbmi.algo.bootstrap.GeneralBootstrapTest')(tetradData, algorithm, numBootstrap)
-            edgeEnsemble = javabridge.get_static_field('edu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble',
-                                               ensembleMethod,
-                                               'Ledu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble;')
-            fas.setEdgeEnsemble(edgeEnsemble)
-            fas.setParameters(parameters)
-            
-        fas.setVerbose(verbose)
-        
-        if priorKnowledge is not None:
-            fas.setKnowledge(priorKnowledge)
-        
-        tetradGraph = fas.search()
-        
-        self.nodes = pycausal.extractTetradGraphNodes(tetradGraph)
-        self.edges = pycausal.extractTetradGraphEdges(tetradGraph)
-    
-    def getNodes(self):
-        return self.nodes
-    
-    def getEdges(self):
-        return self.edges
-
 class fas():
     
     nodes = []
     edges = []
     
-    def __init__(self, df, depth = 3, alpha = 0.05, verbose = False, priorKnowledge = None, numBootstrap = -1, ensembleMethod = 'Highest'):
+    def __init__(self, df, dataType = 0, numCategoriesToDiscretize = 4, depth = 3, alpha = 0.05, verbose = False, priorKnowledge = None, numBootstrap = -1, ensembleMethod = 'Highest'):
+        tetradData = None
+        indTest = None
         
-        tetradData = pycausal.loadContinuousData(df)
-        indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestFisherZ')(tetradData, alpha)
-        
+        # Continuous
+        if dataType == 0:
+            if numBootstrap < 1:                
+                tetradData = pycausal.loadContinuousData(df)
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestFisherZ')(tetradData, alpha)
+            else:
+                tetradData = pycausal.loadContinuousData(df, outputDataset = True)
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.independence.FisherZ')()
+        # Discrete
+        elif dataType == 1:
+            tetradData = pycausal.loadDiscreteData(df)
+            if numBootstrap < 1:
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestChiSquare')(tetradData, alpha)
+            else:
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.independence.ChiSquare')()
+        # Mixed
+        else:
+            tetradData = pycausal.loadMixedData(df, numCategoriesToDiscretize)
+            if numBootstrap < 1:
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestConditionalGaussianLRT')(tetradData, alpha, False)
+            else:
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.independence.ConditionalGaussianLRT')()
+                
         fas = None
         
         if numBootstrap < 1:
@@ -356,12 +292,13 @@ class fas():
             
             parameters = javabridge.JClassWrapper('edu.cmu.tetrad.util.Parameters')()
             parameters.set('depth', depth)
+            parameters.set('alpha', alpha)
             parameters.set('verbose', verbose)
             
             fas = javabridge.JClassWrapper('edu.pitt.dbmi.algo.bootstrap.GeneralBootstrapTest')(tetradData, algorithm, numBootstrap)
-            edgeEnsemble = javabridge.get_static_field('edu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble',
+            edgeEnsemble = javabridge.get_static_field('edu/pitt/dbmi/algo/bootstrap/BootstrapEdgeEnsemble',
                                                ensembleMethod,
-                                               'Ledu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble;')
+                                               'Ledu/pitt/dbmi/algo/bootstrap/BootstrapEdgeEnsemble;')
             fas.setEdgeEnsemble(edgeEnsemble)
             fas.setParameters(parameters)
             
@@ -391,28 +328,31 @@ class fgesMixed():
         
         tetradData = pycausal.loadMixedData(df, numCategoriesToDiscretize)
 
-        score = javabridge.JClassWrapper('edu.cmu.tetrad.search.ConditionalGaussianScore')(tetradData, structurePrior, True)
-        score.setPenaltyDiscount(penaltyDiscount) # set to 2 if variable# <= 50 otherwise set it to 4
-
         fges = None
         
         if numBootstrap < 1:
+            score = javabridge.JClassWrapper('edu.cmu.tetrad.search.ConditionalGaussianScore')(tetradData, structurePrior, False)
+            score.setPenaltyDiscount(penaltyDiscount) # set to 2 if variable# <= 50 otherwise set it to 4
+
             fges = javabridge.JClassWrapper('edu.cmu.tetrad.search.Fges')(score)
             fges.setMaxDegree(maxDegree)
             fges.setNumPatternsToStore(0)
             fges.setFaithfulnessAssumed(faithfulnessAssumed)
         else:
+            score = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.score.ConditionalGaussianBicScore')()
             algorithm = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.algorithm.oracle.pattern.Fges')(score)
             
             parameters = javabridge.JClassWrapper('edu.cmu.tetrad.util.Parameters')()
+            parameters.set('penaltyDiscount', penaltyDiscount)
+            parameters.set('structurePrior', structurePrior)
             parameters.set('maxDegree', maxDegree)
             parameters.set('faithfulnessAssumed', faithfulnessAssumed)
             parameters.set('verbose', verbose)
             
             fges = javabridge.JClassWrapper('edu.pitt.dbmi.algo.bootstrap.GeneralBootstrapTest')(tetradData, algorithm, numBootstrap)
-            edgeEnsemble = javabridge.get_static_field('edu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble',
+            edgeEnsemble = javabridge.get_static_field('edu/pitt/dbmi/algo/bootstrap/BootstrapEdgeEnsemble',
                                                ensembleMethod,
-                                               'Ledu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble;')
+                                               'Ledu/pitt/dbmi/algo/bootstrap/BootstrapEdgeEnsemble;')
             fges.setEdgeEnsemble(edgeEnsemble)
             fges.setParameters(parameters)
             
@@ -446,29 +386,32 @@ class fgesDiscrete():
         
         tetradData = pycausal.loadDiscreteData(df)
         
-        score = javabridge.JClassWrapper('edu.cmu.tetrad.search.BDeuScore')(tetradData)
-        score.setStructurePrior(structurePrior)
-        score.setSamplePrior(samplePrior)
-        
         fges = None
         
         if numBootstrap < 1:
+            score = javabridge.JClassWrapper('edu.cmu.tetrad.search.BDeuScore')(tetradData)
+            score.setStructurePrior(structurePrior)
+            score.setSamplePrior(samplePrior)
+
             fges = javabridge.JClassWrapper('edu.cmu.tetrad.search.Fges')(score)
             fges.setMaxDegree(maxDegree)
             fges.setNumPatternsToStore(0)
             fges.setFaithfulnessAssumed(faithfulnessAssumed)
         else:
+            score = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.score.BdeuScore')()        
             algorithm = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.algorithm.oracle.pattern.Fges')(score)
             
             parameters = javabridge.JClassWrapper('edu.cmu.tetrad.util.Parameters')()
+            parameters.set('structurePrior', structurePrior)
+            parameters.set('samplePrior', samplePrior)
             parameters.set('maxDegree', maxDegree)
             parameters.set('faithfulnessAssumed', faithfulnessAssumed)
             parameters.set('verbose', verbose)
             
             fges = javabridge.JClassWrapper('edu.pitt.dbmi.algo.bootstrap.GeneralBootstrapTest')(tetradData, algorithm, numBootstrap)
-            edgeEnsemble = javabridge.get_static_field('edu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble',
+            edgeEnsemble = javabridge.get_static_field('edu/pitt/dbmi/algo/bootstrap/BootstrapEdgeEnsemble',
                                                ensembleMethod,
-                                               'Ledu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble;')
+                                               'Ledu/pitt/dbmi/algo/bootstrap/BootstrapEdgeEnsemble;')
             fges.setEdgeEnsemble(edgeEnsemble)
             fges.setParameters(parameters)
             
@@ -502,30 +445,34 @@ class fges():
     
     def __init__(self, df, penaltyDiscount = 4, maxDegree = 3, faithfulnessAssumed = True, verbose = False, priorKnowledge = None, numBootstrap = -1, ensembleMethod = 'Highest'):
             
-        tetradData = pycausal.loadContinuousData(df)
-
-        score = javabridge.JClassWrapper('edu.cmu.tetrad.search.SemBicScore')(tetradData)
-        score.setPenaltyDiscount(penaltyDiscount) # set to 2 if variable# <= 50 otherwise set it to 4
-        
         fges = None
         
         if numBootstrap < 1:
+            tetradData = pycausal.loadContinuousData(df)
+
+            score = javabridge.JClassWrapper('edu.cmu.tetrad.search.SemBicScore')(tetradData)
+            score.setPenaltyDiscount(penaltyDiscount) # set to 2 if variable# <= 50 otherwise set it to 4
+        
             fges = javabridge.JClassWrapper('edu.cmu.tetrad.search.Fges')(score)
             fges.setMaxDegree(maxDegree)
             fges.setNumPatternsToStore(0)
             fges.setFaithfulnessAssumed(faithfulnessAssumed)
         else:
+            tetradData = pycausal.loadContinuousData(df, outputDataset = True)
+
+            score = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.score.SemBicScore')()        
             algorithm = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.algorithm.oracle.pattern.Fges')(score)
             
             parameters = javabridge.JClassWrapper('edu.cmu.tetrad.util.Parameters')()
+            parameters.set('penaltyDiscount', penaltyDiscount)
             parameters.set('maxDegree', maxDegree)
             parameters.set('faithfulnessAssumed', faithfulnessAssumed)
             parameters.set('verbose', verbose)
             
             fges = javabridge.JClassWrapper('edu.pitt.dbmi.algo.bootstrap.GeneralBootstrapTest')(tetradData, algorithm, numBootstrap)
-            edgeEnsemble = javabridge.get_static_field('edu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble',
+            edgeEnsemble = javabridge.get_static_field('edu/pitt/dbmi/algo/bootstrap/BootstrapEdgeEnsemble',
                                                ensembleMethod,
-                                               'Ledu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble;')
+                                               'Ledu/pitt/dbmi/algo/bootstrap/BootstrapEdgeEnsemble;')
             fges.setEdgeEnsemble(edgeEnsemble)
             fges.setParameters(parameters)
             
@@ -560,16 +507,26 @@ class fci():
         
         # Continuous
         if dataType == 0:
-            tetradData = pycausal.loadContinuousData(df)
-            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestFisherZ')(tetradData, alpha)
+            if numBootstrap < 1:                
+                tetradData = pycausal.loadContinuousData(df)
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestFisherZ')(tetradData, alpha)
+            else:
+                tetradData = pycausal.loadContinuousData(df, outputDataset = True)
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.independence.FisherZ')()
         # Discrete
         elif dataType == 1:
             tetradData = pycausal.loadDiscreteData(df)
-            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestChiSquare')(tetradData, alpha)
+            if numBootstrap < 1:
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestChiSquare')(tetradData, alpha)
+            else:
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.independence.ChiSquare')()
         # Mixed
         else:
             tetradData = pycausal.loadMixedData(df, numCategoriesToDiscretize)
-            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestConditionalGaussianLRT')(tetradData, alpha)
+            if numBootstrap < 1:
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestConditionalGaussianLRT')(tetradData, alpha, False)
+            else:
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.independence.ConditionalGaussianLRT')()
             
         fci = None
         
@@ -582,13 +539,14 @@ class fci():
             
             parameters = javabridge.JClassWrapper('edu.cmu.tetrad.util.Parameters')()
             parameters.set('depth', depth)
+            parameters.set('alpha', alpha)
             parameters.set('completeRuleSetUsed', completeRuleSetUsed)
             parameters.set('verbose', verbose)
             
             fci = javabridge.JClassWrapper('edu.pitt.dbmi.algo.bootstrap.GeneralBootstrapTest')(tetradData, algorithm, numBootstrap)
-            edgeEnsemble = javabridge.get_static_field('edu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble',
+            edgeEnsemble = javabridge.get_static_field('edu/pitt/dbmi/algo/bootstrap/BootstrapEdgeEnsemble',
                                                ensembleMethod,
-                                               'Ledu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble;')
+                                               'Ledu/pitt/dbmi/algo/bootstrap/BootstrapEdgeEnsemble;')
             fci.setEdgeEnsemble(edgeEnsemble)
             fci.setParameters(parameters)
             
@@ -619,16 +577,26 @@ class cfci():
         
         # Continuous
         if dataType == 0:
-            tetradData = pycausal.loadContinuousData(df)
-            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestFisherZ')(tetradData, alpha)
+            if numBootstrap < 1:                
+                tetradData = pycausal.loadContinuousData(df)
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestFisherZ')(tetradData, alpha)
+            else:
+                tetradData = pycausal.loadContinuousData(df, outputDataset = True)
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.independence.FisherZ')()
         # Discrete
         elif dataType == 1:
             tetradData = pycausal.loadDiscreteData(df)
-            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestChiSquare')(tetradData, alpha)
+            if numBootstrap < 1:
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestChiSquare')(tetradData, alpha)
+            else:
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.independence.ChiSquare')()
         # Mixed
         else:
             tetradData = pycausal.loadMixedData(df, numCategoriesToDiscretize)
-            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestConditionalGaussianLRT')(tetradData, alpha)
+            if numBootstrap < 1:
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestConditionalGaussianLRT')(tetradData, alpha, False)
+            else:
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.independence.ConditionalGaussianLRT')()
         
         cfci = None
         
@@ -640,12 +608,13 @@ class cfci():
             
             parameters = javabridge.JClassWrapper('edu.cmu.tetrad.util.Parameters')()
             parameters.set('depth', depth)
+            parameters.set('alpha', alpha)
             parameters.set('verbose', verbose)
             
             cfci = javabridge.JClassWrapper('edu.pitt.dbmi.algo.bootstrap.GeneralBootstrapTest')(tetradData, algorithm, numBootstrap)
-            edgeEnsemble = javabridge.get_static_field('edu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble',
+            edgeEnsemble = javabridge.get_static_field('edu/pitt/dbmi/algo/bootstrap/BootstrapEdgeEnsemble',
                                                ensembleMethod,
-                                               'Ledu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble;')
+                                               'Ledu/pitt/dbmi/algo/bootstrap/BootstrapEdgeEnsemble;')
             cfci.setEdgeEnsemble(edgeEnsemble)
             cfci.setParameters(parameters)
             
@@ -672,28 +641,31 @@ class rfciMixed():
     
     def __init__(self, df, numCategoriesToDiscretize = 4, depth = 3, maxPathLength = -1, alpha = 0.05, completeRuleSetUsed = False, verbose = False, priorKnowledge = None, numBootstrap = -1, ensembleMethod = 'Highest'):
         tetradData = pycausal.loadMixedData(df, numCategoriesToDiscretize)       
-        indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestConditionalGaussianLRT')(tetradData, alpha)
         
         rfci = None
         
         if numBootstrap < 1:
+            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestConditionalGaussianLRT')(tetradData, alpha, False)
+            
             rfci = javabridge.JClassWrapper('edu.cmu.tetrad.search.Rfci')(indTest)
             rfci.setDepth(depth)
             rfci.setMaxPathLength(maxPathLength)
             rfci.setCompleteRuleSetUsed(completeRuleSetUsed)
         else:
+            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.independence.ConditionalGaussianLRT')()
             algorithm = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.algorithm.oracle.pag.Rfci')(indTest)
             
             parameters = javabridge.JClassWrapper('edu.cmu.tetrad.util.Parameters')()
             parameters.set('depth', depth)
             parameters.set('maxPathLength', maxPathLength)
+            parameters.set('alpha', alpha)
             parameters.set('completeRuleSetUsed', completeRuleSetUsed)
             parameters.set('verbose', verbose)
             
             rfci = javabridge.JClassWrapper('edu.pitt.dbmi.algo.bootstrap.GeneralBootstrapTest')(tetradData, algorithm, numBootstrap)
-            edgeEnsemble = javabridge.get_static_field('edu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble',
+            edgeEnsemble = javabridge.get_static_field('edu/pitt/dbmi/algo/bootstrap/BootstrapEdgeEnsemble',
                                                ensembleMethod,
-                                               'Ledu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble;')
+                                               'Ledu/pitt/dbmi/algo/bootstrap/BootstrapEdgeEnsemble;')
             rfci.setEdgeEnsemble(edgeEnsemble)
             rfci.setParameters(parameters)
             
@@ -720,28 +692,31 @@ class rfciDiscrete():
     
     def __init__(self, df, depth = 3, maxPathLength = -1, alpha = 0.05, completeRuleSetUsed = False, verbose = False, priorKnowledge = None, numBootstrap = -1, ensembleMethod = 'Highest'):
         tetradData = pycausal.loadDiscreteData(df)
-        indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestChiSquare')(tetradData, alpha)
         
         rfci = None
         
         if numBootstrap < 1:
+            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestChiSquare')(tetradData, alpha)
+            
             rfci = javabridge.JClassWrapper('edu.cmu.tetrad.search.Rfci')(indTest)
             rfci.setDepth(depth)
             rfci.setMaxPathLength(maxPathLength)
             rfci.setCompleteRuleSetUsed(completeRuleSetUsed)
         else:
+            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.independence.ChiSquare')()
             algorithm = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.algorithm.oracle.pag.Rfci')(indTest)
             
             parameters = javabridge.JClassWrapper('edu.cmu.tetrad.util.Parameters')()
             parameters.set('depth', depth)
             parameters.set('maxPathLength', maxPathLength)
+            parameters.set('alpha', alpha)
             parameters.set('completeRuleSetUsed', completeRuleSetUsed)
             parameters.set('verbose', verbose)
             
             rfci = javabridge.JClassWrapper('edu.pitt.dbmi.algo.bootstrap.GeneralBootstrapTest')(tetradData, algorithm, numBootstrap)
-            edgeEnsemble = javabridge.get_static_field('edu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble',
+            edgeEnsemble = javabridge.get_static_field('edu/pitt/dbmi/algo/bootstrap/BootstrapEdgeEnsemble',
                                                ensembleMethod,
-                                               'Ledu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble;')
+                                               'Ledu/pitt/dbmi/algo/bootstrap/BootstrapEdgeEnsemble;')
             rfci.setEdgeEnsemble(edgeEnsemble)
             rfci.setParameters(parameters)
         
@@ -767,29 +742,34 @@ class rfci():
     edges = []
     
     def __init__(self, df, depth = 3, maxPathLength = -1, alpha = 0.05, completeRuleSetUsed = False, verbose = False, priorKnowledge = None, numBootstrap = -1, ensembleMethod = 'Highest'):
-        tetradData = pycausal.loadContinuousData(df)
-        indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestFisherZ')(tetradData, alpha)
         
         rfci = None
         
         if numBootstrap < 1:
+            tetradData = pycausal.loadContinuousData(df)
+            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestFisherZ')(tetradData, alpha)
+        
             rfci = javabridge.JClassWrapper('edu.cmu.tetrad.search.Rfci')(indTest)
             rfci.setDepth(depth)
             rfci.setMaxPathLength(maxPathLength)
             rfci.setCompleteRuleSetUsed(completeRuleSetUsed)
         else:
+            tetradData = pycausal.loadContinuousData(df, outputDataset = True)
+
+            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.independence.FisherZ')()
             algorithm = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.algorithm.oracle.pag.Rfci')(indTest)
             
             parameters = javabridge.JClassWrapper('edu.cmu.tetrad.util.Parameters')()
             parameters.set('depth', depth)
             parameters.set('maxPathLength', maxPathLength)
+            parameters.set('alpha', alpha)
             parameters.set('completeRuleSetUsed', completeRuleSetUsed)
             parameters.set('verbose', verbose)
             
             rfci = javabridge.JClassWrapper('edu.pitt.dbmi.algo.bootstrap.GeneralBootstrapTest')(tetradData, algorithm, numBootstrap)
-            edgeEnsemble = javabridge.get_static_field('edu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble',
+            edgeEnsemble = javabridge.get_static_field('edu/pitt/dbmi/algo/bootstrap/BootstrapEdgeEnsemble',
                                                ensembleMethod,
-                                               'Ledu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble;')
+                                               'Ledu/pitt/dbmi/algo/bootstrap/BootstrapEdgeEnsemble;')
             rfci.setEdgeEnsemble(edgeEnsemble)
             rfci.setParameters(parameters)
             
@@ -817,33 +797,38 @@ class gfciMixed():
     def __init__(self, df, numCategoriesToDiscretize = 4, penaltyDiscount = 4, structurePrior = 1.0, maxDegree = 3, maxPathLength = -1, alpha = 0.05, completeRuleSetUsed = False, faithfulnessAssumed = True, verbose = False, priorKnowledge = None, numBootstrap = -1, ensembleMethod = 'Highest'):
         tetradData = pycausal.loadMixedData(df, numCategoriesToDiscretize)
         
-        indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestConditionalGaussianLRT')(tetradData, alpha)
-        
-        score = javabridge.JClassWrapper('edu.cmu.tetrad.search.ConditionalGaussianScore')(tetradData, structurePrior, True)
-        score.setPenaltyDiscount(penaltyDiscount) # set to 2 if variable# <= 50 otherwise set it to 4
-        
         gfci = None
         
         if numBootstrap < 1:
+            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestConditionalGaussianLRT')(tetradData, alpha, False)
+
+            score = javabridge.JClassWrapper('edu.cmu.tetrad.search.ConditionalGaussianScore')(tetradData, structurePrior, False)
+            score.setPenaltyDiscount(penaltyDiscount) # set to 2 if variable# <= 50 otherwise set it to 4
+
             gfci = javabridge.JClassWrapper('edu.cmu.tetrad.search.GFci')(indTest, score)
             gfci.setMaxDegree(maxDegree)
             gfci.setMaxPathLength(maxPathLength)
             gfci.setCompleteRuleSetUsed(completeRuleSetUsed)
             gfci.setFaithfulnessAssumed(faithfulnessAssumed)
         else:
+            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.independence.ConditionalGaussianLRT')()
+            score = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.score.ConditionalGaussianBicScore')()
             algorithm = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.algorithm.oracle.pag.Gfci')(indTest, score)
             
             parameters = javabridge.JClassWrapper('edu.cmu.tetrad.util.Parameters')()
+            parameters.set('penaltyDiscount', penaltyDiscount)
+            parameters.set('structurePrior', structurePrior)
             parameters.set('maxDegree', maxDegree)
             parameters.set('maxPathLength', maxPathLength)
+            parameters.set('alpha', alpha)
             parameters.set('completeRuleSetUsed', completeRuleSetUsed)
             parameters.set('faithfulnessAssumed', faithfulnessAssumed)
             parameters.set('verbose', verbose)
             
             gfci = javabridge.JClassWrapper('edu.pitt.dbmi.algo.bootstrap.GeneralBootstrapTest')(tetradData, algorithm, numBootstrap)
-            edgeEnsemble = javabridge.get_static_field('edu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble',
+            edgeEnsemble = javabridge.get_static_field('edu/pitt/dbmi/algo/bootstrap/BootstrapEdgeEnsemble',
                                                ensembleMethod,
-                                               'Ledu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble;')
+                                               'Ledu/pitt/dbmi/algo/bootstrap/BootstrapEdgeEnsemble;')
             gfci.setEdgeEnsemble(edgeEnsemble)
             gfci.setParameters(parameters)
             
@@ -871,34 +856,39 @@ class gfciDiscrete():
     def __init__(self, df, structurePrior = 1.0, samplePrior = 1.0, maxDegree = 3, maxPathLength = -1, alpha = 0.05, completeRuleSetUsed = False, faithfulnessAssumed = True, verbose = False, priorKnowledge = None, numBootstrap = -1, ensembleMethod = 'Highest'):
         tetradData = pycausal.loadDiscreteData(df)
         
-        indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestChiSquare')(tetradData, alpha)
-        
-        score = javabridge.JClassWrapper('edu.cmu.tetrad.search.BDeuScore')(tetradData)
-        score.setStructurePrior(structurePrior)
-        score.setSamplePrior(samplePrior)
-        
         gfci = None
         
         if numBootstrap < 1:
+            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestChiSquare')(tetradData, alpha)
+
+            score = javabridge.JClassWrapper('edu.cmu.tetrad.search.BDeuScore')(tetradData)
+            score.setStructurePrior(structurePrior)
+            score.setSamplePrior(samplePrior)
+
             gfci = javabridge.JClassWrapper('edu.cmu.tetrad.search.GFci')(indTest, score)
             gfci.setMaxDegree(maxDegree)
             gfci.setMaxPathLength(maxPathLength)
             gfci.setCompleteRuleSetUsed(completeRuleSetUsed)
             gfci.setFaithfulnessAssumed(faithfulnessAssumed)
         else:
+            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.independence.ChiSquare')()
+            score = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.score.BdeuScore')()
             algorithm = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.algorithm.oracle.pag.Gfci')(indTest, score)
             
             parameters = javabridge.JClassWrapper('edu.cmu.tetrad.util.Parameters')()
+            parameters.set('structurePrior', structurePrior)
+            parameters.set('samplePrior', samplePrior)
             parameters.set('maxDegree', maxDegree)
             parameters.set('maxPathLength', maxPathLength)
+            parameters.set('alpha', alpha)
             parameters.set('completeRuleSetUsed', completeRuleSetUsed)
             parameters.set('faithfulnessAssumed', faithfulnessAssumed)
             parameters.set('verbose', verbose)
             
             gfci = javabridge.JClassWrapper('edu.pitt.dbmi.algo.bootstrap.GeneralBootstrapTest')(tetradData, algorithm, numBootstrap)
-            edgeEnsemble = javabridge.get_static_field('edu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble',
+            edgeEnsemble = javabridge.get_static_field('edu/pitt/dbmi/algo/bootstrap/BootstrapEdgeEnsemble',
                                                ensembleMethod,
-                                               'Ledu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble;')
+                                               'Ledu/pitt/dbmi/algo/bootstrap/BootstrapEdgeEnsemble;')
             gfci.setEdgeEnsemble(edgeEnsemble)
             gfci.setParameters(parameters)
             
@@ -924,35 +914,42 @@ class gfci():
     edges = []
     
     def __init__(self, df, penaltyDiscount = 4, maxDegree = 3, maxPathLength = -1, alpha = 0.05, completeRuleSetUsed = False, faithfulnessAssumed = True, verbose = False, priorKnowledge = None, numBootstrap = -1, ensembleMethod = 'Highest'):
-        tetradData = pycausal.loadContinuousData(df)
-        
-        indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestFisherZ')(tetradData, alpha)
-        
-        score = javabridge.JClassWrapper('edu.cmu.tetrad.search.SemBicScore')(tetradData)
-        score.setPenaltyDiscount(penaltyDiscount) # set to 2 if variable# <= 50 otherwise set it to 4
-        
+
         gfci = None
         
         if numBootstrap < 1:
+            tetradData = pycausal.loadContinuousData(df)
+
+            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestFisherZ')(tetradData, alpha)
+
+            score = javabridge.JClassWrapper('edu.cmu.tetrad.search.SemBicScore')(tetradData)
+            score.setPenaltyDiscount(penaltyDiscount) # set to 2 if variable# <= 50 otherwise set it to 4
+
             gfci = javabridge.JClassWrapper('edu.cmu.tetrad.search.GFci')(indTest, score)
             gfci.setMaxDegree(maxDegree)
             gfci.setMaxPathLength(maxPathLength)
             gfci.setCompleteRuleSetUsed(completeRuleSetUsed)
             gfci.setFaithfulnessAssumed(faithfulnessAssumed)
         else:
+            tetradData = pycausal.loadContinuousData(df, outputDataset = True)
+
+            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.independence.FisherZ')()
+            score = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.score.SemBicScore')()
             algorithm = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.algorithm.oracle.pag.Gfci')(indTest, score)
             
             parameters = javabridge.JClassWrapper('edu.cmu.tetrad.util.Parameters')()
+            parameters.set('penaltyDiscount', penaltyDiscount)
             parameters.set('maxDegree', maxDegree)
             parameters.set('maxPathLength', maxPathLength)
+            parameters.set('alpha', alpha)
             parameters.set('completeRuleSetUsed', completeRuleSetUsed)
             parameters.set('faithfulnessAssumed', faithfulnessAssumed)
             parameters.set('verbose', verbose)
             
             gfci = javabridge.JClassWrapper('edu.pitt.dbmi.algo.bootstrap.GeneralBootstrapTest')(tetradData, algorithm, numBootstrap)
-            edgeEnsemble = javabridge.get_static_field('edu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble',
+            edgeEnsemble = javabridge.get_static_field('edu/pitt/dbmi/algo/bootstrap/BootstrapEdgeEnsemble',
                                                ensembleMethod,
-                                               'Ledu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble;')
+                                               'Ledu/pitt/dbmi/algo/bootstrap/BootstrapEdgeEnsemble;')
             gfci.setEdgeEnsemble(edgeEnsemble)
             gfci.setParameters(parameters)
             
@@ -983,16 +980,26 @@ class ccd():
         
         # Continuous
         if dataType == 0:
-            tetradData = pycausal.loadContinuousData(df)
-            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestFisherZ')(tetradData, alpha)
+            if numBootstrap < 1:                
+                tetradData = pycausal.loadContinuousData(df)
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestFisherZ')(tetradData, alpha)
+            else:
+                tetradData = pycausal.loadContinuousData(df, outputDataset = True)
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.independence.FisherZ')()
         # Discrete
         elif dataType == 1:
             tetradData = pycausal.loadDiscreteData(df)
-            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestChiSquare')(tetradData, alpha)
+            if numBootstrap < 1:
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestChiSquare')(tetradData, alpha)
+            else:
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.independence.ChiSquare')()
         # Mixed
         else:
             tetradData = pycausal.loadMixedData(df, numCategoriesToDiscretize)
-            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestConditionalGaussianLRT')(tetradData, alpha)
+            if numBootstrap < 1:
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestConditionalGaussianLRT')(tetradData, alpha, False)
+            else:
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.independence.ConditionalGaussianLRT')()
         
         ccd = None
         
@@ -1004,11 +1011,12 @@ class ccd():
             
             parameters = javabridge.JClassWrapper('edu.cmu.tetrad.util.Parameters')()
             parameters.set('depth', depth)
+            parameters.set('alpha', alpha)
             
             ccd = javabridge.JClassWrapper('edu.pitt.dbmi.algo.bootstrap.GeneralBootstrapTest')(tetradData, algorithm, numBootstrap)
-            edgeEnsemble = javabridge.get_static_field('edu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble',
+            edgeEnsemble = javabridge.get_static_field('edu/pitt/dbmi/algo/bootstrap/BootstrapEdgeEnsemble',
                                                ensembleMethod,
-                                               'Ledu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble;')
+                                               'Ledu/pitt/dbmi/algo/bootstrap/BootstrapEdgeEnsemble;')
             ccd.setEdgeEnsemble(edgeEnsemble)
             ccd.setParameters(parameters)
         
@@ -1038,16 +1046,26 @@ class pc():
         
         # Continuous
         if dataType == 0:
-            tetradData = pycausal.loadContinuousData(df)
-            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestFisherZ')(tetradData, alpha)
+            if numBootstrap < 1:                
+                tetradData = pycausal.loadContinuousData(df)
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestFisherZ')(tetradData, alpha)
+            else:
+                tetradData = pycausal.loadContinuousData(df, outputDataset = True)
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.independence.FisherZ')()
         # Discrete
         elif dataType == 1:
             tetradData = pycausal.loadDiscreteData(df)
-            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestChiSquare')(tetradData, alpha)
+            if numBootstrap < 1:
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestChiSquare')(tetradData, alpha)
+            else:
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.independence.ChiSquare')()
         # Mixed
         else:
             tetradData = pycausal.loadMixedData(df, numCategoriesToDiscretize)
-            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestConditionalGaussianLRT')(tetradData, alpha)
+            if numBootstrap < 1:
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestConditionalGaussianLRT')(tetradData, alpha, False)
+            else:
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.independence.ConditionalGaussianLRT')()
         
         pc = None
         
@@ -1059,12 +1077,13 @@ class pc():
             
             parameters = javabridge.JClassWrapper('edu.cmu.tetrad.util.Parameters')()
             parameters.set('depth', depth)
+            parameters.set('alpha', alpha)
             parameters.set('verbose', verbose)
             
             pc = javabridge.JClassWrapper('edu.pitt.dbmi.algo.bootstrap.GeneralBootstrapTest')(tetradData, algorithm, numBootstrap)
-            edgeEnsemble = javabridge.get_static_field('edu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble',
+            edgeEnsemble = javabridge.get_static_field('edu/pitt/dbmi/algo/bootstrap/BootstrapEdgeEnsemble',
                                                ensembleMethod,
-                                               'Ledu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble;')
+                                               'Ledu/pitt/dbmi/algo/bootstrap/BootstrapEdgeEnsemble;')
             pc.setEdgeEnsemble(edgeEnsemble)
             pc.setParameters(parameters)
         
@@ -1100,16 +1119,26 @@ class pcstablemax():
         
         # Continuous
         if dataType == 0:
-            tetradData = pycausal.loadContinuousData(df)
-            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestFisherZ')(tetradData, alpha)
+            if numBootstrap < 1:                
+                tetradData = pycausal.loadContinuousData(df)
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestFisherZ')(tetradData, alpha)
+            else:
+                tetradData = pycausal.loadContinuousData(df, outputDataset = True)
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.independence.FisherZ')()
         # Discrete
         elif dataType == 1:
             tetradData = pycausal.loadDiscreteData(df)
-            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestChiSquare')(tetradData, alpha)
+            if numBootstrap < 1:
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestChiSquare')(tetradData, alpha)
+            else:
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.independence.ChiSquare')()
         # Mixed
         else:
             tetradData = pycausal.loadMixedData(df, numCategoriesToDiscretize)
-            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestConditionalGaussianLRT')(tetradData, alpha)
+            if numBootstrap < 1:
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestConditionalGaussianLRT')(tetradData, alpha, False)
+            else:
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.independence.ConditionalGaussianLRT')()
         
         pcmax = None
         
@@ -1125,12 +1154,13 @@ class pcstablemax():
             parameters.set('depth', depth)
             parameters.set('maxPathLength', maxPathLength)
             parameters.set('useMaxPOrientationHeuristic', useHeuristic)
+            parameters.set('alpha', alpha)
             parameters.set('verbose', verbose)
             
             pcmax = javabridge.JClassWrapper('edu.pitt.dbmi.algo.bootstrap.GeneralBootstrapTest')(tetradData, algorithm, numBootstrap)
-            edgeEnsemble = javabridge.get_static_field('edu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble',
+            edgeEnsemble = javabridge.get_static_field('edu/pitt/dbmi/algo/bootstrap/BootstrapEdgeEnsemble',
                                                ensembleMethod,
-                                               'Ledu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble;')
+                                               'Ledu/pitt/dbmi/algo/bootstrap/BootstrapEdgeEnsemble;')
             pcmax.setEdgeEnsemble(edgeEnsemble)
             pcmax.setParameters(parameters)
             
@@ -1166,34 +1196,44 @@ class pcstable():
         
         # Continuous
         if dataType == 0:
-            tetradData = pycausal.loadContinuousData(df)
-            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestFisherZ')(tetradData, alpha)
+            if numBootstrap < 1:                
+                tetradData = pycausal.loadContinuousData(df)
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestFisherZ')(tetradData, alpha)
+            else:
+                tetradData = pycausal.loadContinuousData(df, outputDataset = True)
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.independence.FisherZ')()
         # Discrete
         elif dataType == 1:
             tetradData = pycausal.loadDiscreteData(df)
-            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestChiSquare')(tetradData, alpha)
+            if numBootstrap < 1:
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestChiSquare')(tetradData, alpha)
+            else:
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.independence.ChiSquare')()
         # Mixed
         else:
             tetradData = pycausal.loadMixedData(df, numCategoriesToDiscretize)
-            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestConditionalGaussianLRT')(tetradData, alpha)
+            if numBootstrap < 1:
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestConditionalGaussianLRT')(tetradData, alpha, False)
+            else:
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.independence.ConditionalGaussianLRT')()
         
         pcstable = None
         
         if numBootstrap < 1:
             pcstable = javabridge.JClassWrapper('edu.cmu.tetrad.search.PcStable')(indTest)
             pcstable.setDepth(depth)
-            pcstable.setAggressivelyPreventCycles(aggressivelyPreventCycles)
         else:
             algorithm = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.algorithm.oracle.pattern.PcStable')(indTest)
             
             parameters = javabridge.JClassWrapper('edu.cmu.tetrad.util.Parameters')()
             parameters.set('depth', depth)
+            parameters.set('alpha', alpha)
             parameters.set('verbose', verbose)
             
             pcstable = javabridge.JClassWrapper('edu.pitt.dbmi.algo.bootstrap.GeneralBootstrapTest')(tetradData, algorithm, numBootstrap)
-            edgeEnsemble = javabridge.get_static_field('edu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble',
+            edgeEnsemble = javabridge.get_static_field('edu/pitt/dbmi/algo/bootstrap/BootstrapEdgeEnsemble',
                                                ensembleMethod,
-                                               'Ledu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble;')
+                                               'Ledu/pitt/dbmi/algo/bootstrap/BootstrapEdgeEnsemble;')
             pcstable.setEdgeEnsemble(edgeEnsemble)
             pcstable.setParameters(parameters)
         
@@ -1229,16 +1269,26 @@ class cpc():
         
         # Continuous
         if dataType == 0:
-            tetradData = pycausal.loadContinuousData(df)
-            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestFisherZ')(tetradData, alpha)
+            if numBootstrap < 1:                
+                tetradData = pycausal.loadContinuousData(df)
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestFisherZ')(tetradData, alpha)
+            else:
+                tetradData = pycausal.loadContinuousData(df, outputDataset = True)
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.independence.FisherZ')()
         # Discrete
         elif dataType == 1:
             tetradData = pycausal.loadDiscreteData(df)
-            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestChiSquare')(tetradData, alpha)
+            if numBootstrap < 1:
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestChiSquare')(tetradData, alpha)
+            else:
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.independence.ChiSquare')()
         # Mixed
         else:
             tetradData = pycausal.loadMixedData(df, numCategoriesToDiscretize)
-            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestConditionalGaussianLRT')(tetradData, alpha)
+            if numBootstrap < 1:
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestConditionalGaussianLRT')(tetradData, alpha, False)
+            else:
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.independence.ConditionalGaussianLRT')()
         
         cpc = None
         
@@ -1250,12 +1300,13 @@ class cpc():
             
             parameters = javabridge.JClassWrapper('edu.cmu.tetrad.util.Parameters')()
             parameters.set('depth', depth)
+            parameters.set('alpha', alpha)
             parameters.set('verbose', verbose)
             
             cpc = javabridge.JClassWrapper('edu.pitt.dbmi.algo.bootstrap.GeneralBootstrapTest')(tetradData, algorithm, numBootstrap)
-            edgeEnsemble = javabridge.get_static_field('edu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble',
+            edgeEnsemble = javabridge.get_static_field('edu/pitt/dbmi/algo/bootstrap/BootstrapEdgeEnsemble',
                                                ensembleMethod,
-                                               'Ledu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble;')
+                                               'Ledu/pitt/dbmi/algo/bootstrap/BootstrapEdgeEnsemble;')
             cpc.setEdgeEnsemble(edgeEnsemble)
             cpc.setParameters(parameters)
             
@@ -1291,16 +1342,26 @@ class cpcstable():
         
         # Continuous
         if dataType == 0:
-            tetradData = pycausal.loadContinuousData(df)
-            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestFisherZ')(tetradData, alpha)
+            if numBootstrap < 1:                
+                tetradData = pycausal.loadContinuousData(df)
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestFisherZ')(tetradData, alpha)
+            else:
+                tetradData = pycausal.loadContinuousData(df, outputDataset = True)
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.independence.FisherZ')()
         # Discrete
         elif dataType == 1:
             tetradData = pycausal.loadDiscreteData(df)
-            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestChiSquare')(tetradData, alpha)
+            if numBootstrap < 1:
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestChiSquare')(tetradData, alpha)
+            else:
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.independence.ChiSquare')()
         # Mixed
         else:
             tetradData = pycausal.loadMixedData(df, numCategoriesToDiscretize)
-            indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestConditionalGaussianLRT')(tetradData, alpha)
+            if numBootstrap < 1:
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestConditionalGaussianLRT')(tetradData, alpha, False)
+            else:
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.independence.ConditionalGaussianLRT')()
         
         cpcstable = None
         
@@ -1312,12 +1373,13 @@ class cpcstable():
             
             parameters = javabridge.JClassWrapper('edu.cmu.tetrad.util.Parameters')()
             parameters.set('depth', depth)
+            parameters.set('alpha', alpha)
             parameters.set('verbose', verbose)
             
             cpcstable = javabridge.JClassWrapper('edu.pitt.dbmi.algo.bootstrap.GeneralBootstrapTest')(tetradData, algorithm, numBootstrap)
-            edgeEnsemble = javabridge.get_static_field('edu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble',
+            edgeEnsemble = javabridge.get_static_field('edu/pitt/dbmi/algo/bootstrap/BootstrapEdgeEnsemble',
                                                ensembleMethod,
-                                               'Ledu.pitt.dbmi.algo.bootstrap.BootstrapEdgeEnsemble;')
+                                               'Ledu/pitt/dbmi/algo/bootstrap/BootstrapEdgeEnsemble;')
             cpcstable.setEdgeEnsemble(edgeEnsemble)
             cpcstable.setParameters(parameters)
             
