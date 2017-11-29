@@ -33,11 +33,11 @@ If you do not have pip installed already, try [these instructions](https://pip.p
 
 Once pip is installed, execute these commands
 
-    pip install numpy
-    pip install pandas
-    pip install javabridge
-    pip install pydot 
-    pip install GraphViz
+    pip install -U numpy
+    pip install -U pandas
+    pip install -U javabridge
+    pip install -U pydot 
+    pip install -U GraphViz
 
 Note: you also need to install the GraphViz engine by following [these instructions](http://www.graphviz.org/Download..php).
 
@@ -90,15 +90,11 @@ First install Java 7.1 or higher and Python 2.7 or higher.
 
 Installing Python with Anaconda and Jupyter may be easier for some users:
 
-* [Download and install Anaconda](https://www.continuum.io/downloads)
-* conda install javabridge
-
-For OS X, this default install does not seem to work well. try the following instead:
-
-    conda install --channel https://conda.anaconda.org/david_baddeley javabridge
+* [Download and install Anaconda](https://www.continuum.io/downloads) 
 
 Then run the following to configure anacoda
 
+    conda install javabridge
     conda install pandas  
     conda install numpy
     conda install pydot

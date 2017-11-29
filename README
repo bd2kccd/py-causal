@@ -31,11 +31,11 @@ If you do not have pip installed already, try [these instructions](https://pip.p
 
 Once pip is installed, execute these commands
 
-    pip install numpy
-    pip install pandas
-    pip install javabridge
-    pip install pydot 
-    pip install GraphViz
+    pip install -U numpy
+    pip install -U pandas
+    pip install -U javabridge
+    pip install -U pydot 
+    pip install -U GraphViz
 
 We have observed that on some OS X installations, pydot may provide the following response
     Couldn't import dot_parser, loading of dot files will not be possible.
@@ -87,14 +87,10 @@ Anaconda/Jupyter
 Installing Python with Anaconda and Jupyter may be easier for some users:
 
 * [Download and install Anaconda](https://www.continuum.io/downloads)
-* conda install javabridge
-
-For OS X, this default install does not seem to work well. try the following instead:
-
-    conda install --channel https://conda.anaconda.org/david_baddeley javabridge
 
 Then run the following to configure anacoda
 
+    conda install javabridge
     conda install pandas  
     conda install numpy
     conda install pydot
