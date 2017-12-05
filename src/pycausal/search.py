@@ -25,7 +25,7 @@ class lofs():
     nodes = []
     edges = []
     
-    def __init__(self, tetredGraph, dfs, dataType = 0, numCategoriesToDiscretize = 4, rule = 'R1', score = 'andersonDarling', alpha = 0.01, epsilon = 1.0, zeta = 0.0, orientStrongerDirection = False, r2Orient2Cycles = True, edgeCorrected = False, selfLoopStrength = 1.0):
+    def __init__(self, tetradGraph, dfs, dataType = 0, numCategoriesToDiscretize = 4, rule = 'R1', score = 'andersonDarling', alpha = 0.01, epsilon = 1.0, zeta = 0.0, orientStrongerDirection = False, r2Orient2Cycles = True, edgeCorrected = False, selfLoopStrength = 1.0):
         datasets = javabridge.JClassWrapper('java.util.ArrayList')()
         
         for idx in range(len(dfs)):
