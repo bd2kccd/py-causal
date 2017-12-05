@@ -16,8 +16,70 @@ import tempfile
 
 import pycausal
 
-class fofc():
+# rule: IGCI, R1TimeLag, R1, R2, R3, R4, Tanh, EB, Skew, SkewE, RSkew, RSkewE, Patel, Patel25, Patel50, Patel75, Patel90, FastICA, RC, Nlo
+# score: andersonDarling, skew, kurtosis, fifthMoment, absoluteValue, exp, expUnstandardized, expUnstandardizedInverted, other, logcosh, entropy
+class lofs():
+    
+    tetradGraph = None
+    graph = None
+    nodes = []
+    edges = []
+    
+    def __init__(self, dataType = 0, numCategoriesToDiscretize = 4, tetredGraph, dfs, rule = 'R1', score = 'andersonDarling', alpha = 0.01, epsilon = 1.0, zeta = 0.0, orientStrongerDirection = False, r2Orient2Cycles = True, edgeCorrected = False, selfLoopStrength = 1.0):
+        datasets = javabridge.JClassWrapper('java.util.ArrayList')()
+        
+        for idx in range(len(dfs)):
+            df = dfs[idx]
+            tetradData = None
+            # Continuous
+            if dataType == 0:
+                tetradData = pycausal.loadContinuousData(df)
+            # Discrete
+            elif dataType == 1:
+                tetradData = pycausal.loadDiscreteData(df)
+            # Mixed
+            else:
+                tetradData = pycausal.loadMixedData(df, numCategoriesToDiscretize)
+            datasets.add(tetradData)
 
+        lofs2 = javabridge.JClassWrapper('edu.cmu.tetrad.search.Lofs2')(tetradGraph, datasets)
+        rule = javabridge.get_static_field('edu.cmu.tetrad.search.Lofs2$Rule',
+                                                   rule,
+                                                   'Ledu/cmu/tetrad/search/Lofs2$Rule;')
+        score = javabridge.get_static_field('edu.cmu.tetrad.search.Lofs$Score',
+                                                   score,
+                                                   'Ledu/cmu/tetrad/search/Lofs$Score;')
+        lofs2.setRule(rule)
+        lofs2.setScore(score)
+        lofs2.setAlpha(alpha)
+        lofs2.setEpsilon(epsilon)
+        lofs2.setZeta(zeta)
+        lofs2.setOrientStrongerDirection(orientStrongerDirection)
+        lofs2.setR2Orient2Cycles(r2Orient2Cycles)
+        lofs2.setEdgeCorrected(edgeCorrected)
+        lofs2.setSelfLoopStrength(selfLoopStrength)
+        
+        self.tetradGraph = lofs2.orient()
+        
+        self.nodes = pycausal.extractTetradGraphNodes(self.tetradGraph)
+        self.edges = pycausal.extractTetradGraphEdges(self.tetradGraph)
+        self.graph = pycausal.generatePyDotGraph(self.nodes,self.edges)
+        
+    def getTetradGraph(self):
+        return self.tetradGraph
+    
+    def getDot(self):
+        return self.graph
+    
+    def getNodes(self):
+        return self.nodes
+    
+    def getEdges(self):
+        return self.edges
+
+class fofc():
+    
+    tetradGraph = None
     graph = None
     nodes = []
     edges = []
@@ -58,12 +120,15 @@ class fofc():
             fofc.setEdgeEnsemble(edgeEnsemble)
             fofc.setParameters(parameters)
             
-        tetradGraph = fofc.search()
+        self.tetradGraph = fofc.search()
         
-        self.nodes = pycausal.extractTetradGraphNodes(tetradGraph)
-        self.edges = pycausal.extractTetradGraphEdges(tetradGraph)
+        self.nodes = pycausal.extractTetradGraphNodes(self.tetradGraph)
+        self.edges = pycausal.extractTetradGraphEdges(self.tetradGraph)
         self.graph = pycausal.generatePyDotGraph(self.nodes,self.edges)
         
+    def getTetradGraph(self):
+        return self.tetradGraph
+    
     def getDot(self):
         return self.graph
     
@@ -75,6 +140,7 @@ class fofc():
 
 class dm():
     
+    tetradGraph = None
     graph = None
     nodes = []
     edges = []
@@ -110,12 +176,15 @@ class dm():
             dm.setDiscount(gesDiscount)
             dm.setMinDiscount(minDiscount)
             
-        tetradGraph = dm.search()
+        self.tetradGraph = dm.search()
         
-        self.nodes = pycausal.extractTetradGraphNodes(tetradGraph, orig_columns, new_columns)
-        self.edges = pycausal.extractTetradGraphEdges(tetradGraph, orig_columns, new_columns)
+        self.nodes = pycausal.extractTetradGraphNodes(self.tetradGraph, orig_columns, new_columns)
+        self.edges = pycausal.extractTetradGraphEdges(self.tetradGraph, orig_columns, new_columns)
         self.graph = pycausal.generatePyDotGraph(self.nodes,self.edges)
         
+    def getTetradGraph(self):
+        return self.tetradGraph
+    
     def getDot(self):
         return self.graph
     
@@ -127,6 +196,7 @@ class dm():
 
 class imagesBDeu():
 
+    tetradGraph = None
     graph = None
     nodes = []
     edges = []
@@ -172,11 +242,14 @@ class imagesBDeu():
         if priorKnowledge is not None:
             fges.setKnowledge(priorKnowledge)
     
-        tetradGraph = fges.search()
+        self.tetradGraph = fges.search()
         
-        self.nodes = pycausal.extractTetradGraphNodes(tetradGraph)
-        self.edges = pycausal.extractTetradGraphEdges(tetradGraph)
+        self.nodes = pycausal.extractTetradGraphNodes(self.tetradGraph)
+        self.edges = pycausal.extractTetradGraphEdges(self.tetradGraph)
         self.graph = pycausal.generatePyDotGraph(self.nodes,self.edges)
+    
+    def getTetradGraph(self):
+        return self.tetradGraph
     
     def getDot(self):
         return self.graph
@@ -189,6 +262,7 @@ class imagesBDeu():
 
 class imagesSemBic():
 
+    tetradGraph = None
     graph = None
     nodes = []
     edges = []
@@ -235,12 +309,15 @@ class imagesSemBic():
         if priorKnowledge is not None:
             fges.setKnowledge(priorKnowledge)
         
-        tetradGraph = fges.search()
+        self.tetradGraph = fges.search()
         
-        self.nodes = pycausal.extractTetradGraphNodes(tetradGraph)
-        self.edges = pycausal.extractTetradGraphEdges(tetradGraph)
+        self.nodes = pycausal.extractTetradGraphNodes(self.tetradGraph)
+        self.edges = pycausal.extractTetradGraphEdges(self.tetradGraph)
         self.graph = pycausal.generatePyDotGraph(self.nodes,self.edges)
 
+    def getTetradGraph(self):
+        return self.tetradGraph
+    
     def getDot(self):
         return self.graph
     
@@ -252,6 +329,7 @@ class imagesSemBic():
 
 class fas():
     
+    tetradGraph = None
     nodes = []
     edges = []
     
@@ -307,11 +385,14 @@ class fas():
         if priorKnowledge is not None:
             fas.setKnowledge(priorKnowledge)
         
-        tetradGraph = fas.search()
+        self.tetradGraph = fas.search()
         
-        self.nodes = pycausal.extractTetradGraphNodes(tetradGraph)
-        self.edges = pycausal.extractTetradGraphEdges(tetradGraph)
+        self.nodes = pycausal.extractTetradGraphNodes(self.tetradGraph)
+        self.edges = pycausal.extractTetradGraphEdges(self.tetradGraph)
 
+    def getTetradGraph(self):
+        return self.tetradGraph
+    
     def getNodes(self):
         return self.nodes
     
@@ -320,6 +401,7 @@ class fas():
 
 class fgesMixed():
     
+    tetradGraph = None
     graph = None
     nodes = []
     edges = []
@@ -361,12 +443,15 @@ class fgesMixed():
         if priorKnowledge is not None:
             fges.setKnowledge(priorKnowledge)
         
-        tetradGraph = fges.search()
+        self.tetradGraph = fges.search()
         
-        self.nodes = pycausal.extractTetradGraphNodes(tetradGraph)
-        self.edges = pycausal.extractTetradGraphEdges(tetradGraph)
+        self.nodes = pycausal.extractTetradGraphNodes(self.tetradGraph)
+        self.edges = pycausal.extractTetradGraphEdges(self.tetradGraph)
         self.graph = pycausal.generatePyDotGraph(self.nodes,self.edges)
 
+    def getTetradGraph(self):
+        return self.tetradGraph
+    
     def getDot(self):
         return self.graph
     
@@ -378,6 +463,7 @@ class fgesMixed():
 
 class fgesDiscrete():
     
+    tetradGraph = None
     graph = None
     nodes = []
     edges = []
@@ -420,13 +506,16 @@ class fgesDiscrete():
         if priorKnowledge is not None:    
             fges.setKnowledge(priorKnowledge)
             
-        tetradGraph = fges.search()
+        self.tetradGraph = fges.search()
         
-        self.nodes = pycausal.extractTetradGraphNodes(tetradGraph)
-        self.edges = pycausal.extractTetradGraphEdges(tetradGraph)            
+        self.nodes = pycausal.extractTetradGraphNodes(self.tetradGraph)
+        self.edges = pycausal.extractTetradGraphEdges(self.tetradGraph)            
         self.graph = pycausal.generatePyDotGraph(self.nodes,self.edges)
         
         
+    def getTetradGraph(self):
+        return self.tetradGraph
+    
     def getDot(self):
         return self.graph
     
@@ -439,6 +528,7 @@ class fgesDiscrete():
     
 class fges():
     
+    tetradGraph = None
     graph = None
     nodes = []
     edges = []
@@ -481,12 +571,15 @@ class fges():
         if priorKnowledge is not None:    
             fges.setKnowledge(priorKnowledge)
             
-        tetradGraph = fges.search()
+        self.tetradGraph = fges.search()
         
-        self.nodes = pycausal.extractTetradGraphNodes(tetradGraph)
-        self.edges = pycausal.extractTetradGraphEdges(tetradGraph)            
+        self.nodes = pycausal.extractTetradGraphNodes(self.tetradGraph)
+        self.edges = pycausal.extractTetradGraphEdges(self.tetradGraph)            
         self.graph = pycausal.generatePyDotGraph(self.nodes,self.edges)
         
+    def getTetradGraph(self):
+        return self.tetradGraph
+    
     def getDot(self):
         return self.graph
     
@@ -498,6 +591,7 @@ class fges():
 
 class fci():
     
+    tetradGraph = None
     nodes = []
     edges = []
     
@@ -555,11 +649,14 @@ class fci():
         if priorKnowledge is not None:    
             fci.setKnowledge(priorKnowledge)
             
-        tetradGraph = fci.search()
+        self.tetradGraph = fci.search()
         
-        self.nodes = pycausal.extractTetradGraphNodes(tetradGraph)
-        self.edges = pycausal.extractTetradGraphEdges(tetradGraph) 
+        self.nodes = pycausal.extractTetradGraphNodes(self.tetradGraph)
+        self.edges = pycausal.extractTetradGraphEdges(self.tetradGraph) 
         
+    def getTetradGraph(self):
+        return self.tetradGraph
+    
     def getNodes(self):
         return self.nodes
     
@@ -568,6 +665,7 @@ class fci():
         
 class cfci():
     
+    tetradGraph = None
     nodes = []
     edges = []
     
@@ -623,11 +721,14 @@ class cfci():
         if priorKnowledge is not None:    
             cfci.setKnowledge(priorKnowledge)
             
-        tetradGraph = cfci.search()
+        self.tetradGraph = cfci.search()
         
-        self.nodes = pycausal.extractTetradGraphNodes(tetradGraph)
-        self.edges = pycausal.extractTetradGraphEdges(tetradGraph) 
+        self.nodes = pycausal.extractTetradGraphNodes(self.tetradGraph)
+        self.edges = pycausal.extractTetradGraphEdges(self.tetradGraph) 
         
+    def getTetradGraph(self):
+        return self.tetradGraph
+    
     def getNodes(self):
         return self.nodes
     
@@ -636,6 +737,7 @@ class cfci():
         
 class rfciMixed():
     
+    tetradGraph = None
     nodes = []
     edges = []
     
@@ -674,11 +776,14 @@ class rfciMixed():
         if priorKnowledge is not None:
             rfci.setKnowledge(priorKnowledge)
         
-        tetradGraph = rfci.search()
+        self.tetradGraph = rfci.search()
         
-        self.nodes = pycausal.extractTetradGraphNodes(tetradGraph)
-        self.edges = pycausal.extractTetradGraphEdges(tetradGraph)
+        self.nodes = pycausal.extractTetradGraphNodes(self.tetradGraph)
+        self.edges = pycausal.extractTetradGraphEdges(self.tetradGraph)
 
+    def getTetradGraph(self):
+        return self.tetradGraph
+    
     def getNodes(self):
         return self.nodes
     
@@ -687,6 +792,7 @@ class rfciMixed():
 
 class rfciDiscrete():
     
+    tetradGraph = None
     nodes = []
     edges = []
     
@@ -725,11 +831,14 @@ class rfciDiscrete():
         if priorKnowledge is not None:
             rfci.setKnowledge(priorKnowledge)
         
-        tetradGraph = rfci.search()
+        self.tetradGraph = rfci.search()
         
-        self.nodes = pycausal.extractTetradGraphNodes(tetradGraph)
-        self.edges = pycausal.extractTetradGraphEdges(tetradGraph)
+        self.nodes = pycausal.extractTetradGraphNodes(self.tetradGraph)
+        self.edges = pycausal.extractTetradGraphEdges(self.tetradGraph)
 
+    def getTetradGraph(self):
+        return self.tetradGraph
+    
     def getNodes(self):
         return self.nodes
     
@@ -738,6 +847,7 @@ class rfciDiscrete():
 
 class rfci():
     
+    tetradGraph = None
     nodes = []
     edges = []
     
@@ -778,11 +888,14 @@ class rfci():
         if priorKnowledge is not None:    
             rfci.setKnowledge(priorKnowledge)
             
-        tetradGraph = rfci.search()
+        self.tetradGraph = rfci.search()
         
-        self.nodes = pycausal.extractTetradGraphNodes(tetradGraph)
-        self.edges = pycausal.extractTetradGraphEdges(tetradGraph) 
+        self.nodes = pycausal.extractTetradGraphNodes(self.tetradGraph)
+        self.edges = pycausal.extractTetradGraphEdges(self.tetradGraph) 
         
+    def getTetradGraph(self):
+        return self.tetradGraph
+    
     def getNodes(self):
         return self.nodes
     
@@ -791,6 +904,7 @@ class rfci():
         
 class gfciMixed():
     
+    tetradGraph = None
     nodes = []
     edges = []
     
@@ -837,11 +951,14 @@ class gfciMixed():
         if priorKnowledge is not None:
             gfci.setKnowledge(priorKnowledge)
         
-        tetradGraph = gfci.search()
+        self.tetradGraph = gfci.search()
         
-        self.nodes = pycausal.extractTetradGraphNodes(tetradGraph)
-        self.edges = pycausal.extractTetradGraphEdges(tetradGraph)
+        self.nodes = pycausal.extractTetradGraphNodes(self.tetradGraph)
+        self.edges = pycausal.extractTetradGraphEdges(self.tetradGraph)
 
+    def getTetradGraph(self):
+        return self.tetradGraph
+    
     def getNodes(self):
         return self.nodes
     
@@ -850,6 +967,7 @@ class gfciMixed():
 
 class gfciDiscrete():
     
+    tetradGraph = None
     nodes = []
     edges = []
     
@@ -897,11 +1015,14 @@ class gfciDiscrete():
         if priorKnowledge is not None:    
             gfci.setKnowledge(priorKnowledge)
             
-        tetradGraph = gfci.search()
+        self.tetradGraph = gfci.search()
         
-        self.nodes = pycausal.extractTetradGraphNodes(tetradGraph)
-        self.edges = pycausal.extractTetradGraphEdges(tetradGraph) 
+        self.nodes = pycausal.extractTetradGraphNodes(self.tetradGraph)
+        self.edges = pycausal.extractTetradGraphEdges(self.tetradGraph) 
         
+    def getTetradGraph(self):
+        return self.tetradGraph
+    
     def getNodes(self):
         return self.nodes
     
@@ -910,6 +1031,7 @@ class gfciDiscrete():
         
 class gfci():
     
+    tetradGraph = None
     nodes = []
     edges = []
     
@@ -958,11 +1080,14 @@ class gfci():
         if priorKnowledge is not None:    
             gfci.setKnowledge(priorKnowledge)
             
-        tetradGraph = gfci.search()
+        self.tetradGraph = gfci.search()
         
-        self.nodes = pycausal.extractTetradGraphNodes(tetradGraph)
-        self.edges = pycausal.extractTetradGraphEdges(tetradGraph) 
+        self.nodes = pycausal.extractTetradGraphNodes(self.tetradGraph)
+        self.edges = pycausal.extractTetradGraphEdges(self.tetradGraph) 
         
+    def getTetradGraph(self):
+        return self.tetradGraph
+    
     def getNodes(self):
         return self.nodes
     
@@ -971,6 +1096,7 @@ class gfci():
         
 class ccd():
     
+    tetradGraph = None
     nodes = []
     edges = []
     
@@ -1023,11 +1149,14 @@ class ccd():
         if priorKnowledge is not None:    
             ccd.setKnowledge(priorKnowledge)
             
-        tetradGraph = ccd.search()
+        self.tetradGraph = ccd.search()
         
-        self.nodes = pycausal.extractTetradGraphNodes(tetradGraph)
-        self.edges = pycausal.extractTetradGraphEdges(tetradGraph) 
+        self.nodes = pycausal.extractTetradGraphNodes(self.tetradGraph)
+        self.edges = pycausal.extractTetradGraphEdges(self.tetradGraph) 
         
+    def getTetradGraph(self):
+        return self.tetradGraph
+    
     def getNodes(self):
         return self.nodes
     
@@ -1036,6 +1165,7 @@ class ccd():
     
 class pc():
     
+    tetradGraph = None
     graph = None
     nodes = []
     edges = []
@@ -1092,12 +1222,15 @@ class pc():
         if priorKnowledge is not None:    
             pc.setKnowledge(priorKnowledge)
             
-        tetradGraph = pc.search()
+        self.tetradGraph = pc.search()
         
-        self.nodes = pycausal.extractTetradGraphNodes(tetradGraph)
-        self.edges = pycausal.extractTetradGraphEdges(tetradGraph)
+        self.nodes = pycausal.extractTetradGraphNodes(self.tetradGraph)
+        self.edges = pycausal.extractTetradGraphEdges(self.tetradGraph)
         self.graph = pycausal.generatePyDotGraph(self.nodes,self.edges)
 
+    def getTetradGraph(self):
+        return self.tetradGraph
+    
     def getDot(self):
         return self.graph
         
@@ -1109,6 +1242,7 @@ class pc():
     
 class pcstablemax():
     
+    tetradGraph = None
     graph = None
     nodes = []
     edges = []
@@ -1169,12 +1303,15 @@ class pcstablemax():
         if priorKnowledge is not None:    
             pcmax.setKnowledge(priorKnowledge)
             
-        tetradGraph = pcmax.search()
+        self.tetradGraph = pcmax.search()
         
-        self.nodes = pycausal.extractTetradGraphNodes(tetradGraph)
-        self.edges = pycausal.extractTetradGraphEdges(tetradGraph)
+        self.nodes = pycausal.extractTetradGraphNodes(self.tetradGraph)
+        self.edges = pycausal.extractTetradGraphEdges(self.tetradGraph)
         self.graph = pycausal.generatePyDotGraph(self.nodes,self.edges)
 
+    def getTetradGraph(self):
+        return self.tetradGraph
+    
     def getDot(self):
         return self.graph
         
@@ -1186,6 +1323,7 @@ class pcstablemax():
     
 class pcstable():
     
+    tetradGraph = None
     graph = None
     nodes = []
     edges = []
@@ -1242,12 +1380,15 @@ class pcstable():
         if priorKnowledge is not None:    
             pcstable.setKnowledge(priorKnowledge)
             
-        tetradGraph = pcstable.search()
+        self.tetradGraph = pcstable.search()
         
-        self.nodes = pycausal.extractTetradGraphNodes(tetradGraph)
-        self.edges = pycausal.extractTetradGraphEdges(tetradGraph)
+        self.nodes = pycausal.extractTetradGraphNodes(self.tetradGraph)
+        self.edges = pycausal.extractTetradGraphEdges(self.tetradGraph)
         self.graph = pycausal.generatePyDotGraph(self.nodes,self.edges)
 
+    def getTetradGraph(self):
+        return self.tetradGraph
+    
     def getDot(self):
         return self.graph
         
@@ -1259,6 +1400,7 @@ class pcstable():
 
 class cpc():
     
+    tetradGraph = None
     graph = None
     nodes = []
     edges = []
@@ -1315,12 +1457,15 @@ class cpc():
         if priorKnowledge is not None:    
             cpc.setKnowledge(priorKnowledge)
             
-        tetradGraph = cpc.search()
+        self.tetradGraph = cpc.search()
         
-        self.nodes = pycausal.extractTetradGraphNodes(tetradGraph)
-        self.edges = pycausal.extractTetradGraphEdges(tetradGraph)
+        self.nodes = pycausal.extractTetradGraphNodes(self.tetradGraph)
+        self.edges = pycausal.extractTetradGraphEdges(self.tetradGraph)
         self.graph = pycausal.generatePyDotGraph(self.nodes,self.edges)
 
+    def getTetradGraph(self):
+        return self.tetradGraph
+    
     def getDot(self):
         return self.graph
         
@@ -1332,6 +1477,7 @@ class cpc():
     
 class cpcstable():
     
+    tetradGraph = None
     graph = None
     nodes = []
     edges = []
@@ -1388,12 +1534,15 @@ class cpcstable():
         if priorKnowledge is not None:    
             cpcstable.setKnowledge(priorKnowledge)
             
-        tetradGraph = cpcstable.search()
+        self.tetradGraph = cpcstable.search()
         
-        self.nodes = pycausal.extractTetradGraphNodes(tetradGraph)
-        self.edges = pycausal.extractTetradGraphEdges(tetradGraph)
+        self.nodes = pycausal.extractTetradGraphNodes(self.tetradGraph)
+        self.edges = pycausal.extractTetradGraphEdges(self.tetradGraph)
         self.graph = pycausal.generatePyDotGraph(self.nodes,self.edges)
 
+    def getTetradGraph(self):
+        return self.tetradGraph
+    
     def getDot(self):
         return self.graph
         
@@ -1405,6 +1554,7 @@ class cpcstable():
     
 class bayesEst():
     
+    tetradGraph = None
     graph = None
     nodes = []
     edges = []
@@ -1423,8 +1573,8 @@ class bayesEst():
         if priorKnowledge is not None:    
             cpc.setKnowledge(priorKnowledge)
             
-        tetradGraph = cpc.search()
-        dags = javabridge.JClassWrapper('edu.cmu.tetrad.search.DagInPatternIterator')(tetradGraph)
+        self.tetradGraph = cpc.search()
+        dags = javabridge.JClassWrapper('edu.cmu.tetrad.search.DagInPatternIterator')(self.tetradGraph)
         dagGraph = dags.next()
         dag = javabridge.JClassWrapper('edu.cmu.tetrad.graph.Dag')(dagGraph)
 
@@ -1439,6 +1589,9 @@ class bayesEst():
         self.bayesPm = pm
         self.bayesIm = im
         
+    def getTetradGraph(self):
+        return self.tetradGraph
+    
     def getDot(self):
         return self.graph
         
@@ -1459,6 +1612,7 @@ class bayesEst():
     
 class randomDag():
     
+    tetradGraph = None
     graph = None
     nodes = []
     edges = []
@@ -1476,11 +1630,15 @@ class randomDag():
             dag = javabridge.JClassWrapper("edu.cmu.tetrad.graph.Dag")(graph)
             initEdges = dag.getNumEdges()
             
+        self.tetradGraph = graph    
         self.nodes = pycausal.extractTetradGraphNodes(dag)
         self.edges = pycausal.extractTetradGraphEdges(dag)
         self.graph = pycausal.generatePyDotGraph(self.nodes,self.edges)
         self.dag = dag
         
+    def getTetradGraph(self):
+        return self.tetradGraph
+    
     def getDot(self):
         return self.graph
         
