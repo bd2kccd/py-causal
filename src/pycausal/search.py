@@ -33,7 +33,7 @@ class lofs():
             tetradData = None
             # Continuous
             if dataType == 0:
-                tetradData = pycausal.loadContinuousData(df)
+                tetradData = pycausal.loadContinuousData(df, outputDataset = True)
             # Discrete
             elif dataType == 1:
                 tetradData = pycausal.loadDiscreteData(df)
