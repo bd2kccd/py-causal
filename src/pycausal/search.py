@@ -43,10 +43,10 @@ class lofs():
             datasets.add(tetradData)
 
         lofs2 = javabridge.JClassWrapper('edu.cmu.tetrad.search.Lofs2')(tetradGraph, datasets)
-        rule = javabridge.get_static_field('edu.cmu.tetrad.search.Lofs2$Rule',
+        rule = javabridge.get_static_field('edu/cmu/tetrad/search/Lofs2$Rule',
                                                    rule,
                                                    'Ledu/cmu/tetrad/search/Lofs2$Rule;')
-        score = javabridge.get_static_field('edu.cmu.tetrad.search.Lofs$Score',
+        score = javabridge.get_static_field('edu/cmu/tetrad/search/Lofs$Score',
                                                    score,
                                                    'Ledu/cmu/tetrad/search/Lofs$Score;')
         lofs2.setRule(rule)
