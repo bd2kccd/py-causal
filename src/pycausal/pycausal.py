@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 MA 02110-1301  USA
  
 Created on Feb 15, 2016
+Updated on Feb 28, 2018
 
 @author: Chirayu Wongchokprasitti, PhD 
 @email: chw20@pitt.edu
@@ -244,24 +245,67 @@ def extractTetradGraphEdges(tetradGraph, orig_columns = None, new_columns = None
 
     return e            
     
-def generatePyDotGraph(n,e):
+def generatePyDotGraph(n,e,tetradGraph):
     graph = pydot.Dot(graph_type='digraph')
-    nodes = []
 
-    for i in range(0,len(n)):
-        nodes.append(pydot.Node(n[i]))
-        graph.add_node(nodes[i])
+    # causal search and get edges
+    tetradString = tetradGraph.toString()
+    graph_edges = []
+    token = tetradString.split('\n')
+    for edge in token[4:-1]:
+        graph_edges.append(str(edge).split('. ')[1])
 
-    for i in range(0,len(e)):
-        token = e[i].split(" ")
-        if(len(token) >= 3):
-            src = token[0]
-            arc = token[1]
-            dst = token[2]
-            if(isNodeExisting(n,src) and isNodeExisting(n,dst)):
-                edge = pydot.Edge(nodes[n.index(src)],nodes[n.index(dst)])
-                if(arc == "---"):
+    # gets the nodes in sorted order
+    nodes_sorted = str(token[1]).split(',')
+    nodes_sorted.sort()
+    #for node in nodes_sorted:
+    #    graph.add_node(pydot.Node(node))
+
+    # create dictionaries of the nodes and edges
+    nodes = {}
+    edges = {}
+    bootstraps = {}
+    for edge in graph_edges:
+        token = str(edge).split()
+        n1 = token[0]
+        arc = token[1]
+        n2 = token[2]
+        if n1 not in nodes: nodes[n1] = []
+        if n2 not in nodes: nodes[n2] = []
+        nodes[n1].append(n2)
+        nodes[n2].append(n1)
+        edges[n1, n2] = n1 + ' ' + arc + ' ' + n2
+        if len(str(edge)) > 100:
+            bootstraps[n1, n2] = str(edge[-100:])
+
+    # graph plot the variables and edges
+    for v0 in nodes.keys():
+        for v1 in nodes.keys():
+            if (v0, v1) in edges.keys():
+                arc = arcs[v0, v1]
+                edge = pydot.Edge(v0, v1)
+                if arc == '---':
                     edge.set_arrowhead("none")
-                graph.add_edge(edge)
+
+                if len(bootstraps) > 0:
+                    # nodes reported in sorted order
+                    if nodes_sorted.index(v0) < nodes_sorted.index(v1): 
+                        label = v0 + ' - ' + v1 + '\n' 
+                    else:
+                        label = v1 + ' - ' + v0 + '\n'            
+
+                    # Bootstrapping distribution
+                    # [no edge]
+                    if '0.0000' not in bootstraps[v0, v1][0:16]:
+                        label += bootstraps[v0, v1][0:16] + '\n'
+                    for i in range(0,7):
+                        e = bootstraps[v0, v1][16+i*12:28+i*12]
+                        if '0.0000' not in e:                    
+                            label += e + '\n'
+
+                    edge.set('fontname', 'courier')
+                    edge.set('label', label)
+
+                graph.add_edge(edge)      
 
     return graph
