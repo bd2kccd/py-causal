@@ -58,7 +58,7 @@ class tetradrunner():
         paramDescs = javabridge.JClassWrapper("edu.cmu.tetrad.util.ParamDescriptions")
         paramDescs = paramDescs.getInstance()
 
-    def run(self, algoId, dfs, testId = None, scoreId = None, priorKnowledge = None, **parameters):
+    def run(self, algoId, dfs, testId = None, scoreId = None, priorKnowledge = None, dataType = 0, numCategoriesToDiscretize = 4, **parameters):
         algo = algos.get(algoId)
         algoAnno = algo.getAnnotation()
         algoClass = algo.getClazz()
@@ -107,13 +107,13 @@ class tetradrunner():
                 elif dataType == 1:
                     dataset = pycausal.loadDiscreteData(df)
                 else:
-                    numCategoriesToDiscretize = 4
-                    if parameters['numCategoriesToDiscretize'] is not None:
-                        numCategoriesToDiscretize = parameters['numCategoriesToDiscretize']
                     dataset = pycausal.loadMixedData(df, numCategoriesToDiscretize)
                 tetradData.add(dataset)
             
         algorithm = algoFactory.create(algoClass, testClass, scoreClass)
+        
+        if priorKnowledge is not None:
+            algorithm.setKnowledge(priorKnowledge)
         
         self.tetradGraph = algorithm.search(tetradData, params)
         self.nodes = pycausal.extractTetradGraphNodes(self.tetradGraph)
