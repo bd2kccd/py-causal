@@ -38,42 +38,42 @@ class tetradrunner():
             algo = algoClasses.get(i)
             algoType = str(algo.getAnnotation().algoType())
             if algoType != 'orient_pairwise':
-                this.algos[str(algo.getAnnotation().command())] = algo
+                self.algos[str(algo.getAnnotation().command())] = algo
             
         testAnnotations = javabridge.JClassWrapper("edu.cmu.tetrad.annotation.TestOfIndependenceAnnotations")
         testClasses = testAnnotations.getInstance().getAnnotatedClasses()
 
         for i in range(0,testClasses.size()):
             test = testClasses.get(i)
-            this.tests[str(test.getAnnotation().command())] = test
+            self.tests[str(test.getAnnotation().command())] = test
 
         scoreAnnotations = javabridge.JClassWrapper("edu.cmu.tetrad.annotation.ScoreAnnotations")
         scoreClasses = ScoreAnnotations.getInstance().getAnnotatedClasses()
 
         for i in range(0,scoreClasses.size()):
             score = scoreClasses.get(i)
-            this.scores[str(score.getAnnotation().command())] = score
+            self.scores[str(score.getAnnotation().command())] = score
             
-        this.algoFactory = javabridge.JClassWrapper("edu.cmu.tetrad.algcomparison.algorithm.AlgorithmFactory")
+        self.algoFactory = javabridge.JClassWrapper("edu.cmu.tetrad.algcomparison.algorithm.AlgorithmFactory")
         paramDescs = javabridge.JClassWrapper("edu.cmu.tetrad.util.ParamDescriptions")
-        this.paramDescs = paramDescs.getInstance()
+        self.paramDescs = paramDescs.getInstance()
 
     def run(self, algoId, dfs, testId = None, scoreId = None, priorKnowledge = None, dataType = 0, numCategoriesToDiscretize = 4, **parameters):
-        algo = this.algos.get(algoId)
+        algo = self.algos.get(algoId)
         algoAnno = algo.getAnnotation()
         algoClass = algo.getClazz()
         
         testClass = None
         if testId is not None:
-            testClass = this.tests.get(testId)
+            testClass = self.tests.get(testId)
             
         scoreClass = None
         if scoreId is not None:
-            scoreClass = this.scores.get(scoreId)
+            scoreClass = self.scores.get(scoreId)
         
         params = javabridge.JClassWrapper('edu.cmu.tetrad.util.Parameters')()
         for key in parameters.keys():
-            if this.paramDescs.get(key) is not None:
+            if self.paramDescs.get(key) is not None:
                 value = parameters[key]
                 params.set(key, value)
                 
@@ -90,9 +90,6 @@ class tetradrunner():
             elif dataType == 1:
                 tetradData = pycausal.loadDiscreteData(dfs)
             else:
-                numCategoriesToDiscretize = 4
-                if parameters['numCategoriesToDiscretize'] is not None:
-                    numCategoriesToDiscretize = parameters['numCategoriesToDiscretize']
                 tetradData = pycausal.loadMixedData(dfs, numCategoriesToDiscretize)
                 
         else:
@@ -110,7 +107,7 @@ class tetradrunner():
                     dataset = pycausal.loadMixedData(df, numCategoriesToDiscretize)
                 tetradData.add(dataset)
             
-        algorithm = this.algoFactory.create(algoClass, testClass, scoreClass)
+        algorithm = self.algoFactory.create(algoClass, testClass, scoreClass)
         
         if priorKnowledge is not None:
             algorithm.setKnowledge(priorKnowledge)
@@ -121,44 +118,44 @@ class tetradrunner():
         self.graph = pycausal.generatePyDotGraph(self.nodes,self.edges)
         
     def listAlgorithms(self):
-        _algos = this.algos.keys()
+        _algos = self.algos.keys()
         _algos.sort()
         print('\n'.join(_algos))
     
     def listIndTests(self):
-        _tests = this.tests.keys()
+        _tests = self.tests.keys()
         _tests.sort()
         print('\n'.join(_tests))
     
     def listScores(self):
-        _scores = this.scores.keys()
+        _scores = self.scores.keys()
         _scores.sort()
         print('\n'.join(_scores))
 
     def getAlgorithmDescription(self, algoId):
-        algo = this.algos.get(algoId)
+        algo = self.algos.get(algoId)
         algoAnno = algo.getAnnotation()
         print(algoAnno.name() + ': ' + algoAnno.description())
     
     def getAlgorithmParameters(self, algoId, testId = None, scoreId = None):
-        algo = this.algos.get(algoId)
+        algo = self.algos.get(algoId)
         algoAnno = algo.getAnnotation()
         algoClass = algo.getClazz()
         
         testClass = None
         if testId is not None:
-            testClass = this.tests.get(testId)
+            testClass = self.tests.get(testId)
             
         scoreClass = None
         if scoreId is not None:
-            scoreClass = this.scores.get(scoreId)
+            scoreClass = self.scores.get(scoreId)
         
-        algorithm = this.algoFactory.create(algoClass, testClass, scoreClass)
+        algorithm = self.algoFactory.create(algoClass, testClass, scoreClass)
         algoParams = algorithm.getParameters()
   
         for i in range(0,algoParams.size()):
             algoParam = str(algoParams.get(i))
-            paramDesc = this.paramDescs.get(algoParam)
+            paramDesc = self.paramDescs.get(algoParam)
             defaultValue = paramDesc.getDefaultValue()
             javaClass = pycausal.getJavaClass(defaultValue)
             desc = str(paramDesc.getDescription())
