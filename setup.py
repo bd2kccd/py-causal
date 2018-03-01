@@ -24,10 +24,7 @@ Updated on Feb 28, 2018
 @author: chw20
 '''
 
-try:
-    from distutils.core import setup
-except ImportError, excp:
-    from setuptools import setup
+from distutils.core import setup
 
 setup(
     name = "pycausal",

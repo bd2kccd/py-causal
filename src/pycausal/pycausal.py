@@ -55,7 +55,7 @@ def isNodeExisting(nodes,node):
         nodes.index(node)
         return True
     except IndexError:
-        print "Node %s does not exist!", node
+        print("Node {0} does not exist!".format(node))
         return False
 
 def loadMixedData(df, numCategoriesToDiscretize = 4):
@@ -282,7 +282,7 @@ def generatePyDotGraph(n,e,tetradGraph):
     for v0 in nodes.keys():
         for v1 in nodes.keys():
             if (v0, v1) in edges.keys():
-                arc = arcs[v0, v1]
+                arc = edges[v0, v1].split()[1]
                 edge = pydot.Edge(v0, v1)
                 if arc == '---':
                     edge.set_arrowhead("none")
