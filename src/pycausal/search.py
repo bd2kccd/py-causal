@@ -356,8 +356,8 @@ class ccd():
             
         self.tetradGraph = ccd.search()
         
-        self.nodes = pycausal.extractTetradGraphNodes(self.tetradGraph)
-        self.edges = pycausal.extractTetradGraphEdges(self.tetradGraph) 
+        self.nodes = pc.extractTetradGraphNodes(self.tetradGraph)
+        self.edges = pc.extractTetradGraphEdges(self.tetradGraph) 
         
     def getTetradGraph(self):
         return self.tetradGraph
