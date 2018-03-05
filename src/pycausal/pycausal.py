@@ -50,10 +50,6 @@ def stop_vm():
     javabridge.detach()
     javabridge.kill_vm()
 
-def getJavaClass(jObj):
-    return str(javabridge.call(javabridge.call(jObj.o, "getClass", "()Ljava/lang/Class;"),
-                            "getName","()Ljava/lang/String;"))    
-    
 def isNodeExisting(nodes,node):
     try:
         nodes.index(node)

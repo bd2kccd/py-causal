@@ -15,7 +15,7 @@ import random
 import string
 import tempfile
 
-import pycausal
+import pycausal as pc
 
 class tetradrunner():
     
@@ -100,7 +100,8 @@ class tetradrunner():
             algoParam = str(algoParams.get(i))
             paramDesc = self.paramDescs.get(algoParam)
             defaultValue = paramDesc.getDefaultValue()
-            javaClass = pycausal.getJavaClass(defaultValue)
+            javaClass = str(javabridge.call(javabridge.call(defaultValue.o, "getClass", "()Ljava/lang/Class;"),
+                            "getName","()Ljava/lang/String;"))
             desc = str(paramDesc.getDescription())
     
             print(algoParam + ": " + desc + ' (' + javaClass + ') [default:' + str(defaultValue) + ']')
@@ -131,12 +132,15 @@ class tetradrunner():
             
             # Continuous
             if dataType == 0:
-                tetradData = pycausal.loadContinuousData(dfs)
+                if 'bootstrapSampleSize' in parameters and parameters['bootstrapSampleSize'] > 0:
+                    tetradData = pc.loadContinuousData(dfs, outputDataset = True)
+                else:
+                    tetradData = pc.loadContinuousData(dfs)
             # Discrete
             elif dataType == 1:
-                tetradData = pycausal.loadDiscreteData(dfs)
+                tetradData = pc.loadDiscreteData(dfs)
             else:
-                tetradData = pycausal.loadMixedData(dfs, numCategoriesToDiscretize)
+                tetradData = pc.loadMixedData(dfs, numCategoriesToDiscretize)
                 
         else:
         
@@ -145,12 +149,15 @@ class tetradrunner():
                 dataset = None
                 # Continuous
                 if dataType == 0:
-                    dataset = pycausal.loadContinuousData(df)
+                    if 'bootstrapSampleSize' in parameters and parameters['bootstrapSampleSize'] > 0:
+                        dataset = pc.loadContinuousData(dfs, outputDataset = True)
+                    else:
+                        dataset = pc.loadContinuousData(dfs)
                 # Discrete
                 elif dataType == 1:
-                    dataset = pycausal.loadDiscreteData(df)
+                    dataset = pc.loadDiscreteData(df)
                 else:
-                    dataset = pycausal.loadMixedData(df, numCategoriesToDiscretize)
+                    dataset = pc.loadMixedData(df, numCategoriesToDiscretize)
                 tetradData.add(dataset)
             
         algorithm = self.algoFactory.create(algoClass, testClass, scoreClass)
@@ -159,9 +166,9 @@ class tetradrunner():
             algorithm.setKnowledge(priorKnowledge)
         
         self.tetradGraph = algorithm.search(tetradData, params)
-        self.nodes = pycausal.extractTetradGraphNodes(self.tetradGraph)
-        self.edges = pycausal.extractTetradGraphEdges(self.tetradGraph)
-        self.graph = pycausal.generatePyDotGraph(self.nodes,self.edges,self.tetradGraph)
+        self.nodes = pc.extractTetradGraphNodes(self.tetradGraph)
+        self.edges = pc.extractTetradGraphEdges(self.tetradGraph)
+        self.graph = pc.generatePyDotGraph(self.nodes,self.edges,self.tetradGraph)
         
     def getTetradGraph(self):
         return self.tetradGraph
@@ -192,13 +199,13 @@ class lofs():
             tetradData = None
             # Continuous
             if dataType == 0:
-                tetradData = pycausal.loadContinuousData(df, outputDataset = True)
+                tetradData = pc.loadContinuousData(df, outputDataset = True)
             # Discrete
             elif dataType == 1:
-                tetradData = pycausal.loadDiscreteData(df)
+                tetradData = pc.loadDiscreteData(df)
             # Mixed
             else:
-                tetradData = pycausal.loadMixedData(df, numCategoriesToDiscretize)
+                tetradData = pc.loadMixedData(df, numCategoriesToDiscretize)
             datasets.add(tetradData)
 
         lofs2 = javabridge.JClassWrapper('edu.cmu.tetrad.search.Lofs2')(tetradGraph, datasets)
@@ -220,9 +227,9 @@ class lofs():
         
         self.tetradGraph = lofs2.orient()
         
-        self.nodes = pycausal.extractTetradGraphNodes(self.tetradGraph)
-        self.edges = pycausal.extractTetradGraphEdges(self.tetradGraph)
-        self.graph = pycausal.generatePyDotGraph(self.nodes,self.edges)
+        self.nodes = pc.extractTetradGraphNodes(self.tetradGraph)
+        self.edges = pc.extractTetradGraphEdges(self.tetradGraph)
+        self.graph = pc.generatePyDotGraph(self.nodes,self.edges)
         
     def getTetradGraph(self):
         return self.tetradGraph
@@ -259,7 +266,7 @@ class dm():
         df.columns = new_columns
         new_columns = new_columns.tolist()
         
-        tetradData = pycausal.loadContinuousData(df, outputDataset = True)
+        tetradData = pc.loadContinuousData(df, outputDataset = True)
         
         dm = javabridge.JClassWrapper('edu.cmu.tetrad.search.DMSearch')()
         dm.setInputs(inputs)
@@ -276,9 +283,9 @@ class dm():
             
         self.tetradGraph = dm.search()
         
-        self.nodes = pycausal.extractTetradGraphNodes(self.tetradGraph, orig_columns, new_columns)
-        self.edges = pycausal.extractTetradGraphEdges(self.tetradGraph, orig_columns, new_columns)
-        self.graph = pycausal.generatePyDotGraph(self.nodes,self.edges)
+        self.nodes = pc.extractTetradGraphNodes(self.tetradGraph, orig_columns, new_columns)
+        self.edges = pc.extractTetradGraphEdges(self.tetradGraph, orig_columns, new_columns)
+        self.graph = pc.generatePyDotGraph(self.nodes,self.edges)
         
     def getTetradGraph(self):
         return self.tetradGraph
@@ -292,6 +299,75 @@ class dm():
     def getEdges(self):
         return self.edges
 
+class ccd():
+    
+    tetradGraph = None
+    nodes = []
+    edges = []
+    
+    def __init__(self, df, dataType = 0, numCategoriesToDiscretize = 4, depth = 3, alpha = 0.05, priorKnowledge = None, numBootstrap = -1, ensembleMethod = 'Highest'):
+        tetradData = None
+        indTest = None
+        
+        # Continuous
+        if dataType == 0:
+            if numBootstrap < 1:                
+                tetradData = pc.loadContinuousData(df)
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestFisherZ')(tetradData, alpha)
+            else:
+                tetradData = pc.loadContinuousData(df, outputDataset = True)
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.independence.FisherZ')()
+        # Discrete
+        elif dataType == 1:
+            tetradData = pc.loadDiscreteData(df)
+            if numBootstrap < 1:
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestChiSquare')(tetradData, alpha)
+            else:
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.independence.ChiSquare')()
+        # Mixed
+        else:
+            tetradData = pc.loadMixedData(df, numCategoriesToDiscretize)
+            if numBootstrap < 1:
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestConditionalGaussianLRT')(tetradData, alpha, False)
+            else:
+                indTest = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.independence.ConditionalGaussianLRT')()
+        
+        ccd = None
+        
+        if numBootstrap < 1:
+            ccd = javabridge.JClassWrapper('edu.cmu.tetrad.search.Ccd')(indTest)
+            ccd.setDepth(depth)
+        else:
+            algorithm = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.algorithm.oracle.pag.Ccd')(indTest)
+            
+            parameters = javabridge.JClassWrapper('edu.cmu.tetrad.util.Parameters')()
+            parameters.set('depth', depth)
+            parameters.set('alpha', alpha)
+            
+            ccd = javabridge.JClassWrapper('edu.pitt.dbmi.algo.bootstrap.GeneralBootstrapTest')(tetradData, algorithm, numBootstrap)
+            edgeEnsemble = javabridge.get_static_field('edu/pitt/dbmi/algo/bootstrap/BootstrapEdgeEnsemble',
+                                               ensembleMethod,
+                                               'Ledu/pitt/dbmi/algo/bootstrap/BootstrapEdgeEnsemble;')
+            ccd.setEdgeEnsemble(edgeEnsemble)
+            ccd.setParameters(parameters)
+        
+        if priorKnowledge is not None:    
+            ccd.setKnowledge(priorKnowledge)
+            
+        self.tetradGraph = ccd.search()
+        
+        self.nodes = pycausal.extractTetradGraphNodes(self.tetradGraph)
+        self.edges = pycausal.extractTetradGraphEdges(self.tetradGraph) 
+        
+    def getTetradGraph(self):
+        return self.tetradGraph
+    
+    def getNodes(self):
+        return self.nodes
+    
+    def getEdges(self):    
+        return self.edges
+    
 class bayesEst():
     
     tetradGraph = None
@@ -303,7 +379,7 @@ class bayesEst():
     bayesIm = None
     
     def __init__(self, df, depth = 3, alpha = 0.05, verbose = False, priorKnowledge = None):
-        tetradData = pycausal.loadDiscreteData(df)
+        tetradData = pc.loadDiscreteData(df)
         indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestChiSquare')(tetradData, alpha)
         
         cpc = javabridge.JClassWrapper('edu.cmu.tetrad.search.Cpc')(indTest)
@@ -322,9 +398,9 @@ class bayesEst():
         est = javabridge.JClassWrapper('edu.cmu.tetrad.bayes.MlBayesEstimator')()
         im = est.estimate(pm, tetradData)
 
-        self.nodes = pycausal.extractTetradGraphNodes(dag)
-        self.edges = pycausal.extractTetradGraphEdges(dag)
-        self.graph = pycausal.generatePyDotGraph(self.nodes,self.edges)
+        self.nodes = pc.extractTetradGraphNodes(dag)
+        self.edges = pc.extractTetradGraphEdges(dag)
+        self.graph = pc.generatePyDotGraph(self.nodes,self.edges)
         self.dag = dag
         self.bayesPm = pm
         self.bayesIm = im
@@ -371,9 +447,9 @@ class randomDag():
             initEdges = dag.getNumEdges()
             
         self.tetradGraph = graph    
-        self.nodes = pycausal.extractTetradGraphNodes(dag)
-        self.edges = pycausal.extractTetradGraphEdges(dag)
-        self.graph = pycausal.generatePyDotGraph(self.nodes,self.edges)
+        self.nodes = pc.extractTetradGraphNodes(dag)
+        self.edges = pc.extractTetradGraphEdges(dag)
+        self.graph = pc.generatePyDotGraph(self.nodes,self.edges)
         self.dag = dag
         
     def getTetradGraph(self):
