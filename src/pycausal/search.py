@@ -229,7 +229,7 @@ class lofs():
         
         self.nodes = pc.extractTetradGraphNodes(self.tetradGraph)
         self.edges = pc.extractTetradGraphEdges(self.tetradGraph)
-        self.graph = pc.generatePyDotGraph(self.nodes,self.edges)
+        self.graph = pc.generatePyDotGraph(self.nodes,self.edges,self.tetradGraph)
         
     def getTetradGraph(self):
         return self.tetradGraph
@@ -285,7 +285,7 @@ class dm():
         
         self.nodes = pc.extractTetradGraphNodes(self.tetradGraph, orig_columns, new_columns)
         self.edges = pc.extractTetradGraphEdges(self.tetradGraph, orig_columns, new_columns)
-        self.graph = pc.generatePyDotGraph(self.nodes,self.edges)
+        self.graph = pc.generatePyDotGraph(self.nodes,self.edges,self.tetradGraph)
         
     def getTetradGraph(self):
         return self.tetradGraph
@@ -400,7 +400,7 @@ class bayesEst():
 
         self.nodes = pc.extractTetradGraphNodes(dag)
         self.edges = pc.extractTetradGraphEdges(dag)
-        self.graph = pc.generatePyDotGraph(self.nodes,self.edges)
+        self.graph = pc.generatePyDotGraph(self.nodes,self.edges,self.tetradGraph)
         self.dag = dag
         self.bayesPm = pm
         self.bayesIm = im
@@ -449,7 +449,7 @@ class randomDag():
         self.tetradGraph = graph    
         self.nodes = pc.extractTetradGraphNodes(dag)
         self.edges = pc.extractTetradGraphEdges(dag)
-        self.graph = pc.generatePyDotGraph(self.nodes,self.edges)
+        self.graph = pc.generatePyDotGraph(self.nodes,self.edges,self.tetradGraph)
         self.dag = dag
         
     def getTetradGraph(self):
