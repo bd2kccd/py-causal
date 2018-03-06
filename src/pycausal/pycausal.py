@@ -226,7 +226,7 @@ class pycausal():
         for i in range(0,len(n)):
             n[i] = n[i].strip()
             if(orig_columns != None and new_columns != None):
-                n[i] = restoreOriginalName(new_columns,orig_columns,n[i])
+                n[i] = pycausal.restoreOriginalName(self,new_columns,orig_columns,n[i])
 
         return n
 
@@ -241,8 +241,8 @@ class pycausal():
                 src = token[0]
                 arc = token[1]
                 dst = token[2]
-                src = restoreOriginalName(new_columns,orig_columns,src)
-                dst = restoreOriginalName(new_columns,orig_columns,dst)
+                src = pycausal.restoreOriginalName(self,new_columns,orig_columns,src)
+                dst = pycausal.restoreOriginalName(self,new_columns,orig_columns,dst)
                 e[i] = src + " " + arc + " " + dst
 
         return e            
