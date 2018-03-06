@@ -15,9 +15,12 @@ import random
 import string
 import tempfile
 
-import pycausal as pc
+# import pycausal as pc
+from .pycausal import pycausal as pc
 
 class tetradrunner():
+    
+    pc = pc()
     
     algos = {}
     tests = {}
@@ -107,6 +110,9 @@ class tetradrunner():
             print(algoParam + ": " + desc + ' (' + javaClass + ') [default:' + str(defaultValue) + ']')
         
     def run(self, algoId, dfs, testId = None, scoreId = None, priorKnowledge = None, dataType = 0, numCategoriesToDiscretize = 4, **parameters):
+        
+        pc = self.pc
+        
         algo = self.algos.get(algoId)
         algoAnno = algo.getAnnotation()
         algoClass = algo.getClazz()
@@ -126,7 +132,7 @@ class tetradrunner():
             if self.paramDescs.get(key) is not None:
                 value = parameters[key]
                 params.set(key, value)
-                
+        
         tetradData = None
         if not isinstance(dfs, list):
             
@@ -150,9 +156,9 @@ class tetradrunner():
                 # Continuous
                 if dataType == 0:
                     if 'bootstrapSampleSize' in parameters and parameters['bootstrapSampleSize'] > 0:
-                        dataset = pc.loadContinuousData(dfs, outputDataset = True)
+                        dataset = pc.loadContinuousData(df, outputDataset = True)
                     else:
-                        dataset = pc.loadContinuousData(dfs)
+                        dataset = pc.loadContinuousData(df)
                 # Discrete
                 elif dataType == 1:
                     dataset = pc.loadDiscreteData(df)
@@ -186,6 +192,8 @@ class tetradrunner():
 # score: andersonDarling, skew, kurtosis, fifthMoment, absoluteValue, exp, expUnstandardized, expUnstandardizedInverted, other, logcosh, entropy
 class lofs():
     
+    pc = pc()
+    
     tetradGraph = None
     graph = None
     nodes = []
@@ -193,6 +201,8 @@ class lofs():
     
     def __init__(self, tetradGraph, dfs, dataType = 0, numCategoriesToDiscretize = 4, rule = 'R1', score = 'andersonDarling', alpha = 0.01, epsilon = 1.0, zeta = 0.0, orientStrongerDirection = False, r2Orient2Cycles = True, edgeCorrected = False, selfLoopStrength = 1.0):
         datasets = javabridge.JClassWrapper('java.util.ArrayList')()
+        
+        pc = self.pc
         
         for idx in range(len(dfs)):
             df = dfs[idx]
@@ -244,6 +254,7 @@ class lofs():
         return self.edges
 
 class dm():
+    pc = pc()
     
     tetradGraph = None
     graph = None
@@ -265,6 +276,8 @@ class dm():
             col_no = col_no + 1
         df.columns = new_columns
         new_columns = new_columns.tolist()
+        
+        pc = self.pc
         
         tetradData = pc.loadContinuousData(df, outputDataset = True)
         
@@ -300,6 +313,7 @@ class dm():
         return self.edges
 
 class ccd():
+    pc = pc()
     
     tetradGraph = None
     nodes = []
@@ -308,6 +322,8 @@ class ccd():
     def __init__(self, df, dataType = 0, numCategoriesToDiscretize = 4, depth = 3, alpha = 0.05, priorKnowledge = None, numBootstrap = -1, ensembleMethod = 'Highest'):
         tetradData = None
         indTest = None
+        
+        pc = self.pc
         
         # Continuous
         if dataType == 0:
@@ -369,6 +385,7 @@ class ccd():
         return self.edges
     
 class bayesEst():
+    pc = pc()
     
     tetradGraph = None
     graph = None
@@ -379,6 +396,8 @@ class bayesEst():
     bayesIm = None
     
     def __init__(self, df, depth = 3, alpha = 0.05, verbose = False, priorKnowledge = None):
+        pc = self.pc
+        
         tetradData = pc.loadDiscreteData(df)
         indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestChiSquare')(tetradData, alpha)
         
@@ -400,7 +419,7 @@ class bayesEst():
 
         self.nodes = pc.extractTetradGraphNodes(dag)
         self.edges = pc.extractTetradGraphEdges(dag)
-        self.graph = pc.generatePyDotGraph(self.nodes,self.edges,self.tetradGraph)
+        self.graph = pc.generatePyDotGraph(self.nodes,self.edges,dag)
         self.dag = dag
         self.bayesPm = pm
         self.bayesIm = im
@@ -446,10 +465,10 @@ class randomDag():
             dag = javabridge.JClassWrapper("edu.cmu.tetrad.graph.Dag")(graph)
             initEdges = dag.getNumEdges()
             
-        self.tetradGraph = graph    
+        self.tetradGraph = dag    
         self.nodes = pc.extractTetradGraphNodes(dag)
         self.edges = pc.extractTetradGraphEdges(dag)
-        self.graph = pc.generatePyDotGraph(self.nodes,self.edges,self.tetradGraph)
+        self.graph = pc.generatePyDotGraph(self.nodes,self.edges,dag)
         self.dag = dag
         
     def getTetradGraph(self):
