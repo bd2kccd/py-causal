@@ -59,7 +59,8 @@ or use the pip command:
 
     pip install git+git://github.com/bd2kccd/py-causal
     
-After running this command, enter a python shell and attempt the follwing import
+After running this command, enter a python shell and attempt the following imports:
+    
     import pandas as pd
     import pydot
     from tetrad import search as s
@@ -70,7 +71,7 @@ Finally, try to run the python example
 
 Be sure to run this from within the py-causal directory.
 
-This program will create a file named tetrad.svg, which should be viewable in any SVG capable program. If you see a causal graph, everything is working correctly.
+This program will create a file named `tetrad.svg`, which should be viewable in any SVG capable program. If you see a causal graph, everything is working correctly.
 
 Running Jupyter/IPython
 -----------------------
@@ -92,7 +93,7 @@ Installing Python with Anaconda and Jupyter may be easier for some users:
 
 * [Download and install Anaconda](https://www.continuum.io/downloads) 
 
-Then run the following to configure anacoda
+Then run the following to configure anaconda
 
     conda install javabridge
     conda install pandas  
