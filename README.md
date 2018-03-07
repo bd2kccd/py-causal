@@ -8,13 +8,13 @@ This code is distributed under the LGPL 2.1 license.
 Requirements:
 ============
 
-Python 2.7 (does not work with Python 3)
+Python 2.7 and 3.6
 * javabridge>=1.0.11
 * pandas
 * numpy 
 * pydot
 * GraphViz
-* JDK 1.7+
+* JDK 1.8
 
 Installation overview:
 ======================
@@ -27,7 +27,7 @@ Directions for both approaches are given below...
 Installation with pip
 =====================
 
-First install Java 7.1 or higher and Python 2.7 or higher.
+First install Java 8 or higher and Python 2.7 or higher.
 
 If you do not have pip installed already, try [these instructions](https://pip.pypa.io/en/stable/installing/).
 
@@ -39,7 +39,7 @@ Once pip is installed, execute these commands
     pip install -U pydot 
     pip install -U GraphViz
 
-Note: you also need to install the GraphViz engine by following [these instructions](http://www.graphviz.org/Download..php).
+Note: you also need to install the GraphViz engine by following [these instructions](http://www.graphviz.org/download/).
 
 We have observed that on some OS X installations, pydot may provide the following response
     Couldn't import dot_parser, loading of dot files will not be possible.
@@ -87,7 +87,7 @@ We have found [Jupyter](http://jupyter.org/) notebooks to be helpful. (Those who
 Anaconda/Jupyter
 ================
 
-First install Java 7.1 or higher and Python 2.7 or higher.
+First install Java 8 or higher and Python 2.7 or higher.
 
 Installing Python with Anaconda and Jupyter may be easier for some users:
 
