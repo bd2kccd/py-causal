@@ -63,7 +63,7 @@ After running this command, enter a python shell and attempt the following impor
     
     import pandas as pd
     import pydot
-    from tetrad import search as s
+    from pycausal import search as s
 
 Finally, try to run the python example
 

@@ -62,7 +62,7 @@ or use the pip command:
 After running this command, enter a python shell and attempt the follwing imports:
     import pandas as pd
     import pydot
-    from tetrad import search as s
+    from pycausal import search as s
 
 Finally, try to run the python example
 
