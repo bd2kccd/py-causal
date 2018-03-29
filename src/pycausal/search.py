@@ -121,13 +121,13 @@ class tetradrunner():
         
         pc = self.pc
         
-        algo = self.algos.[algoId]
+        algo = self.algos[algoId]
         algoAnno = algo.getAnnotation()
         algoClass = algo.getClazz()
         
         testClass = None
         if testId is not None:
-            test = self.tests.[testId]
+            test = self.tests[testId]
             testClass = test.getClazz()
         
         tetradProperties = javabridge.JClassWrapper("edu.cmu.tetrad.util.TetradProperties")
@@ -135,7 +135,7 @@ class tetradrunner():
         algorithmAnnotations = javabridge.JClassWrapper("edu.cmu.tetrad.annotation.AlgorithmAnnotations")
         algorithmAnnotations = algorithmAnnotations.getInstance()
         
-        if testClass == None && algorithmAnnotations.requireIndependenceTest(algoClass):
+        if testClass == None and algorithmAnnotations.requireIndependenceTest(algoClass):
             defaultTestClassName = None
             
             # Default dataType
@@ -164,7 +164,7 @@ class tetradrunner():
             score = self.scores[scoreId]
             scoreClass = score.getClazz()
 
-        if scoreClass == None && algorithmAnnotations.requireScore(algoClass):
+        if scoreClass == None and algorithmAnnotations.requireScore(algoClass):
             defaultScoreClassName = None
             
             # Default dataType
