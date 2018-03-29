@@ -79,8 +79,16 @@ class tetradrunner():
 
     def getAlgorithmDescription(self, algoId):
         algo = self.algos.get(algoId)
+        algoClass = algo.getClazz()
         algoAnno = algo.getAnnotation()
         print(algoAnno.name() + ': ' + algoAnno.description())
+        algorithmAnnotations = javabridge.JClassWrapper("edu.cmu.tetrad.annotation.AlgorithmAnnotations")
+        if algorithmAnnotations.getInstance().requireIndependenceTest(algoClass):
+            print("\nIt requires the independence test.")
+        if algorithmAnnotations.getInstance().requireScore(algoClass):
+            print("\nIt requires the score.")
+        if algorithmAnnotations.getInstance().acceptKnowledge(algoClass):
+            print("\nIt accepts the prior knowledge.")
     
     def getAlgorithmParameters(self, algoId, testId = None, scoreId = None):
         algo = self.algos.get(algoId)
@@ -109,26 +117,79 @@ class tetradrunner():
     
             print(algoParam + ": " + desc + ' (' + javaClass + ') [default:' + str(defaultValue) + ']')
         
-    def run(self, algoId, dfs, testId = None, scoreId = None, priorKnowledge = None, dataType = 0, numCategoriesToDiscretize = 4, **parameters):
+    def run(self, algoId, dfs, testId = None, scoreId = None, priorKnowledge = None, dataType = 'continuous', numCategoriesToDiscretize = 4, **parameters):
         
         pc = self.pc
         
-        algo = self.algos.get(algoId)
+        algo = self.algos.[algoId]
         algoAnno = algo.getAnnotation()
         algoClass = algo.getClazz()
         
         testClass = None
         if testId is not None:
-            test = self.tests.get(testId)
+            test = self.tests.[testId]
             testClass = test.getClazz()
+        
+        tetradProperties = javabridge.JClassWrapper("edu.cmu.tetrad.util.TetradProperties")
+        tetradProperties = tetradProperties.getInstance()
+        algorithmAnnotations = javabridge.JClassWrapper("edu.cmu.tetrad.annotation.AlgorithmAnnotations")
+        algorithmAnnotations = algorithmAnnotations.getInstance()
+        
+        if testClass == None && algorithmAnnotations.requireIndependenceTest(algoClass):
+            defaultTestClassName = None
             
+            # Default dataType
+            continuous = 'datatype.continuous.test.default'
+            discrete = 'datatype.discrete.test.default'
+            mixed = 'datatype.mixed.test.default'
+            
+            if dataType == 'continuous':
+                defaultTestClassName = tetradProperties.getValue(continuous)
+            elif dataType == 'discrete':
+                defaultTestClassName = tetradProperties.getValue(discrete)
+            else:
+                defaultTestClassName = tetradProperties.getValue(mixed)
+            
+            for key in self.tests:
+                test = self.tests[key]
+                tClass = test.getClazz()
+                name = tClass.getName()
+		  	
+                if name == defaultTestClassName:
+                    testClass = tClass
+                    break
+
         scoreClass = None
         if scoreId is not None:
-            score = self.scores.get(scoreId)
+            score = self.scores[scoreId]
             scoreClass = score.getClazz()
-        
+
+        if scoreClass == None && algorithmAnnotations.requireScore(algoClass):
+            defaultScoreClassName = None
+            
+            # Default dataType
+            continuous = 'datatype.continuous.score.default'
+            discrete = 'datatype.discrete.score.default'
+            mixed = 'datatype.mixed.score.default'
+            
+            if dataType == 'continuous':
+                defaultScoreClassName = tetradProperties.getValue(continuous)
+            elif dataType == 'discrete':
+                defaultScoreClassName = tetradProperties.getValue(discrete)
+            else:
+                defaultScoreClassName = tetradProperties.getValue(mixed)
+            
+            for key in self.scores:
+                score = self.scores[key]
+                sClass = score.getClazz()
+                name = sClass.getName()
+		  	
+                if name == defaultScoreClassName:
+                    scoreClass = sClass
+                    break
+            
         params = javabridge.JClassWrapper('edu.cmu.tetrad.util.Parameters')()
-        for key in parameters.keys():
+        for key in parameters:
             if self.paramDescs.get(key) is not None:
                 value = parameters[key]
                 params.set(key, value)
@@ -137,13 +198,13 @@ class tetradrunner():
         if not isinstance(dfs, list):
             
             # Continuous
-            if dataType == 0:
+            if dataType == 'continuous':
                 if 'bootstrapSampleSize' in parameters and parameters['bootstrapSampleSize'] > 0:
                     tetradData = pc.loadContinuousData(dfs, outputDataset = True)
                 else:
                     tetradData = pc.loadContinuousData(dfs)
             # Discrete
-            elif dataType == 1:
+            elif dataType == 'discrete':
                 tetradData = pc.loadDiscreteData(dfs)
             else:
                 tetradData = pc.loadMixedData(dfs, numCategoriesToDiscretize)
@@ -154,13 +215,13 @@ class tetradrunner():
             for df in dfs:
                 dataset = None
                 # Continuous
-                if dataType == 0:
+                if dataType == 'continuous':
                     if 'bootstrapSampleSize' in parameters and parameters['bootstrapSampleSize'] > 0:
                         dataset = pc.loadContinuousData(df, outputDataset = True)
                     else:
                         dataset = pc.loadContinuousData(df)
                 # Discrete
-                elif dataType == 1:
+                elif dataType == 'discrete':
                     dataset = pc.loadDiscreteData(df)
                 else:
                     dataset = pc.loadMixedData(df, numCategoriesToDiscretize)
@@ -199,7 +260,7 @@ class lofs():
     nodes = []
     edges = []
     
-    def __init__(self, tetradGraph, dfs, dataType = 0, numCategoriesToDiscretize = 4, rule = 'R1', score = 'andersonDarling', alpha = 0.01, epsilon = 1.0, zeta = 0.0, orientStrongerDirection = False, r2Orient2Cycles = True, edgeCorrected = False, selfLoopStrength = 1.0):
+    def __init__(self, tetradGraph, dfs, dataType = 'continuous', numCategoriesToDiscretize = 4, rule = 'R1', score = 'andersonDarling', alpha = 0.01, epsilon = 1.0, zeta = 0.0, orientStrongerDirection = False, r2Orient2Cycles = True, edgeCorrected = False, selfLoopStrength = 1.0):
         datasets = javabridge.JClassWrapper('java.util.ArrayList')()
         
         pc = self.pc
@@ -208,10 +269,10 @@ class lofs():
             df = dfs[idx]
             tetradData = None
             # Continuous
-            if dataType == 0:
+            if dataType == 'continuous':
                 tetradData = pc.loadContinuousData(df, outputDataset = True)
             # Discrete
-            elif dataType == 1:
+            elif dataType == 'discrete':
                 tetradData = pc.loadDiscreteData(df)
             # Mixed
             else:
@@ -319,14 +380,14 @@ class ccd():
     nodes = []
     edges = []
     
-    def __init__(self, df, dataType = 0, numCategoriesToDiscretize = 4, depth = 3, alpha = 0.05, priorKnowledge = None, numBootstrap = -1, ensembleMethod = 'Highest'):
+    def __init__(self, df, dataType = 'continuous', numCategoriesToDiscretize = 4, depth = 3, alpha = 0.05, priorKnowledge = None, numBootstrap = -1, ensembleMethod = 'Highest'):
         tetradData = None
         indTest = None
         
         pc = self.pc
         
         # Continuous
-        if dataType == 0:
+        if dataType == 'continuous':
             if numBootstrap < 1:                
                 tetradData = pc.loadContinuousData(df)
                 indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestFisherZ')(tetradData, alpha)
@@ -334,7 +395,7 @@ class ccd():
                 tetradData = pc.loadContinuousData(df, outputDataset = True)
                 indTest = javabridge.JClassWrapper('edu.cmu.tetrad.algcomparison.independence.FisherZ')()
         # Discrete
-        elif dataType == 1:
+        elif dataType == 'discrete':
             tetradData = pc.loadDiscreteData(df)
             if numBootstrap < 1:
                 indTest = javabridge.JClassWrapper('edu.cmu.tetrad.search.IndTestChiSquare')(tetradData, alpha)
