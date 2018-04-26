@@ -287,8 +287,20 @@ class pycausal():
                 if (v0, v1) in edges.keys():
                     arc = edges[v0, v1].split()[1]
                     edge = pydot.Edge(v0, v1)
-                    if arc == '---':
+                    if(arc[0] != "-"):
+                        edge.set_dir("both")
+            
+                    if(arc[0] == "o"):
+                        edge.set_arrowtail("odot")
+                    elif(arc[0] == "<"):
+                        edge.set_arrowtail("normal")
+            
+                    if(arc[2] == "-"):
                         edge.set_arrowhead("none")
+                    elif(arc[2] == "o"):
+                        edge.set_arrowhead("odot")
+                    else:
+                        edge.set_arrowhead("normal")
 
                     if len(bootstraps) > 0:
                         # nodes reported in sorted order
