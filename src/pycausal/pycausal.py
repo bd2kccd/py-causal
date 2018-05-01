@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 MA 02110-1301  USA
  
 Created on Feb 15, 2016
-Updated on Feb 28, 2018
+Updated on May 1, 2018
 
 @author: Chirayu Wongchokprasitti, PhD 
 @email: chw20@pitt.edu
@@ -111,7 +111,7 @@ class pycausal():
 
         else:
             # Generate random name
-            temp_data_file = ''.join(random.choice(string.lowercase) for i in range(10)) + '.csv'
+            temp_data_file = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(10)) + '.csv'
             temp_data_path = os.path.join(tempfile.gettempdir(), temp_data_file)
             df.to_csv(temp_data_path, sep = "\t", index = False)
 
@@ -149,7 +149,7 @@ class pycausal():
 
         else:
             #Generate random name
-            temp_data_file = ''.join(random.choice(string.lowercase) for i in range(10)) + '.csv'
+            temp_data_file = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(10)) + '.csv'
             temp_data_path = os.path.join(tempfile.gettempdir(), temp_data_file)
             df.to_csv(temp_data_path, sep = '\t', index = False)
 
@@ -198,7 +198,7 @@ class pycausal():
 
         else:
             # Generate random name
-            temp_data_file = ''.join(random.choice(string.lowercase) for i in range(10)) + '.csv'
+            temp_data_file = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(10)) + '.csv'
             temp_data_path = os.path.join(tempfile.gettempdir(), temp_data_file)
             df.to_csv(temp_data_path, sep = "\t", index = False)
 
@@ -287,6 +287,7 @@ class pycausal():
                 if (v0, v1) in edges.keys():
                     arc = edges[v0, v1].split()[1]
                     edge = pydot.Edge(v0, v1)
+                    
                     if(arc[0] != "-"):
                         edge.set_dir("both")
             
