@@ -99,12 +99,12 @@ class pycausal():
             for row in df.index:
 
                 for col in cont_list:
-                    value = javabridge.JClassWrapper('java.lang.Double')(df.ix[row][col])
+                    value = javabridge.JClassWrapper('java.lang.Double')(df.iloc[row,col])
                     mixedDataBox.set(row,col,value)
 
                 for col in disc_list:
                     cat_array = sorted(set(df[df.columns[col]]))
-                    value = javabridge.JClassWrapper('java.lang.Integer')(cat_array.index(df.ix[row][col]))
+                    value = javabridge.JClassWrapper('java.lang.Integer')(cat_array.index(df.iloc[row,col]))
                     mixedDataBox.set(row,col,value)
 
             tetradData = javabridge.JClassWrapper('edu.cmu.tetrad.data.BoxDataSet')(mixedDataBox, node_list)
@@ -140,7 +140,7 @@ class pycausal():
                 node_list.add(nodi)
 
                 for row in df.index:
-                    value = javabridge.JClassWrapper('java.lang.Double')(df.ix[row][col_no])
+                    value = javabridge.JClassWrapper('java.lang.Double')(df.iloc[row,col_no])
                     dataBox.set(row,col_no,value)
 
                 col_no = col_no + 1
@@ -189,7 +189,7 @@ class pycausal():
                 node_list.add(nodi)
 
                 for row in df.index:
-                    value = javabridge.JClassWrapper('java.lang.Integer')(cat_array.index(df.ix[row][col_no]))
+                    value = javabridge.JClassWrapper('java.lang.Integer')(cat_array.index(df.iloc[row,col_no]))
                     dataBox.set(row,col_no,value)
 
                 col_no = col_no + 1
