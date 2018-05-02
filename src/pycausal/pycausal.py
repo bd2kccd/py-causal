@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 MA 02110-1301  USA
  
 Created on Feb 15, 2016
-Updated on Feb 28, 2018
+Updated on May 1, 2018
 
 @author: Chirayu Wongchokprasitti, PhD 
 @email: chw20@pitt.edu
@@ -99,19 +99,19 @@ class pycausal():
             for row in df.index:
 
                 for col in cont_list:
-                    value = javabridge.JClassWrapper('java.lang.Double')(df.ix[row][col])
+                    value = javabridge.JClassWrapper('java.lang.Double')(df.iloc[row,col])
                     mixedDataBox.set(row,col,value)
 
                 for col in disc_list:
                     cat_array = sorted(set(df[df.columns[col]]))
-                    value = javabridge.JClassWrapper('java.lang.Integer')(cat_array.index(df.ix[row][col]))
+                    value = javabridge.JClassWrapper('java.lang.Integer')(cat_array.index(df.iloc[row,col]))
                     mixedDataBox.set(row,col,value)
 
             tetradData = javabridge.JClassWrapper('edu.cmu.tetrad.data.BoxDataSet')(mixedDataBox, node_list)
 
         else:
             # Generate random name
-            temp_data_file = ''.join(random.choice(string.lowercase) for i in range(10)) + '.csv'
+            temp_data_file = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(10)) + '.csv'
             temp_data_path = os.path.join(tempfile.gettempdir(), temp_data_file)
             df.to_csv(temp_data_path, sep = "\t", index = False)
 
@@ -140,7 +140,7 @@ class pycausal():
                 node_list.add(nodi)
 
                 for row in df.index:
-                    value = javabridge.JClassWrapper('java.lang.Double')(df.ix[row][col_no])
+                    value = javabridge.JClassWrapper('java.lang.Double')(df.iloc[row,col_no])
                     dataBox.set(row,col_no,value)
 
                 col_no = col_no + 1
@@ -149,7 +149,7 @@ class pycausal():
 
         else:
             #Generate random name
-            temp_data_file = ''.join(random.choice(string.lowercase) for i in range(10)) + '.csv'
+            temp_data_file = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(10)) + '.csv'
             temp_data_path = os.path.join(tempfile.gettempdir(), temp_data_file)
             df.to_csv(temp_data_path, sep = '\t', index = False)
 
@@ -189,7 +189,7 @@ class pycausal():
                 node_list.add(nodi)
 
                 for row in df.index:
-                    value = javabridge.JClassWrapper('java.lang.Integer')(cat_array.index(df.ix[row][col_no]))
+                    value = javabridge.JClassWrapper('java.lang.Integer')(cat_array.index(df.iloc[row,col_no]))
                     dataBox.set(row,col_no,value)
 
                 col_no = col_no + 1
@@ -198,7 +198,7 @@ class pycausal():
 
         else:
             # Generate random name
-            temp_data_file = ''.join(random.choice(string.lowercase) for i in range(10)) + '.csv'
+            temp_data_file = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(10)) + '.csv'
             temp_data_path = os.path.join(tempfile.gettempdir(), temp_data_file)
             df.to_csv(temp_data_path, sep = "\t", index = False)
 
@@ -286,29 +286,43 @@ class pycausal():
             for v1 in nodes.keys():
                 if (v0, v1) in edges.keys():
                     arc = edges[v0, v1].split()[1]
-                    edge = pydot.Edge(v0, v1)
-                    if arc == '---':
-                        edge.set_arrowhead("none")
+                    if len(arc) >= 3:
+                        edge = pydot.Edge(v0, v1)
 
-                    if len(bootstraps) > 0:
-                        # nodes reported in sorted order
-                        if nodes_sorted.index(v0) < nodes_sorted.index(v1): 
-                            label = v0 + ' - ' + v1 + '\n' 
+                        if(arc[0] != "-"):
+                            edge.set_dir("both")
+
+                        if(arc[0] == "o"):
+                            edge.set_arrowtail("odot")
+                        elif(arc[0] == "<"):
+                            edge.set_arrowtail("normal")
+
+                        if(arc[2] == "-"):
+                            edge.set_arrowhead("none")
+                        elif(arc[2] == "o"):
+                            edge.set_arrowhead("odot")
                         else:
-                            label = v1 + ' - ' + v0 + '\n'            
+                            edge.set_arrowhead("normal")
 
-                        # Bootstrapping distribution
-                        # [no edge]
-                        if '0.0000' not in bootstraps[v0, v1][0:16]:
-                            label += bootstraps[v0, v1][0:16] + '\n'
-                        for i in range(0,7):
-                            e = bootstraps[v0, v1][16+i*12:28+i*12]
-                            if '0.0000' not in e:                    
-                                label += e + '\n'
+                        if len(bootstraps) > 0:
+                            # nodes reported in sorted order
+                            if nodes_sorted.index(v0) < nodes_sorted.index(v1): 
+                                label = v0 + ' - ' + v1 + '\n' 
+                            else:
+                                label = v1 + ' - ' + v0 + '\n'            
 
-                        edge.set('fontname', 'courier')
-                        edge.set('label', label)
+                            # Bootstrapping distribution
+                            # [no edge]
+                            if '0.0000' not in bootstraps[v0, v1][0:16]:
+                                label += bootstraps[v0, v1][0:16] + '\n'
+                            for i in range(0,7):
+                                e = bootstraps[v0, v1][16+i*12:28+i*12]
+                                if '0.0000' not in e:                    
+                                    label += e + '\n'
 
-                    graph.add_edge(edge)      
+                            edge.set('fontname', 'courier')
+                            edge.set('label', label)
+
+                        graph.add_edge(edge)      
 
         return graph
