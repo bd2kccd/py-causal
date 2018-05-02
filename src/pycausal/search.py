@@ -377,6 +377,7 @@ class ccd():
     pc = pc()
     
     tetradGraph = None
+    graph = None
     nodes = []
     edges = []
     
@@ -434,11 +435,15 @@ class ccd():
         self.tetradGraph = ccd.search()
         
         self.nodes = pc.extractTetradGraphNodes(self.tetradGraph)
-        self.edges = pc.extractTetradGraphEdges(self.tetradGraph) 
+        self.edges = pc.extractTetradGraphEdges(self.tetradGraph)
+        self.graph = pc.generatePyDotGraph(self.nodes,self.edges,self.tetradGraph)
         
     def getTetradGraph(self):
         return self.tetradGraph
     
+    def getDot(self):
+        return self.graph
+        
     def getNodes(self):
         return self.nodes
     
@@ -507,6 +512,7 @@ class bayesEst():
         return self.bayesIm
     
 class randomDag():
+    pc = pc()
     
     tetradGraph = None
     graph = None
@@ -515,6 +521,8 @@ class randomDag():
     dag = None
     
     def __init__(self, seed = None, numNodes = 10, numEdges = 10):
+        pc = self.pc
+        
         if seed is not None:
             RandomUtil = javabridge.static_call("edu/cmu/tetrad/util/RandomUtil","getInstance","()Ledu/cmu/tetrad/util/RandomUtil;")
             javabridge.call(RandomUtil, "setSeed", "(J)V", seed)
