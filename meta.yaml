@@ -1,6 +1,6 @@
 package:
   name: pycausal
-  version: "0.1.4"
+  version: "1.1.0"
  
 source:
   git_rev: v0.1
