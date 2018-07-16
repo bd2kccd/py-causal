@@ -120,7 +120,7 @@ class pycausal():
             delimiter = javabridge.get_static_field('edu/pitt/dbmi/data/Delimiter','TAB','Ledu/pitt/dbmi/data/Delimiter;')
             dataReader = javabridge.JClassWrapper('edu.pitt.dbmi.data.reader.tabular.MixedTabularDataFileReader')(numCategoriesToDiscretize, f,delimiter)
             tetradData = dataReader.readInData()
-            tetradData = javabridge.static_call('edu/pitt/dbmi/causal/cmd/util/TetradDataUtils','toDataModel','(Ledu/pitt/dbmi/data/Dataset;)Ledu/cmu/tetrad/data/DataModel;', tetradData)
+            tetradData = javabridge.static_call('edu/cmu/tetrad/util/DataConvertUtils','toDataModel','(Ledu/pitt/dbmi/data/Dataset;)Ledu/cmu/tetrad/data/DataModel;', tetradData)
 
             os.remove(temp_data_path)
 
@@ -158,7 +158,7 @@ class pycausal():
             delimiter = javabridge.get_static_field('edu/pitt/dbmi/data/Delimiter','TAB','Ledu/pitt/dbmi/data/Delimiter;')
             dataReader = javabridge.JClassWrapper('edu.pitt.dbmi.data.reader.tabular.ContinuousTabularDataFileReader')(f,delimiter)
             tetradData = dataReader.readInData()
-            tetradData = javabridge.static_call('edu/pitt/dbmi/causal/cmd/util/TetradDataUtils','toDataModel','(Ledu/pitt/dbmi/data/Dataset;)Ledu/cmu/tetrad/data/DataModel;', tetradData)
+            tetradData = javabridge.static_call('edu/cmu/tetrad/util/DataConvertUtils','toDataModel','(Ledu/pitt/dbmi/data/Dataset;)Ledu/cmu/tetrad/data/DataModel;', tetradData)
 
             os.remove(temp_data_path)
 
@@ -207,7 +207,7 @@ class pycausal():
             delimiter = javabridge.get_static_field('edu/pitt/dbmi/data/Delimiter','TAB','Ledu/pitt/dbmi/data/Delimiter;')
             dataReader = javabridge.JClassWrapper('edu.pitt.dbmi.data.reader.tabular.VerticalDiscreteTabularDataReader')(f,delimiter)
             tetradData = dataReader.readInData()
-            tetradData = javabridge.static_call('edu/pitt/dbmi/causal/cmd/util/TetradDataUtils','toDataModel','(Ledu/pitt/dbmi/data/Dataset;)Ledu/cmu/tetrad/data/DataModel;', tetradData)
+            tetradData = javabridge.static_call('edu/cmu/tetrad/util/DataConvertUtils','toDataModel','(Ledu/pitt/dbmi/data/Dataset;)Ledu/cmu/tetrad/data/DataModel;', tetradData)
 
             os.remove(temp_data_path)
 
