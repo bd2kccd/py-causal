@@ -15,17 +15,13 @@ pc.start_vm()
 
 from pycausal import search as s
 tetrad = s.tetradrunner()
-tetrad.run(algoId = 'fges', dfs = df, scoreId = 'sem-bic', priorKnowledge = prior, dataType = 0,
+tetrad.run(algoId = 'fges', dfs = df, scoreId = 'sem-bic', dataType = 'continuous',
            penaltyDiscount = 2, maxDegree = -1, faithfulnessAssumed = True, verbose = True)
 
 tetrad.getNodes()
 tetrad.getEdges()
 
 dot = tetrad.getDot()
-svg_str = dot.create_svg(prog='dot')
-
-f = open('fges-continuous.dot','w')
-f.write(svg_str)
-f.close()
+dot.write_svg('fges-continuous.svg')
 
 pc.stop_vm()
