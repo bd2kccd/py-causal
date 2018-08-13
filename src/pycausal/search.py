@@ -10,7 +10,6 @@ import javabridge
 import os
 import glob
 import numpy as np
-import pydot
 import random
 import string
 import tempfile
@@ -29,7 +28,6 @@ class tetradrunner():
     algoFactory = None
     
     tetradGraph = None
-    graph = None
     nodes = []
     edges = []
     
@@ -235,20 +233,17 @@ class tetradrunner():
         self.tetradGraph = algorithm.search(tetradData, params)
         self.nodes = pc.extractTetradGraphNodes(self.tetradGraph)
         self.edges = pc.extractTetradGraphEdges(self.tetradGraph)
-        self.graph = pc.generatePyDotGraph(self.nodes,self.edges,self.tetradGraph)
         
     def getTetradGraph(self):
         return self.tetradGraph
-    
-    def getDot(self):
-        return self.graph
     
     def getNodes(self):
         return self.nodes
     
     def getEdges(self):
         return self.edges
-
+        
+        
 # rule: IGCI, R1TimeLag, R1, R2, R3, R4, Tanh, EB, Skew, SkewE, RSkew, RSkewE, Patel, Patel25, Patel50, Patel75, Patel90, FastICA, RC, Nlo
 # score: andersonDarling, skew, kurtosis, fifthMoment, absoluteValue, exp, expUnstandardized, expUnstandardizedInverted, other, logcosh, entropy
 class lofs():
@@ -256,7 +251,6 @@ class lofs():
     pc = pc()
     
     tetradGraph = None
-    graph = None
     nodes = []
     edges = []
     
@@ -300,13 +294,9 @@ class lofs():
         
         self.nodes = pc.extractTetradGraphNodes(self.tetradGraph)
         self.edges = pc.extractTetradGraphEdges(self.tetradGraph)
-        self.graph = pc.generatePyDotGraph(self.nodes,self.edges,self.tetradGraph)
         
     def getTetradGraph(self):
         return self.tetradGraph
-    
-    def getDot(self):
-        return self.graph
     
     def getNodes(self):
         return self.nodes
@@ -318,7 +308,6 @@ class dm():
     pc = pc()
     
     tetradGraph = None
-    graph = None
     nodes = []
     edges = []
     
@@ -359,13 +348,9 @@ class dm():
         
         self.nodes = pc.extractTetradGraphNodes(self.tetradGraph, orig_columns, new_columns)
         self.edges = pc.extractTetradGraphEdges(self.tetradGraph, orig_columns, new_columns)
-        self.graph = pc.generatePyDotGraph(self.nodes,self.edges,self.tetradGraph)
         
     def getTetradGraph(self):
         return self.tetradGraph
-    
-    def getDot(self):
-        return self.graph
     
     def getNodes(self):
         return self.nodes
@@ -377,7 +362,6 @@ class ccd():
     pc = pc()
     
     tetradGraph = None
-    graph = None
     nodes = []
     edges = []
     
@@ -436,13 +420,9 @@ class ccd():
         
         self.nodes = pc.extractTetradGraphNodes(self.tetradGraph)
         self.edges = pc.extractTetradGraphEdges(self.tetradGraph)
-        self.graph = pc.generatePyDotGraph(self.nodes,self.edges,self.tetradGraph)
         
     def getTetradGraph(self):
         return self.tetradGraph
-    
-    def getDot(self):
-        return self.graph
         
     def getNodes(self):
         return self.nodes
@@ -454,7 +434,6 @@ class bayesEst():
     pc = pc()
     
     tetradGraph = None
-    graph = None
     nodes = []
     edges = []
     dag = None
@@ -485,16 +464,12 @@ class bayesEst():
 
         self.nodes = pc.extractTetradGraphNodes(dag)
         self.edges = pc.extractTetradGraphEdges(dag)
-        self.graph = pc.generatePyDotGraph(self.nodes,self.edges,dag)
         self.dag = dag
         self.bayesPm = pm
         self.bayesIm = im
         
     def getTetradGraph(self):
         return self.tetradGraph
-    
-    def getDot(self):
-        return self.graph
         
     def getNodes(self):
         return self.nodes
@@ -515,7 +490,6 @@ class randomDag():
     pc = pc()
     
     tetradGraph = None
-    graph = None
     nodes = []
     edges = []
     dag = None
@@ -537,14 +511,10 @@ class randomDag():
         self.tetradGraph = dag    
         self.nodes = pc.extractTetradGraphNodes(dag)
         self.edges = pc.extractTetradGraphEdges(dag)
-        self.graph = pc.generatePyDotGraph(self.nodes,self.edges,dag)
         self.dag = dag
         
     def getTetradGraph(self):
         return self.tetradGraph
-    
-    def getDot(self):
-        return self.graph
         
     def getNodes(self):
         return self.nodes

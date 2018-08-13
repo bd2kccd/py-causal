@@ -52,9 +52,7 @@ setup(
     },
     install_requires = [
         'javabridge>=1.0.11', 
-        'pydot',
-        'pyparsing',
-        'GraphViz'],
+        'pyparsing'],
     data_files = [('.', ['LICENSE', 'README'], 'data/charity.txt','data/audiology.txt')]
 )
 
