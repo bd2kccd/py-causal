@@ -28,7 +28,7 @@ from distutils.core import setup
 
 setup(
     name = "pycausal",
-    version = "1.1.1",
+    version = "1.1.0",
     description = "Python wrapper for the Tetrad Library",
     author = "Chirayu Kong Wongchokprasitti",
     author_email = 'chw20@pitt.edu',
