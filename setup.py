@@ -21,7 +21,7 @@ MA 02110-1301  USA
 Created on Feb 15, 2016
 Updated on Aug 13, 2018
 
-@author: chw20
+@author: Chirayu Wongchokprasitti
 '''
 
 from distutils.core import setup
