@@ -12,9 +12,9 @@ Python 2.7 and 3.6
 * javabridge>=1.0.11
 * pandas
 * numpy 
-* pydot
-* GraphViz
 * JDK 1.8
+* pydot (Optional)
+* GraphViz (Optional)
 
 Installation overview:
 ======================
@@ -36,8 +36,8 @@ Once pip is installed, execute these commands
     pip install -U numpy
     pip install -U pandas
     pip install -U javabridge
-    pip install -U pydot 
-    pip install -U GraphViz
+    pip install -U pydot # optional
+    pip install -U GraphViz # optional
 
 Note: you also need to install the GraphViz engine by following [these instructions](http://www.graphviz.org/download/).
 
