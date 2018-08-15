@@ -79,7 +79,7 @@ class tetradrunner():
         algo = self.algos.get(algoId)
         algoClass = algo.getClazz()
         
-        algorithmDescriptions = javabridge.JClassWrapper("edu.cmu.tetrad.annotation.AlgorithmDescriptions")
+        algorithmDescriptions = javabridge.JClassWrapper("edu.cmu.tetrad.util.AlgorithmDescriptions")
         algoDescs = algorithmDescriptions.getInstance()
 
         print(algoDescs.get(algoId))
