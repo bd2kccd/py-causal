@@ -78,8 +78,11 @@ class tetradrunner():
     def getAlgorithmDescription(self, algoId):
         algo = self.algos.get(algoId)
         algoClass = algo.getClazz()
-        algoAnno = algo.getAnnotation()
-        print(algoAnno.name() + ': ' + algoAnno.description())
+        
+        algorithmDescriptions = javabridge.JClassWrapper("edu.cmu.tetrad.util.AlgorithmDescriptions")
+        algoDescs = algorithmDescriptions.getInstance()
+
+        print(algoDescs.get(algoId))
         algorithmAnnotations = javabridge.JClassWrapper("edu.cmu.tetrad.annotation.AlgorithmAnnotations")
         if algorithmAnnotations.getInstance().requireIndependenceTest(algoClass):
             print("\nIt requires the independence test.")
