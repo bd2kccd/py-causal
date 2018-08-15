@@ -51,7 +51,9 @@ setup(
         'pycausal': ['lib/*.jar'],
     },
     install_requires = [
-        'javabridge>=1.0.11', 
+        'javabridge>=1.0.11',
+        'numpy',
+        'pandas',
         'pyparsing'],
     data_files = [('.', ['LICENSE', 'README'], 'data/charity.txt','data/audiology.txt')]
 )
