@@ -61,17 +61,17 @@ class tetradrunner():
         self.algoFactory = javabridge.JClassWrapper("edu.cmu.tetrad.algcomparison.algorithm.AlgorithmFactory")
         
     def listAlgorithms(self):
-        _algos = self.algos.keys()
+        _algos = list(self.algos.keys())
         _algos.sort()
         print('\n'.join(_algos))
     
     def listIndTests(self):
-        _tests = self.tests.keys()
+        _tests = list(self.tests.keys())
         _tests.sort()
         print('\n'.join(_tests))
     
     def listScores(self):
-        _scores = self.scores.keys()
+        _scores = list(self.scores.keys())
         _scores.sort()
         print('\n'.join(_scores))
 
