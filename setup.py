@@ -24,7 +24,7 @@ Updated on Aug 13, 2018
 @author: Chirayu Wongchokprasitti
 '''
 
-from distutils.core import setup
+from setuptools import setup
 
 setup(
     name = "pycausal",
