@@ -120,7 +120,7 @@ class pycausal():
             delimiter = javabridge.get_static_field('edu/pitt/dbmi/data/Delimiter','TAB','Ledu/pitt/dbmi/data/Delimiter;')
             dataReader = javabridge.JClassWrapper('edu.pitt.dbmi.data.reader.tabular.MixedTabularDataFileReader')(numCategoriesToDiscretize, f,delimiter)
             tetradData = dataReader.readInData()
-            tetradData = javabridge.static_call('edu/pitt/dbmi/causal/cmd/util/TetradDataUtils','toDataModel','(Ledu/pitt/dbmi/data/Dataset;)Ledu/cmu/tetrad/data/DataModel;', tetradData)
+            tetradData = javabridge.static_call('edu/cmu/tetrad/util/DataConvertUtils','toDataModel','(Ledu/pitt/dbmi/data/Dataset;)Ledu/cmu/tetrad/data/DataModel;', tetradData)
 
             os.remove(temp_data_path)
 
@@ -158,7 +158,7 @@ class pycausal():
             delimiter = javabridge.get_static_field('edu/pitt/dbmi/data/Delimiter','TAB','Ledu/pitt/dbmi/data/Delimiter;')
             dataReader = javabridge.JClassWrapper('edu.pitt.dbmi.data.reader.tabular.ContinuousTabularDataFileReader')(f,delimiter)
             tetradData = dataReader.readInData()
-            tetradData = javabridge.static_call('edu/pitt/dbmi/causal/cmd/util/TetradDataUtils','toDataModel','(Ledu/pitt/dbmi/data/Dataset;)Ledu/cmu/tetrad/data/DataModel;', tetradData)
+            tetradData = javabridge.static_call('edu/cmu/tetrad/util/DataConvertUtils','toDataModel','(Ledu/pitt/dbmi/data/Dataset;)Ledu/cmu/tetrad/data/DataModel;', tetradData)
 
             os.remove(temp_data_path)
 
@@ -207,7 +207,7 @@ class pycausal():
             delimiter = javabridge.get_static_field('edu/pitt/dbmi/data/Delimiter','TAB','Ledu/pitt/dbmi/data/Delimiter;')
             dataReader = javabridge.JClassWrapper('edu.pitt.dbmi.data.reader.tabular.VerticalDiscreteTabularDataReader')(f,delimiter)
             tetradData = dataReader.readInData()
-            tetradData = javabridge.static_call('edu/pitt/dbmi/causal/cmd/util/TetradDataUtils','toDataModel','(Ledu/pitt/dbmi/data/Dataset;)Ledu/cmu/tetrad/data/DataModel;', tetradData)
+            tetradData = javabridge.static_call('edu/cmu/tetrad/util/DataConvertUtils','toDataModel','(Ledu/pitt/dbmi/data/Dataset;)Ledu/cmu/tetrad/data/DataModel;', tetradData)
 
             os.remove(temp_data_path)
 
@@ -247,82 +247,7 @@ class pycausal():
 
         return e            
 
-    def generatePyDotGraph(self, n,e,tetradGraph):
-        graph = pydot.Dot(graph_type='digraph')
+    def tetradGraphToDot(self, tetradGraph): 
+        graph_dot = javabridge.static_call('edu/cmu/tetrad/graph/GraphUtils','graphToDot','(Ledu/cmu/tetrad/graph/Graph;)Ljava/lang/String;', tetradGraph)
 
-        # causal search and get edges
-        tetradString = tetradGraph.toString()
-        graph_edges = []
-        token = tetradString.split('\n')
-        for edge in token[4:-1]:
-            if len(str(edge).split('. ')) > 1:
-                graph_edges.append(str(edge).split('. ')[1])
-
-        # gets the nodes in sorted order
-        nodes_sorted = str(token[1]).split(',')
-        nodes_sorted.sort()
-        #for node in nodes_sorted:
-        #    graph.add_node(pydot.Node(node))
-
-        # create dictionaries of the nodes and edges
-        nodes = {}
-        edges = {}
-        bootstraps = {}
-        for edge in graph_edges:
-            token = str(edge).split()
-            n1 = token[0]
-            arc = token[1]
-            n2 = token[2]
-            if n1 not in nodes: nodes[n1] = []
-            if n2 not in nodes: nodes[n2] = []
-            nodes[n1].append(n2)
-            nodes[n2].append(n1)
-            edges[n1, n2] = n1 + ' ' + arc + ' ' + n2
-            if len(str(edge)) > 100:
-                bootstraps[n1, n2] = str(edge[-100:])
-
-        # graph plot the variables and edges
-        for v0 in nodes.keys():
-            for v1 in nodes.keys():
-                if (v0, v1) in edges.keys():
-                    arc = edges[v0, v1].split()[1]
-                    if len(arc) >= 3:
-                        edge = pydot.Edge(v0, v1)
-
-                        if(arc[0] != "-"):
-                            edge.set_dir("both")
-
-                        if(arc[0] == "o"):
-                            edge.set_arrowtail("odot")
-                        elif(arc[0] == "<"):
-                            edge.set_arrowtail("normal")
-
-                        if(arc[2] == "-"):
-                            edge.set_arrowhead("none")
-                        elif(arc[2] == "o"):
-                            edge.set_arrowhead("odot")
-                        else:
-                            edge.set_arrowhead("normal")
-
-                        if len(bootstraps) > 0:
-                            # nodes reported in sorted order
-                            if nodes_sorted.index(v0) < nodes_sorted.index(v1): 
-                                label = v0 + ' - ' + v1 + '\n' 
-                            else:
-                                label = v1 + ' - ' + v0 + '\n'            
-
-                            # Bootstrapping distribution
-                            # [no edge]
-                            if '0.0000' not in bootstraps[v0, v1][0:16]:
-                                label += bootstraps[v0, v1][0:16] + '\n'
-                            for i in range(0,7):
-                                e = bootstraps[v0, v1][16+i*12:28+i*12]
-                                if '0.0000' not in e:                    
-                                    label += e + '\n'
-
-                            edge.set('fontname', 'courier')
-                            edge.set('label', label)
-
-                        graph.add_edge(edge)      
-
-        return graph
+        return graph_dot
