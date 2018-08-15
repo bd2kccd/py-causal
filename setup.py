@@ -55,5 +55,5 @@ setup(
         'numpy',
         'pandas',
         'pyparsing'],
-    data_files = [('.', ['LICENSE', 'README'], 'data/charity.txt','data/audiology.txt')]
+    data_files = ['.', ['LICENSE', 'README'], 'data/charity.txt','data/audiology.txt']
 )
