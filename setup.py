@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 MA 02110-1301  USA
 
 Created on Feb 15, 2016
-Updated on Aug 13, 2018
+Updated on Aug 23, 2018
 
 @author: Chirayu Wongchokprasitti
 '''
