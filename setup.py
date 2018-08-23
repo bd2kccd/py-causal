@@ -33,7 +33,7 @@ setup(
     author = "Chirayu Kong Wongchokprasitti",
     author_email = 'chw20@pitt.edu',
     url = 'http://github.com/bd2kccd/py-causal',
-    download_url = 'https://github.com/bd2kccd/py-causal/archive/v1.1.1.tar.gz',
+    download_url = 'https://github.com/bd2kccd/py-causal/archive/v1.1.0.tar.gz',
     license = 'Lesser GNU General Public License version >= 2.1 (LGPL >= 2.1)',
     keywords = 'tetrad causal graph bayesian network search discovery',
     platforms = ['any'],
@@ -54,6 +54,5 @@ setup(
         'javabridge>=1.0.11',
         'numpy',
         'pandas',
-        'pyparsing'],
-    data_files = ['.', ['LICENSE', 'README'], 'data/charity.txt','data/audiology.txt']
+        'pyparsing']
 )
