@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 MA 02110-1301  USA
 
 Created on Feb 15, 2016
-Updated on Aug 23, 2018
+Updated on Sep 26, 2018
 
 @author: Chirayu Wongchokprasitti
 '''
@@ -28,7 +28,7 @@ from setuptools import setup
 
 setup(
     name = "pycausal",
-    version = "1.1.0",
+    version = "1.1.1",
     description = "Python wrapper for the Tetrad Library",
     author = "Chirayu Kong Wongchokprasitti",
     author_email = 'chw20@pitt.edu',
