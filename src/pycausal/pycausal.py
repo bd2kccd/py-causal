@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 MA 02110-1301  USA
  
 Created on Feb 15, 2016
-Updated on May 1, 2018
+Updated on March 8, 2019
 
 @author: Chirayu Wongchokprasitti, PhD 
 @email: chw20@pitt.edu
@@ -117,10 +117,11 @@ class pycausal():
 
             # Read Data from File
             f = javabridge.JClassWrapper('java.io.File')(temp_data_path)
-            delimiter = javabridge.get_static_field('edu/pitt/dbmi/data/Delimiter','TAB','Ledu/pitt/dbmi/data/Delimiter;')
-            dataReader = javabridge.JClassWrapper('edu.pitt.dbmi.data.reader.tabular.MixedTabularDataFileReader')(numCategoriesToDiscretize, f,delimiter)
+            path = f.toPath()
+            delimiter = javabridge.get_static_field('edu/pitt/dbmi/data/reader/Delimiter','TAB','Ledu/pitt/dbmi/data/reader/Delimiter;')
+            dataReader = javabridge.JClassWrapper('edu.pitt.dbmi.data.reader.tabular.MixedTabularDatasetFileReader')(path,delimiter,numCategoriesToDiscretize)
             tetradData = dataReader.readInData()
-            tetradData = javabridge.static_call('edu/cmu/tetrad/util/DataConvertUtils','toDataModel','(Ledu/pitt/dbmi/data/Dataset;)Ledu/cmu/tetrad/data/DataModel;', tetradData)
+            tetradData = javabridge.static_call('edu/cmu/tetrad/util/DataConvertUtils','toDataModel','(Ledu/pitt/dbmi/data/reader/Data;)Ledu/cmu/tetrad/data/DataModel;', tetradData)
 
             os.remove(temp_data_path)
 
@@ -155,10 +156,11 @@ class pycausal():
 
             # Read Data from File
             f = javabridge.JClassWrapper('java.io.File')(temp_data_path)
-            delimiter = javabridge.get_static_field('edu/pitt/dbmi/data/Delimiter','TAB','Ledu/pitt/dbmi/data/Delimiter;')
-            dataReader = javabridge.JClassWrapper('edu.pitt.dbmi.data.reader.tabular.ContinuousTabularDataFileReader')(f,delimiter)
+            path = f.toPath()
+            delimiter = javabridge.get_static_field('edu/pitt/dbmi/data/reader/Delimiter','TAB','Ledu/pitt/dbmi/data/reader/Delimiter;')
+            dataReader = javabridge.JClassWrapper('edu.pitt.dbmi.data.reader.tabular.ContinuousTabularDatasetFileReader')(path,delimiter)
             tetradData = dataReader.readInData()
-            tetradData = javabridge.static_call('edu/cmu/tetrad/util/DataConvertUtils','toDataModel','(Ledu/pitt/dbmi/data/Dataset;)Ledu/cmu/tetrad/data/DataModel;', tetradData)
+            tetradData = javabridge.static_call('edu/cmu/tetrad/util/DataConvertUtils','toDataModel','(Ledu/pitt/dbmi/data/reader/Data;)Ledu/cmu/tetrad/data/DataModel;', tetradData)
 
             os.remove(temp_data_path)
 
@@ -204,10 +206,11 @@ class pycausal():
 
             # Read Data from File
             f = javabridge.JClassWrapper('java.io.File')(temp_data_path)
-            delimiter = javabridge.get_static_field('edu/pitt/dbmi/data/Delimiter','TAB','Ledu/pitt/dbmi/data/Delimiter;')
-            dataReader = javabridge.JClassWrapper('edu.pitt.dbmi.data.reader.tabular.VerticalDiscreteTabularDataReader')(f,delimiter)
+            path = f.toPath()
+            delimiter = javabridge.get_static_field('edu/pitt/dbmi/data/reader/Delimiter','TAB','Ledu/pitt/dbmi/data/reader/Delimiter;')
+            dataReader = javabridge.JClassWrapper('edu.pitt.dbmi.data.reader.tabular.VerticalDiscreteTabularDatasetFileReader')(path,delimiter)
             tetradData = dataReader.readInData()
-            tetradData = javabridge.static_call('edu/cmu/tetrad/util/DataConvertUtils','toDataModel','(Ledu/pitt/dbmi/data/Dataset;)Ledu/cmu/tetrad/data/DataModel;', tetradData)
+            tetradData = javabridge.static_call('edu/cmu/tetrad/util/DataConvertUtils','toDataModel','(Ledu/pitt/dbmi/data/reader/Data;)Ledu/cmu/tetrad/data/DataModel;', tetradData)
 
             os.remove(temp_data_path)
 
