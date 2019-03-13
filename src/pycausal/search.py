@@ -1,6 +1,6 @@
 '''
 Created on Feb 17, 2016
-Updated on May 1, 2018
+Updated on March 8, 2019
 
 @author: Chirayu Wongchokprasitti, PhD 
 @email: chw20@pitt.edu
@@ -200,7 +200,7 @@ class tetradrunner():
             
             # Continuous
             if dataType == 'continuous':
-                if 'bootstrapSampleSize' in parameters and parameters['bootstrapSampleSize'] > 0:
+                if 'numberResampling' in parameters and parameters['numberResampling'] > 0:
                     tetradData = pc.loadContinuousData(dfs, outputDataset = True)
                 else:
                     tetradData = pc.loadContinuousData(dfs)
@@ -217,7 +217,7 @@ class tetradrunner():
                 dataset = None
                 # Continuous
                 if dataType == 'continuous':
-                    if 'bootstrapSampleSize' in parameters and parameters['bootstrapSampleSize'] > 0:
+                    if 'numberResampling' in parameters and parameters['numberResampling'] > 0:
                         dataset = pc.loadContinuousData(df, outputDataset = True)
                     else:
                         dataset = pc.loadContinuousData(df)

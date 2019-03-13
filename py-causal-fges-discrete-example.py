@@ -21,7 +21,8 @@ tetrad.run(algoId = 'fges', dfs = df, scoreId = 'bdeu', dataType = 'discrete',
 tetrad.getNodes()
 tetrad.getEdges()
 
-dot = tetrad.getDot()
-dot.write_svg('fges-discrete.svg')
+dot_str = pc.tetradGraphToDot(tetrad.getTetradGraph())
+graphs = pydot.graph_from_dot_data(dot_str)
+graphs[0].write_svg('fges-discrete.svg')
 
 pc.stop_vm()

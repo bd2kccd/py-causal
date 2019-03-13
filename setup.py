@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 MA 02110-1301  USA
 
 Created on Feb 15, 2016
-Updated on Aug 13, 2018
+Updated on Mar 7, 2019
 
 @author: Chirayu Wongchokprasitti
 '''
@@ -28,12 +28,12 @@ from setuptools import setup
 
 setup(
     name = "pycausal",
-    version = "1.1.0",
+    version = "1.1.1",
     description = "Python wrapper for the Tetrad Library",
     author = "Chirayu Kong Wongchokprasitti",
     author_email = 'chw20@pitt.edu',
     url = 'http://github.com/bd2kccd/py-causal',
-    download_url = 'https://github.com/bd2kccd/py-causal/archive/v1.1.1.tar.gz',
+    download_url = 'https://github.com/bd2kccd/py-causal/archive/v1.1.0.tar.gz',
     license = 'Lesser GNU General Public License version >= 2.1 (LGPL >= 2.1)',
     keywords = 'tetrad causal graph bayesian network search discovery',
     platforms = ['any'],
@@ -54,6 +54,5 @@ setup(
         'javabridge>=1.0.11',
         'numpy',
         'pandas',
-        'pyparsing'],
-    data_files = ['.', ['LICENSE', 'README'], 'data/charity.txt','data/audiology.txt']
+        'pyparsing']
 )
