@@ -15,8 +15,8 @@ pc.start_vm()
 
 from pycausal import search as s
 tetrad = s.tetradrunner()
-tetrad.run(algoId = 'fges', dfs = df, scoreId = 'sem-bic', dataType = 'continuous',
-           penaltyDiscount = 2, maxDegree = -1, faithfulnessAssumed = True, verbose = True)
+tetrad.run(algoId = 'fges', dfs = df, scoreId = 'sem-bic-score', dataType = 'continuous',
+           maxDegree = -1, faithfulnessAssumed = True, verbose = True)
 
 tetrad.getNodes()
 tetrad.getEdges()
