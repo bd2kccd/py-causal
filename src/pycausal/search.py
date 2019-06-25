@@ -37,23 +37,43 @@ class tetradrunner():
 
         for i in range(0,algoClasses.size()):
             algo = algoClasses.get(i)
-            algoType = str(algo.getAnnotation().algoType())
+            
+            annotation = algo.getAnnotation()
+            if annotation is None:
+                continue
+            
+            algoType = str(annotation.algoType())
+            command = str(annotation.command())
+            
             if algoType != 'orient_pairwise':
-                self.algos[str(algo.getAnnotation().command())] = algo
+                self.algos[command] = algo
+            self.algos[command] = algo
             
         testAnnotations = javabridge.JClassWrapper("edu.cmu.tetrad.annotation.TestOfIndependenceAnnotations")
         testClasses = testAnnotations.getInstance().getAnnotatedClasses()
 
         for i in range(0,testClasses.size()):
             test = testClasses.get(i)
-            self.tests[str(test.getAnnotation().command())] = test
+            
+            annotation = test.getAnnotation()
+            if annotation is None:
+                continue
+            
+            command = str(annotation.command())
+            self.tests[command] = test
 
         scoreAnnotations = javabridge.JClassWrapper("edu.cmu.tetrad.annotation.ScoreAnnotations")
         scoreClasses = scoreAnnotations.getInstance().getAnnotatedClasses()
 
         for i in range(0,scoreClasses.size()):
             score = scoreClasses.get(i)
-            self.scores[str(score.getAnnotation().command())] = score
+            
+            annotation = score.getAnnotation()
+            if annotation is None:
+                continue
+
+            command = str(annotation.command())
+            self.scores[command] = score
             
         paramDescs = javabridge.JClassWrapper("edu.cmu.tetrad.util.ParamDescriptions")
         self.paramDescs = paramDescs.getInstance()
@@ -75,21 +95,21 @@ class tetradrunner():
         _scores.sort()
         print('\n'.join(_scores))
 
-    def getAlgorithmDescription(self, algoId):
-        algo = self.algos.get(algoId)
-        algoClass = algo.getClazz()
+#    def getAlgorithmDescription(self, algoId):
+#        algo = self.algos[algoId]
+#        algoClass = algo.getClazz()
         
-        algorithmDescriptions = javabridge.JClassWrapper("edu.cmu.tetrad.util.AlgorithmDescriptions")
-        algoDescs = algorithmDescriptions.getInstance()
+#        tetradAlgorithms = javabridge.JClassWrapper("edu.pitt.dbmi.causal.cmd.tetrad.TetradAlgorithms")
+#        tetradAlgors = tetradAlgorithms.getInstance()
 
-        print(algoDescs.get(algoId))
-        algorithmAnnotations = javabridge.JClassWrapper("edu.cmu.tetrad.annotation.AlgorithmAnnotations")
-        if algorithmAnnotations.getInstance().requireIndependenceTest(algoClass):
-            print("\nIt requires the independence test.")
-        if algorithmAnnotations.getInstance().requireScore(algoClass):
-            print("\nIt requires the score.")
-        if algorithmAnnotations.getInstance().acceptKnowledge(algoClass):
-            print("\nIt accepts the prior knowledge.")
+#        if tetradAlgors.requireIndependenceTest(algoClass):
+#            print("\nIt requires the independence test.")
+#        if tetradAlgors.requireScore(algoClass):
+#            print("\nIt requires the score.")
+#        if tetradAlgors.acceptKnowledge(algoClass):
+#            print("\nIt accepts the prior knowledge.")
+#        if tetradAlgors.acceptMultipleDataset(algoClass):
+#            print("\nIt accepts multiple datasets.")
     
     def getAlgorithmParameters(self, algoId, testId = None, scoreId = None):
         algo = self.algos.get(algoId)
@@ -97,12 +117,12 @@ class tetradrunner():
         
         testClass = None
         if testId is not None:
-            test = self.tests.get(testId)
+            test = self.tests[testId]
             testClass = test.getClazz()
             
         scoreClass = None
         if scoreId is not None:
-            score = self.scores.get(scoreId)
+            score = self.scores[scoreId]
             scoreClass = score.getClazz()
         
         algorithm = self.algoFactory.create(algoClass, testClass, scoreClass)
@@ -114,7 +134,7 @@ class tetradrunner():
             defaultValue = paramDesc.getDefaultValue()
             javaClass = str(javabridge.call(javabridge.call(defaultValue.o, "getClass", "()Ljava/lang/Class;"),
                             "getName","()Ljava/lang/String;"))
-            desc = str(paramDesc.getDescription())
+            desc = str(paramDesc.getLongDescription())
     
             print(algoParam + ": " + desc + ' (' + javaClass + ') [default:' + str(defaultValue) + ']')
         
@@ -184,7 +204,7 @@ class tetradrunner():
                 score = self.scores[key]
                 sClass = score.getClazz()
                 name = sClass.getName()
-		  	
+
                 if name == defaultScoreClassName:
                     scoreClass = sClass
                     break

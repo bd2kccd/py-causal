@@ -15,8 +15,8 @@ pc.start_vm(java_max_heap_size = '100M')
 
 from pycausal import search as s
 tetrad = s.tetradrunner()
-tetrad.run(algoId = 'fges', dfs = df, scoreId = 'bdeu', dataType = 'discrete',
-           structurePrior = 1.0, samplePrior = 1.0, maxDegree = 3, faithfulnessAssumed = True, verbose = True)
+tetrad.run(algoId = 'fges', dfs = df, scoreId = 'bdeu-score', dataType = 'discrete',
+           maxDegree = 3, faithfulnessAssumed = True, verbose = True)
 
 tetrad.getNodes()
 tetrad.getEdges()

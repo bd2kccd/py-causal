@@ -164,8 +164,8 @@ class pycausal():
 
             os.remove(temp_data_path)
 
-        if(not outputDataset):
-            tetradData = javabridge.JClassWrapper('edu.cmu.tetrad.data.CovarianceMatrixOnTheFly')(tetradData)
+        #if(not outputDataset):
+        #    tetradData = javabridge.JClassWrapper('edu.cmu.tetrad.data.CovarianceMatrixOnTheFly')(tetradData)
 
         return tetradData
 
