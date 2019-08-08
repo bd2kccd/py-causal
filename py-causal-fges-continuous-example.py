@@ -3,7 +3,6 @@
 import os
 import pandas as pd
 import pydot
-from IPython.display import SVG
 
 data_dir = os.path.join(os.getcwd(), 'data', 'charity.txt')
 df = pd.read_table(data_dir, sep="\t")
