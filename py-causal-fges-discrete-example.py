@@ -1,6 +1,5 @@
 #!/usr/local/bin/python
 
-
 import os
 import pandas as pd
 import pydot
@@ -14,7 +13,7 @@ pc.start_vm(java_max_heap_size = '100M')
 
 from pycausal import search as s
 tetrad = s.tetradrunner()
-tetrad.run(algoId = 'fges', dfs = df, scoreId = 'bdeu-score', dataType = 'discrete',
+tetrad.run(algoId = 'fges', dfs = df, scoreId = 'cg-bic-score', dataType = 'discrete',
            maxDegree = 3, faithfulnessAssumed = True, 
            symmetricFirstStep = True, verbose = True)
 

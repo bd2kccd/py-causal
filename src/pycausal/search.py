@@ -95,21 +95,23 @@ class tetradrunner():
         _scores.sort()
         print('\n'.join(_scores))
 
-#    def getAlgorithmDescription(self, algoId):
-#        algo = self.algos[algoId]
-#        algoClass = algo.getClazz()
+    def getAlgorithmDescription(self, algoId):
+        algo = self.algos.get(algoId)
+        algoClass = algo.getClazz()
         
-#        tetradAlgorithms = javabridge.JClassWrapper("edu.pitt.dbmi.causal.cmd.tetrad.TetradAlgorithms")
-#        tetradAlgors = tetradAlgorithms.getInstance()
+        algorithmDescriptions = javabridge.JClassWrapper("edu.cmu.tetrad.util.AlgorithmDescriptions")
+        algoDescs = algorithmDescriptions.getInstance()
 
-#        if tetradAlgors.requireIndependenceTest(algoClass):
-#            print("\nIt requires the independence test.")
-#        if tetradAlgors.requireScore(algoClass):
-#            print("\nIt requires the score.")
-#        if tetradAlgors.acceptKnowledge(algoClass):
-#            print("\nIt accepts the prior knowledge.")
-#        if tetradAlgors.acceptMultipleDataset(algoClass):
-#            print("\nIt accepts multiple datasets.")
+        print(algoDescs.get(algoId))
+        algorithmAnnotations = javabridge.JClassWrapper("edu.cmu.tetrad.annotation.AlgorithmAnnotations")
+        if algorithmAnnotations.getInstance().requireIndependenceTest(algoClass):
+            print("\nIt requires the independence test.")
+        if algorithmAnnotations.getInstance().requireScore(algoClass):
+            print("\nIt requires the score.")
+        if algorithmAnnotations.getInstance().acceptKnowledge(algoClass):
+            print("\nIt accepts the prior knowledge.")
+        if algorithmAnnotations.getInstance().acceptMultipleDataset(algoClass):
+            print("\nIt accepts multiple datasets.")
     
     def getAlgorithmParameters(self, algoId, testId = None, scoreId = None):
         algo = self.algos.get(algoId)

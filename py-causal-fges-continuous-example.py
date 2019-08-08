@@ -1,6 +1,5 @@
 #!/usr/local/bin/python
 
-
 import os
 import pandas as pd
 import pydot
@@ -14,7 +13,7 @@ pc.start_vm()
 
 from pycausal import search as s
 tetrad = s.tetradrunner()
-tetrad.run(algoId = 'fges', dfs = df, scoreId = 'sem-bic-score', dataType = 'continuous',
+tetrad.run(algoId = 'fges', dfs = df, scoreId = 'sem-bic', dataType = 'continuous',
            maxDegree = -1, faithfulnessAssumed = True, verbose = True)
 
 print(tetrad.getNodes())
