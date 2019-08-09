@@ -1,5 +1,6 @@
 #!/usr/local/bin/python
 
+
 import os
 import pandas as pd
 import pydot
@@ -14,20 +15,13 @@ pc.start_vm()
 
 from pycausal import search as s
 tetrad = s.tetradrunner()
-tetrad.run(algoId = 'fges', dfs = df, scoreId = 'sem-bic', dataType = 'continuous',
+tetrad.run(algoId = 'fges', dfs = df, scoreId = 'sem-bic-score', dataType = 'continuous',
            maxDegree = -1, faithfulnessAssumed = True, verbose = True)
 
-print(tetrad.getNodes())
-print(tetrad.getEdges())
+tetrad.getNodes()
+tetrad.getEdges()
 
-graph = tetrad.getTetradGraph()
-print('Graph BIC: {}'.format(graph.getAttribute('BIC')))
-nodes = graph.getNodes()
-for i in range(nodes.size()):
-    node = nodes.get(i)
-    print('Node {} BIC: {}'.format(node.getName(),node.getAttribute('BIC')))
-
-dot_str = pc.tetradGraphToDot(graph)
+dot_str = pc.tetradGraphToDot(tetrad.getTetradGraph())
 graphs = pydot.graph_from_dot_data(dot_str)
 graphs[0].write_svg('fges-continuous.svg')
 

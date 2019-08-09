@@ -60,11 +60,6 @@ class pycausal():
             print("Node {0} does not exist!".format(node))
             return False
 
-    def loadTimeSeriesData(self, tetradData, numLags = 1):
-        tetradData = javabridge.static_call('edu/cmu/tetrad/search/TimeSeriesUtils','createLagData','(Ledu/cmu/tetrad/data/DataSet;I)Ledu/cmu/tetrad/data/DataSet;', tetradData, numLags)
-        
-        return tetradData
-        
     def loadMixedData(self, df, numCategoriesToDiscretize = 4):
         tetradData = None
 
