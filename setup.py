@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 MA 02110-1301  USA
 
 Created on Feb 15, 2016
-Updated on Dec 25, 2019
+Updated on Aug 19, 2020
 
 @author: Chirayu Wongchokprasitti
 '''
@@ -28,10 +28,10 @@ from setuptools import setup
 
 setup(
     name = "pycausal",
-    version = "1.2.1",
+    version = "1.2.2",
     description = "Python wrapper for the Tetrad Library",
     author = "Chirayu Kong Wongchokprasitti",
-    author_email = 'chw20@pitt.edu',
+    author_email = 'chirayu.kong@gmail.com',
     url = 'http://github.com/bd2kccd/py-causal',
     download_url = 'https://github.com/bd2kccd/py-causal/archive/v1.2.1.tar.gz',
     license = 'Lesser GNU General Public License version >= 2.1 (LGPL >= 2.1)',
