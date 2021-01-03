@@ -110,3 +110,7 @@ Docker Image
 
 The pre-installed py-causal Docker image is also available at [Docker Hub](https://hub.docker.com/r/chirayukong/py-causal-notebook/)
 
+Citation
+========
+
+[![DOI](https://zenodo.org/badge/52296325.svg)](https://zenodo.org/badge/latestdoi/52296325)
