@@ -1,3 +1,5 @@
+NOTE: THIS VERSION OF PYCAUSAL USES AN OUTDATED VERSION OF TETRAD AND SO IS DEPRECATED. WE WILL TRY TO REVISIT AN PYTHON WRAPPER FOR TETRAD HOPEFULLY IN THE NEAR FUTURE. IN THE MEANTIME WE WILL ADD A WIKI ARTICLE FOR HOW TO RUN CAUSAL-CMD ALGORITHMS IN PYTHON USING OS.SYS. J Ramsey, 2023.02.08.
+
 py-causal
 ========
 Python APIs for causal modeling algorithms developed by the University of Pittsburgh/Carnegie Mellon University [Center for Causal Discovery](http://www.ccd.pitt.edu). 
