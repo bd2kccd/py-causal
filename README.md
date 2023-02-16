@@ -1,4 +1,20 @@
-NOTE: THIS VERSION OF PYCAUSAL USES AN OUTDATED VERSION OF TETRAD AND SO IS DEPRECATED. WE WILL TRY TO REVISIT AN PYTHON WRAPPER FOR TETRAD HOPEFULLY IN THE NEAR FUTURE. IN THE MEANTIME WE WILL ADD A WIKI ARTICLE FOR HOW TO RUN CAUSAL-CMD ALGORITHMS IN PYTHON USING OS.SYS. J Ramsey, 2023.02.08.
+Note: This version of PyCausal uses an older version of Tetrad, and our current (tiny) development team has not been able to get to updating it. The projects we are striving to keep up to date are Tetrad and Causal-Cmd, the command-line version of Tetrad. Here is the current version of Tetrad:
+
+https://github.com/cmu-phil/tetrad
+
+Here is the current version of Causal Command (causal-cmd):
+
+https://github.com/bd2kccd/causal-cmd
+
+Here is a link showing how to run Tetrad algorithms in Python through the os.sys command using causal-cmd:
+
+https://github.com/cmu-phil/tetrad/wiki/Running-Tetrad-algorithms-in-Python
+
+Sorry for the inconvenience; we realize pycausal is being used in the literature and will try to get to updating it hopefully in the near future.
+
+Best,
+
+Joe Ramsey
 
 py-causal
 ========
