@@ -14,7 +14,7 @@ Sorry for the inconvenience; we realize pycausal is being used in the literature
 
 Best,
 
-Joe Ramsey
+Joe Ramsey, 2023-02-16
 
 py-causal
 ========
