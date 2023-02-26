@@ -1,20 +1,8 @@
-Note: This version of PyCausal uses an older version of Tetrad, and our current (tiny) development team has not been able to get to updating it. The projects we are striving to keep up to date are Tetrad and Causal-Cmd, the command-line version of Tetrad. Here is the current version of Tetrad:
+Note: This project uses an older version of Tetrad and a buggy and hard to install Python/Java bridge and so is not recommended. We are currently in the process of creating a new project, [py-tetrad](https://github.com/cmu-phil/py-tetrad), which will use the (much better) JPype Python project to bridge Python and Java. Py-tetrad is not yet stable, but please, if you're currently using this py-causal project, watch the py-tetrad project and swith over as soon as it becomes stable.
 
-https://github.com/cmu-phil/tetrad
+Joe Ramsey, 2023-02-26
 
-Here is the current version of Causal Command (causal-cmd):
-
-https://github.com/bd2kccd/causal-cmd
-
-Here is a link showing how to run Tetrad algorithms in Python through the os.sys command using causal-cmd:
-
-https://github.com/cmu-phil/tetrad/wiki/Running-Tetrad-algorithms-in-Python
-
-Sorry for the inconvenience; we realize pycausal is being used in the literature and will possibly try to update it in the near future.
-
-Best,
-
-Joe Ramsey, 2023-02-16
+-----------------------
 
 py-causal
 ========
