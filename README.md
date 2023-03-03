@@ -1,6 +1,4 @@
-**Note 2023-02-26: This project uses an older version of Tetrad and a buggy and hard to install Python/Java bridge and so is not recommended. We are currently in the process of creating a new project, [py-tetrad](https://github.com/cmu-phil/py-tetrad), which will use the (much better) [JPype Python package](https://jpype.readthedocs.io/en/latest/) to bridge Python and Java. Py-tetrad is not yet stable, but please, if you're currently using this py-causal project, watch the py-tetrad project and switch over as soon as it becomes stable.**
-
-**Note 2023-02-27: We may move the py-tetrad files over to the repository as a new version of py-causal.**
+**Note 2023-02-26: This project uses an old version of Tetrad and buggy and often hard to install Javabridge and so is not recommended. Please switch using [py-tetrad](https://github.com/cmu-phil/py-tetrad), which uses the (much better) [JPype Python package](https://jpype.readthedocs.io/en/latest/) to bridge Python and Java.**
 
 -----------------------
 
