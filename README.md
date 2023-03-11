@@ -1,4 +1,4 @@
-**Note 2023-02-26: This project uses an old version of Tetrad and the sometimes buggy and often hard to install Javabridge and so is not recommended. Please switch using [py-tetrad](https://github.com/cmu-phil/py-tetrad), which uses the (much better) [JPype](https://jpype.readthedocs.io/en/latest/) to bridge Python and Java.**
+**Note 2023-02-26: This project uses an old version of Tetrad and the sometimes buggy and often hard to install Javabridge and so is no longer recommended. Please switch using [py-tetrad](https://github.com/cmu-phil/py-tetrad), which uses the (much better) [JPype](https://jpype.readthedocs.io/en/latest/) to bridge Python and Java.**
 
 -----------------------
 
